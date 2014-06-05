@@ -29,11 +29,6 @@
     </property>
     <addaction name="actionSalir"/>
    </widget>
-   <widget class="QMenu" name="menuEdici_n">
-    <property name="title">
-     <string>Edición</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menuAyuda">
     <property name="title">
      <string>Ayuda</string>
@@ -46,9 +41,22 @@
     </property>
     <addaction name="actionCerrar_Sesi_n"/>
    </widget>
+   <widget class="QMenu" name="menuDatos">
+    <property name="title">
+     <string>Datos</string>
+    </property>
+    <addaction name="actionSubir"/>
+   </widget>
+   <widget class="QMenu" name="menuLog">
+    <property name="title">
+     <string>Log</string>
+    </property>
+    <addaction name="actionVer_el_registro_de_sucesos"/>
+   </widget>
    <addaction name="menuArchivo"/>
-   <addaction name="menuEdici_n"/>
+   <addaction name="menuDatos"/>
    <addaction name="menuUsuarios"/>
+   <addaction name="menuLog"/>
    <addaction name="menuAyuda"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -73,6 +81,16 @@
   <action name="actionCerrar_Sesi_n">
    <property name="text">
     <string>Cerrar Sesión</string>
+   </property>
+  </action>
+  <action name="actionSubir">
+   <property name="text">
+    <string>Subir</string>
+   </property>
+  </action>
+  <action name="actionVer_el_registro_de_sucesos">
+   <property name="text">
+    <string>Ver el registro de sucesos</string>
    </property>
   </action>
  </widget>

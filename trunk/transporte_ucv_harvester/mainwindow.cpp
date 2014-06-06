@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     db = QSqlDatabase::addDatabase("QODBC");
     db.setHostName("localhost");
-    db.setDatabaseName("test");
+    db.setDatabaseName("ptransporteucv");
     db.setUserName("compusciens");
     db.setPassword("kakolukiya");
     db.setPort(3306);
@@ -19,15 +19,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     }
     else
     {
-        printf("ola ke ase\n");
+        QSqlQuery query;
+        query.exec("SELECT nombre FROM persona WHERE cedula=21536559");
+
+        query.first();
+
+        QMessageBox::critical(0, QObject::tr("Database Result"),
+                                  query.value(0).toString());
+
     }
-        /*
-    if (ok)
-    {
-        printf("ola ke ase\n");
-    }
-    else
-        printf("noup\n");*/
+
 }
 
 MainWindow::~MainWindow()

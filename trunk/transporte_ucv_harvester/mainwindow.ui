@@ -13,11 +13,13 @@
   <property name="windowTitle">
    <string>Sistema de [Nombre por definir]</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
   <property name="styleSheet">
-   <string notr="true">#QtWidget:centralWidget
-{
-	background-color: #ffffff;
-}</string>
+   <string notr="true">background-image: url(Chrysanthemum.jpg);
+background-position: top left; 
+background-repeat: repeat-xy;</string>
   </property>
   <widget class="QWidget" name="centralWidget"/>
   <widget class="QMenuBar" name="menuBar">

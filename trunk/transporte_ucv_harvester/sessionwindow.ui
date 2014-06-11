@@ -202,6 +202,9 @@
               <property name="echoMode">
                <enum>QLineEdit::Password</enum>
               </property>
+              <property name="placeholderText">
+               <string/>
+              </property>
              </widget>
             </item>
            </layout>

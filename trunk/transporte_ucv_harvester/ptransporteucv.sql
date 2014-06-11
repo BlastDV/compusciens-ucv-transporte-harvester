@@ -1,5 +1,5 @@
 /*
-SQLyog Community v11.5 (32 bit)
+SQLyog Community v11.42 (32 bit)
 MySQL - 5.6.19-log : Database - ptransporteucv
 *********************************************************************
 */
@@ -16,20 +16,96 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`ptransporteucv` /*!40100 DEFAULT CHARAC
 
 USE `ptransporteucv`;
 
-/*Table structure for table `persona` */
+/*Table structure for table `paradas` */
 
-DROP TABLE IF EXISTS `persona`;
+DROP TABLE IF EXISTS `paradas`;
 
-CREATE TABLE `persona` (
-  `cedula` int(15) NOT NULL,
-  `nombre` varchar(45) NOT NULL,
-  `apellido` varchar(45) NOT NULL,
+CREATE TABLE `paradas` (
+  `nombre_parada` varchar(45) NOT NULL,
+  `id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `paradas` */
+
+/*Table structure for table `pasajeros` */
+
+DROP TABLE IF EXISTS `pasajeros`;
+
+CREATE TABLE `pasajeros` (
+  `cedula` int(8) unsigned NOT NULL COMMENT 'La cedula de los pasajeros',
+  `id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `pasajeros` */
+
+/*Table structure for table `registros` */
+
+DROP TABLE IF EXISTS `registros`;
+
+CREATE TABLE `registros` (
+  `viaje_id` bigint(20) unsigned NOT NULL COMMENT 'El viaje asociado al registro',
+  `pasajero_id` int(10) unsigned NOT NULL COMMENT 'La lista de pasajeros asociada al viaje',
+  `id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `Un registro, un viaje` (`viaje_id`),
+  CONSTRAINT `Un registro, un viaje` FOREIGN KEY (`viaje_id`) REFERENCES `viajes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `registros` */
+
+/*Table structure for table `rutas` */
+
+DROP TABLE IF EXISTS `rutas`;
+
+CREATE TABLE `rutas` (
+  `origen` varchar(45) NOT NULL COMMENT 'El origen de la ruta',
+  `destino` varchar(45) NOT NULL COMMENT 'El final de la ruta',
+  `paradas_id` int(10) unsigned NOT NULL COMMENT 'Referencia las paradas de la ruta',
+  `id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `Muchas paradas, una ruta` (`paradas_id`),
+  CONSTRAINT `Muchas paradas, una ruta` FOREIGN KEY (`paradas_id`) REFERENCES `paradas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `rutas` */
+
+/*Table structure for table `transportista` */
+
+DROP TABLE IF EXISTS `transportista`;
+
+CREATE TABLE `transportista` (
+  `primer_nombre` varchar(45) NOT NULL,
+  `segundo_nombre` varchar(45) DEFAULT NULL COMMENT 'El segundo nombre es opcional.',
+  `primer_apellido` varchar(45) NOT NULL,
+  `segundo_apellido` varchar(45) NOT NULL,
+  `fecha_nac` date DEFAULT NULL,
+  `cedula` int(8) unsigned NOT NULL,
   PRIMARY KEY (`cedula`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `persona` */
+/*Data for the table `transportista` */
 
-insert  into `persona`(`cedula`,`nombre`,`apellido`) values (14199311,'maria','olarte'),(17489960,'aura','olarte'),(21536559,'pedro','fernandes');
+/*Table structure for table `viajes` */
+
+DROP TABLE IF EXISTS `viajes`;
+
+CREATE TABLE `viajes` (
+  `fecha` date NOT NULL COMMENT 'La fecha del viaje',
+  `hora_salida` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Hora de partida',
+  `hora_llegada` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Hora de llegada',
+  `ruta_id` int(10) unsigned NOT NULL COMMENT 'La ruta del viaje',
+  `ci_transportista` int(8) unsigned NOT NULL COMMENT 'La cedula del chofer',
+  `id` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `Un viaje, un transportista` (`ci_transportista`),
+  KEY `Un viaje, una ruta` (`ruta_id`),
+  CONSTRAINT `Un viaje, una ruta` FOREIGN KEY (`ruta_id`) REFERENCES `rutas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `Un viaje, un transportista` FOREIGN KEY (`ci_transportista`) REFERENCES `transportista` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `viajes` */
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

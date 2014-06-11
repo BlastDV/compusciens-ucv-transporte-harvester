@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>pictures/background.png</file>
+        <file>pictures/sessionwindowbg.png</file>
     </qresource>
 </RCC>

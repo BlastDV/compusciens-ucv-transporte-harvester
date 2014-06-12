@@ -87,6 +87,21 @@ CREATE TABLE `transportista` (
 
 /*Data for the table `transportista` */
 
+/*Table structure for table `usuarios` */
+
+DROP TABLE IF EXISTS `usuarios`;
+
+CREATE TABLE `usuarios` (
+  `password` varchar(41) NOT NULL COMMENT 'La clave encriptada',
+  `id` varchar(15) NOT NULL COMMENT 'El id del usuario',
+  `permisos` int(10) unsigned DEFAULT NULL COMMENT 'El id de los permisos correspondientes',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `usuarios` */
+
+insert  into `usuarios`(`password`,`id`,`permisos`) values ('d033e22ae348aeb5660fc2140aec35850c4da997','admin',NULL);
+
 /*Table structure for table `viajes` */
 
 DROP TABLE IF EXISTS `viajes`;
@@ -101,8 +116,8 @@ CREATE TABLE `viajes` (
   PRIMARY KEY (`id`),
   KEY `Un viaje, un transportista` (`ci_transportista`),
   KEY `Un viaje, una ruta` (`ruta_id`),
-  CONSTRAINT `Un viaje, una ruta` FOREIGN KEY (`ruta_id`) REFERENCES `rutas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `Un viaje, un transportista` FOREIGN KEY (`ci_transportista`) REFERENCES `transportista` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `Un viaje, un transportista` FOREIGN KEY (`ci_transportista`) REFERENCES `transportista` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `Un viaje, una ruta` FOREIGN KEY (`ruta_id`) REFERENCES `rutas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `viajes` */

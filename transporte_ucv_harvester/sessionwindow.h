@@ -2,6 +2,7 @@
 #define SESSIONWINDOW_H
 
 #include <QWidget>
+#include <QCryptographicHash>
 
 namespace Ui {
 class SessionWindow;
@@ -17,6 +18,7 @@ public:
 
 private:
     Ui::SessionWindow *ui;
+    QCryptographicHash *encrypter;
 };
 
 #endif // SESSIONWINDOW_H

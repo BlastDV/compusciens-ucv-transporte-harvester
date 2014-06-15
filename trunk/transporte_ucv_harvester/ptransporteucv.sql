@@ -16,6 +16,24 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`ptransporteucv` /*!40100 DEFAULT CHARAC
 
 USE `ptransporteucv`;
 
+/*Table structure for table `actividades` */
+
+DROP TABLE IF EXISTS `actividades`;
+
+CREATE TABLE `actividades` (
+  `usuario` varchar(45) NOT NULL COMMENT 'El usuario actor',
+  `tiempo` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'El momento del evento',
+  `actividad` varchar(150) DEFAULT NULL COMMENT 'Descripcion del evento',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
+  KEY `Usuario hace algo` (`usuario`),
+  CONSTRAINT `Usuario hace algo` FOREIGN KEY (`usuario`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+/*Data for the table `actividades` */
+
+insert  into `actividades`(`usuario`,`tiempo`,`actividad`,`id`) values ('admin','2014-06-15 16:50:30','INICIO SESION',6);
+
 /*Table structure for table `paradas` */
 
 DROP TABLE IF EXISTS `paradas`;
@@ -34,7 +52,7 @@ DROP TABLE IF EXISTS `pasajeros`;
 
 CREATE TABLE `pasajeros` (
   `cedula` int(8) unsigned NOT NULL COMMENT 'La cedula de los pasajeros',
-  `id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -47,10 +65,10 @@ DROP TABLE IF EXISTS `registros`;
 CREATE TABLE `registros` (
   `viaje_id` bigint(20) unsigned NOT NULL COMMENT 'El viaje asociado al registro',
   `pasajero_id` int(10) unsigned NOT NULL COMMENT 'La lista de pasajeros asociada al viaje',
-  `id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`),
   KEY `Un registro, un viaje` (`viaje_id`),
-  CONSTRAINT `Un registro, un viaje` FOREIGN KEY (`viaje_id`) REFERENCES `viajes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `Un registro, un viaje` FOREIGN KEY (`viaje_id`) REFERENCES `viajes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `registros` */
@@ -112,12 +130,12 @@ CREATE TABLE `viajes` (
   `hora_llegada` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Hora de llegada',
   `ruta_id` int(10) unsigned NOT NULL COMMENT 'La ruta del viaje',
   `ci_transportista` int(8) unsigned NOT NULL COMMENT 'La cedula del chofer',
-  `id` bigint(20) unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`),
   KEY `Un viaje, un transportista` (`ci_transportista`),
   KEY `Un viaje, una ruta` (`ruta_id`),
-  CONSTRAINT `Un viaje, un transportista` FOREIGN KEY (`ci_transportista`) REFERENCES `transportista` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `Un viaje, una ruta` FOREIGN KEY (`ruta_id`) REFERENCES `rutas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `Un viaje, un transportista` FOREIGN KEY (`ci_transportista`) REFERENCES `transportista` (`cedula`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `Un viaje, una ruta` FOREIGN KEY (`ruta_id`) REFERENCES `rutas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `viajes` */

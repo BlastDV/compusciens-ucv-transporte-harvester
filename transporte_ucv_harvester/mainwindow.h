@@ -21,10 +21,15 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    QSqlDatabase db;
+    QSqlDatabase DBConnector;
 
 private:
     Ui::MainWindow *ui;
+
+signals:
+    void CerrarSesion ();
+private slots:
+    void on_actionCerrarSesion_triggered();
 };
 
 #endif // MAINWINDOW_H

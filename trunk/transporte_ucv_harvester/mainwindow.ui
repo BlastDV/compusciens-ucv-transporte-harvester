@@ -53,7 +53,7 @@
     <property name="title">
      <string>Usuarios</string>
     </property>
-    <addaction name="actionCerrar_Sesi_n"/>
+    <addaction name="actionCerrarSesion"/>
    </widget>
    <widget class="QMenu" name="menuDatos">
     <property name="title">
@@ -92,7 +92,7 @@
     <string>Salir</string>
    </property>
   </action>
-  <action name="actionCerrar_Sesi_n">
+  <action name="actionCerrarSesion">
    <property name="text">
     <string>Cerrar Sesión</string>
    </property>

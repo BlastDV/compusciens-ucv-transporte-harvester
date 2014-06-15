@@ -7,7 +7,6 @@ SessionWindow::SessionWindow(QWidget *parent) : QWidget(parent), ui(new Ui::Sess
 {
     ui->setupUi(this);
 
-
 }
 
 SessionWindow::~SessionWindow()
@@ -30,7 +29,7 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
     if (!DBConnector.open()) // Error en la BD. No disponible?
     {
         QMessageBox::critical(0, QObject::tr("Error"),
-        "No se ha podido iniciar sesi贸n, revise el estado"
+        "No se ha podido iniciar sesi髇, revise el estado"
         "de la Base de Datos\n\nMensaje: Error DBA1\n"+ DBConnector.lastError().text());
 
         INICIOOK= false;
@@ -44,7 +43,7 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
         if (!Loginquery.exec(QString("SELECT * FROM usuarios WHERE id=")+QString("'")+UserID+QString("'")))
         {
             QMessageBox::critical(0, QObject::tr("Error"),
-            "No se ha podido iniciar sesi贸n, revise sus datos");
+            "No se ha podido iniciar sesi髇, revise sus datos");
 
             INICIOOK= false;
         }
@@ -56,22 +55,42 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
             if (Loginquery.value(0)!=Encryptedpassword)
             {
                 QMessageBox::critical(0, QObject::tr("Error"),
-                "No se ha podido iniciar sesi贸n, revise sus datos");
+                "No se ha podido iniciar sesi髇, revise sus datos");
+
+                INICIOOK= false;
             }
             else
             {
-                QMessageBox::critical(0, QObject::tr("Inicio de Sesi贸n"),
+                QMessageBox::critical(0, QObject::tr("Inicio de Sesi髇"),
                 "Bienvenido " + UserID);
+
+                INICIOOK= true;
             }
         }
     }
 
     DBConnector.close();
+    DBConnector.removeDatabase("QODBC");
 
     return INICIOOK;
 }
 
+//Esto se activara cada vez que se presione el boton de inicio de sesion
 void SessionWindow::on_SessionSubmitButton_clicked()
 {
-    InicioSesion (ui->UserInput->text(), ui->PasswordInput->text());
+    if (InicioSesion (ui->UserInput->text(), ui->PasswordInput->text()))
+    {
+        this->hide();
+        w= new MainWindow(this);
+
+        connect (w, SIGNAL(CerrarSesion()), this, SLOT(CerrarSesion()));
+        w->show();
+    }
+}
+
+//Esto se ejecutara cada vez que cierren sesion desde la ventana w
+void SessionWindow::CerrarSesion()
+{
+    delete w;
+    this->show();
 }

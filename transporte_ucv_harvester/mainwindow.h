@@ -26,10 +26,13 @@ public:
 private:
     Ui::MainWindow *ui;
 
-signals:
-    void CerrarSesion ();
+
 private slots:
     void on_actionCerrarSesion_triggered();
+
+signals:
+    void CerrarSesion ();
+    void ReportarAccion (QString action);
 };
 
 #endif // MAINWINDOW_H

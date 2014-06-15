@@ -14,10 +14,14 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    sessionwindow.cpp
+    sessionwindow.cpp \
+    logmaster.cpp \
+    dbconnector.cpp
 
 HEADERS  += mainwindow.h \
-    sessionwindow.h
+    sessionwindow.h \
+    logmaster.h \
+    dbconnector.h
 
 FORMS    += mainwindow.ui \
     sessionwindow.ui

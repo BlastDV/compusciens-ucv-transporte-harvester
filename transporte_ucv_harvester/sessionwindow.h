@@ -4,8 +4,11 @@
 #include <QWidget>
 #include <QCryptographicHash>
 #include <QtSql/QtSql>
+
 //Clases para el resto del programa
 #include "mainwindow.h"
+#include "logmaster.h"
+#include "dbconnector.h"
 
 namespace Ui
 {
@@ -27,11 +30,17 @@ private slots:
 private:
     Ui::SessionWindow *ui;
     QCryptographicHash *Encrypter;
-    QSqlDatabase DBConnector;
+    DBConnector* Connector;
 
+    LogMaster* Logger;
     MainWindow* w;
 
+
     bool InicioSesion (QString UserID, QString Password);
+
+signals:
+    void ReportarUserID (QString UserID);
+    void ReportarAccion (QString action);
 };
 
 #endif // SESSIONWINDOW_H

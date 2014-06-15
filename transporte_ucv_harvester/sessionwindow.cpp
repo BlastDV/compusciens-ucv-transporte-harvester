@@ -6,7 +6,8 @@
 SessionWindow::SessionWindow(QWidget *parent) : QWidget(parent), ui(new Ui::SessionWindow)
 {
     ui->setupUi(this);
-
+    Logger= new LogMaster(this);
+    Connector= new DBConnector(this);
 }
 
 SessionWindow::~SessionWindow()
@@ -19,18 +20,11 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
     bool INICIOOK; // Para devolver el resultado de la operacion
 
     // Vamos a crear una conexion para poder autentificar al usuario
-    DBConnector= QSqlDatabase::addDatabase("QODBC");
-    DBConnector.setHostName("localhost");
-    DBConnector.setDatabaseName("ptransporteucv");
-    DBConnector.setUserName("compusciens");
-    DBConnector.setPassword("kakolukiya");
-    DBConnector.setPort(3306);
-
-    if (!DBConnector.open()) // Error en la BD. No disponible?
+    if (!Connector->RequestConnection()) // Error en la BD. No disponible?
     {
         QMessageBox::critical(0, QObject::tr("Error"),
         "No se ha podido iniciar sesión, revise el estado"
-        "de la Base de Datos\n\nMensaje: Error DBA1\n"+ DBConnector.lastError().text());
+        "de la Base de Datos\n\nMensaje: Error DBA1\n"+ Connector->getLastError().text());
 
         INICIOOK= false;
     }
@@ -64,13 +58,20 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
                 QMessageBox::critical(0, QObject::tr("Inicio de Sesión"),
                 "Bienvenido " + UserID);
 
+                Logger->UpdateUser(UserID);
+
+                // Cerramos esta conexion a la BD
+                Connector->EndConnection();
+
+                if (Logger->RegistrarEvento("INICIO SESION"))
+                QMessageBox::critical(0, QObject::tr("Gud"),
+                "asdasdasdasdasd");
                 INICIOOK= true;
             }
         }
     }
 
-    DBConnector.close();
-    DBConnector.removeDatabase("QODBC");
+
 
     return INICIOOK;
 }
@@ -84,6 +85,8 @@ void SessionWindow::on_SessionSubmitButton_clicked()
         w= new MainWindow(this);
 
         connect (w, SIGNAL(CerrarSesion()), this, SLOT(CerrarSesion()));
+        connect (w, SIGNAL(ReportarAccion(QString)), Logger, SLOT(RegistrarEvento(QString)));
+
         w->show();
     }
 }
@@ -91,6 +94,7 @@ void SessionWindow::on_SessionSubmitButton_clicked()
 //Esto se ejecutara cada vez que cierren sesion desde la ventana w
 void SessionWindow::CerrarSesion()
 {
+    disconnect (w, SIGNAL(CerrarSesion()));
     delete w;
     this->show();
 }

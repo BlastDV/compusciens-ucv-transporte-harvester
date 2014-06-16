@@ -35,8 +35,9 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
         // Hay que encriptar la clave con SHA1 para compararla con la de la BD
         QString Encryptedpassword= (Encrypter->hash(QByteArray(Password.toStdString().c_str()), QCryptographicHash::Sha1)).toHex();
 
-        QSqlQuery Loginquery;
-        if (!Loginquery.exec(QString("SELECT * FROM usuarios WHERE id=")+QString("'")+UserID+QString("'")))
+        // Connector->Connector le dice a Loginquery con cual BD y conexion funcionar
+        QSqlQuery* Loginquery= new QSqlQuery (Connector->Connector);
+        if (!Loginquery->exec(QString("SELECT * FROM usuarios WHERE id=")+QString("'")+UserID+QString("'")))
         {
             QMessageBox::critical(0, QObject::tr("Error"),
             "No se ha podido iniciar sesión, revise sus datos");
@@ -45,10 +46,10 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
         }
         else
         {
-            Loginquery.first();
+            Loginquery->first();
 
             // Ahora evaluemos que las claves coinciden
-            if (Loginquery.value(0)!=Encryptedpassword)
+            if (Loginquery->value(0)!=Encryptedpassword)
             {
                 QMessageBox::critical(0, QObject::tr("Error"),
                 "No se ha podido iniciar sesión, revise sus datos");
@@ -62,15 +63,17 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
 
                 Logger->UpdateUser(UserID);
 
-                // Cerramos esta conexion a la BD
-                Connector->EndConnection();
 
                 if (Logger->RegistrarEvento("INICIO SESION"))
                     QMessageBox::information(0, QObject::tr("Gud"), "Evento Registrado");
 
                 INICIOOK= true;
             }
+
         }
+
+        // Cerramos esta conexion a la BD
+        Connector->EndConnection();
     }
 
     return INICIOOK;

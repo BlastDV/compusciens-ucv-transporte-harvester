@@ -5,7 +5,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 {
     ui->setupUi(this);
 
-    QMessageBox::critical(0, QObject::tr("-"), "SEGUIMOS VIVOS");
 }
 
 MainWindow::~MainWindow()

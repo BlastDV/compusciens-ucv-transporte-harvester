@@ -9,7 +9,7 @@ bool DBConnector::RequestConnection()
 {
     bool APERTURA;
 
-    Connector= QSqlDatabase::addDatabase("QODBC", ConnectionName.toLatin1());
+    Connector= QSqlDatabase::addDatabase("QODBC", ConnectionName);
     Connector.setHostName("localhost");
     Connector.setDatabaseName("ptransporteucv");
     Connector.setUserName("compusciens");

@@ -14,11 +14,12 @@ public:
     void EndConnection ();
     QSqlError getLastError ();
     QString ConnectionName;
+    QSqlDatabase Connector;
     
 public slots:
 
 private:
-    QSqlDatabase Connector;
+
 
 signals:
     

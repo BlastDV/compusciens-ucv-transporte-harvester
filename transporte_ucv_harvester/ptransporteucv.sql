@@ -28,11 +28,11 @@ CREATE TABLE `actividades` (
   PRIMARY KEY (`id`),
   KEY `Usuario hace algo` (`usuario`),
   CONSTRAINT `Usuario hace algo` FOREIGN KEY (`usuario`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 /*Data for the table `actividades` */
 
-insert  into `actividades`(`usuario`,`tiempo`,`actividad`,`id`) values ('admin','2014-06-15 16:50:30','INICIO SESION',6);
+insert  into `actividades`(`usuario`,`tiempo`,`actividad`,`id`) values ('admin','2014-06-15 16:50:30','INICIO SESION',6),('admin','2014-06-15 19:04:11','INICIO SESION',7),('admin','2014-06-15 19:51:51','INICIO SESION',8),('admin','2014-06-15 19:53:01','INICIO SESION',9),('admin','2014-06-15 19:58:59','INICIO SESION',10),('admin','2014-06-15 20:00:03','INICIO SESION',11),('admin','2014-06-15 20:00:35','INICIO SESION',12),('admin','2014-06-15 20:01:58','INICIO SESION',13);
 
 /*Table structure for table `paradas` */
 

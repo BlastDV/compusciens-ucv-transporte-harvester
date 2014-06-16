@@ -32,6 +32,7 @@ private:
     QCryptographicHash *Encrypter;
     DBConnector* Connector;
 
+    QString UserID;
     LogMaster* Logger;
     MainWindow* w;
 

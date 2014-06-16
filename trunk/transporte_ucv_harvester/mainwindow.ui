@@ -65,7 +65,7 @@
     <property name="title">
      <string>Log</string>
     </property>
-    <addaction name="actionVer_el_registro_de_sucesos"/>
+    <addaction name="actionVerLog"/>
    </widget>
    <addaction name="menuArchivo"/>
    <addaction name="menuDatos"/>
@@ -102,7 +102,7 @@
     <string>Subir</string>
    </property>
   </action>
-  <action name="actionVer_el_registro_de_sucesos">
+  <action name="actionVerLog">
    <property name="text">
     <string>Ver el registro de sucesos</string>
    </property>

@@ -16,15 +16,18 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     sessionwindow.cpp \
     logmaster.cpp \
-    dbconnector.cpp
+    dbconnector.cpp \
+    logreporter.cpp
 
 HEADERS  += mainwindow.h \
     sessionwindow.h \
     logmaster.h \
-    dbconnector.h
+    dbconnector.h \
+    logreporter.h
 
 FORMS    += mainwindow.ui \
-    sessionwindow.ui
+    sessionwindow.ui \
+    logreporter.ui
 
 RESOURCES += \
     icons.qrc \

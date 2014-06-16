@@ -64,8 +64,8 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
                 Connector->EndConnection();
 
                 if (Logger->RegistrarEvento("INICIO SESION"))
-                QMessageBox::critical(0, QObject::tr("Gud"),
-                "asdasdasdasdasd");
+                    QMessageBox::critical(0, QObject::tr("Gud"),
+                    "asdasdasdasdasd");
                 INICIOOK= true;
             }
         }
@@ -86,6 +86,7 @@ void SessionWindow::on_SessionSubmitButton_clicked()
 
         connect (w, SIGNAL(CerrarSesion()), this, SLOT(CerrarSesion()));
         connect (w, SIGNAL(ReportarAccion(QString)), Logger, SLOT(RegistrarEvento(QString)));
+        w->UserID= UserID;
 
         w->show();
     }
@@ -95,6 +96,8 @@ void SessionWindow::on_SessionSubmitButton_clicked()
 void SessionWindow::CerrarSesion()
 {
     disconnect (w, SIGNAL(CerrarSesion()));
+    disconnect (w, SIGNAL(ReportarAccion(QString)));
     delete w;
     this->show();
 }
+

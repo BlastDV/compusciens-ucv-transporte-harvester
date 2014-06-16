@@ -7,7 +7,9 @@ SessionWindow::SessionWindow(QWidget *parent) : QWidget(parent), ui(new Ui::Sess
 {
     ui->setupUi(this);
     Logger= new LogMaster(this);
+    ConnectionName= "SessionWindow";
     Connector= new DBConnector(this);
+    Connector->ConnectionName= ConnectionName;
 }
 
 SessionWindow::~SessionWindow()
@@ -17,7 +19,7 @@ SessionWindow::~SessionWindow()
 
 bool SessionWindow::InicioSesion(QString UserID, QString Password)
 {
-    bool INICIOOK; // Para devolver el resultado de la operacion
+    bool INICIOOK= false; // Para devolver el resultado de la operacion
 
     // Vamos a crear una conexion para poder autentificar al usuario
     if (!Connector->RequestConnection()) // Error en la BD. No disponible?
@@ -64,14 +66,12 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
                 Connector->EndConnection();
 
                 if (Logger->RegistrarEvento("INICIO SESION"))
-                    QMessageBox::critical(0, QObject::tr("Gud"),
-                    "asdasdasdasdasd");
+                    QMessageBox::information(0, QObject::tr("Gud"), "Evento Registrado");
+
                 INICIOOK= true;
             }
         }
     }
-
-
 
     return INICIOOK;
 }

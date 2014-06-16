@@ -4,6 +4,8 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    QMessageBox::critical(0, QObject::tr("-"), "SEGUIMOS VIVOS");
 }
 
 MainWindow::~MainWindow()
@@ -23,8 +25,7 @@ void MainWindow::on_actionVerLog_triggered()
 {
     LogRep= new LogReporter (this);
 
-    QMessageBox::critical(0, QObject::tr("Gud"),
-    "YEAH");
+    QMessageBox::critical(0, QObject::tr("Gud"), "YEAH");
     LogRep->UserID= UserID;
 
     LogRep->show();

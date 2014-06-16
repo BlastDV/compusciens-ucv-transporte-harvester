@@ -9,7 +9,7 @@ bool DBConnector::RequestConnection()
 {
     bool APERTURA;
 
-    Connector= QSqlDatabase::addDatabase("QODBC");
+    Connector= QSqlDatabase::addDatabase("QODBC", ConnectionName.toLatin1());
     Connector.setHostName("localhost");
     Connector.setDatabaseName("ptransporteucv");
     Connector.setUserName("compusciens");
@@ -24,7 +24,7 @@ bool DBConnector::RequestConnection()
 void DBConnector::EndConnection()
 {
     Connector.close();
-    Connector.removeDatabase("ptransporteucv");
+    Connector.removeDatabase(ConnectionName);
 }
 
 QSqlError DBConnector::getLastError()

@@ -13,6 +13,7 @@ public:
     bool RequestConnection ();
     void EndConnection ();
     QSqlError getLastError ();
+    QString ConnectionName;
     
 public slots:
 

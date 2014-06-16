@@ -3,7 +3,9 @@
 
 LogMaster::LogMaster(QObject *parent) : QObject(parent)
 {
+    ConnectionName= "LogMaster";
     Connector= new DBConnector(this);
+    Connector->ConnectionName= ConnectionName;
 }
 
 // Este procedimiento permitira registrar los eventos en la tabla correspondiente
@@ -13,7 +15,7 @@ LogMaster::LogMaster(QObject *parent) : QObject(parent)
 // -Cerrar la conexion
 bool LogMaster::RegistrarEvento(QString evento)
 {
-    bool REGISTROOK;
+    bool REGISTROOK= false;
 
     if (!Connector->RequestConnection())
         REGISTROOK= false;

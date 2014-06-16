@@ -19,6 +19,7 @@ public:
     ~MainWindow();
 
     QString UserID;
+    QString ConnectionName;
 
 private:
     Ui::MainWindow *ui;

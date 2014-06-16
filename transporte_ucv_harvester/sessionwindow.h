@@ -23,6 +23,8 @@ public:
     explicit SessionWindow(QWidget *parent = 0);
     ~SessionWindow();
 
+    QString ConnectionName;
+
 private slots:
     void on_SessionSubmitButton_clicked();
     void CerrarSesion ();
@@ -31,6 +33,7 @@ private:
     Ui::SessionWindow *ui;
     QCryptographicHash *Encrypter;
     DBConnector* Connector;
+
 
     QString UserID;
     LogMaster* Logger;

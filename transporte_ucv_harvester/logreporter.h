@@ -17,6 +17,7 @@ public:
     ~LogReporter();
 
     QString UserID;
+    QString ConnectionName;
     
 private:
     Ui::LogReporter *ui;

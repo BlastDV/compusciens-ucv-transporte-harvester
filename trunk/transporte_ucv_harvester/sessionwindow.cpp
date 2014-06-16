@@ -73,6 +73,7 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
         }
 
         // Cerramos esta conexion a la BD
+        delete Loginquery;
         Connector->EndConnection();
     }
 

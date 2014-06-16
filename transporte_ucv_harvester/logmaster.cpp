@@ -24,8 +24,10 @@ bool LogMaster::RegistrarEvento(QString evento)
         QSqlQuery InsertQuery;
         if (!InsertQuery.exec(QString("INSERT INTO actividades (usuario, tiempo, actividad) VALUES (")+
                               QString("'")+UserID+QString("', '")+QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss")+QString("', ")+
-                              QString("'")+evento+QString("')")));
+                              QString("'")+evento+QString("')")))
             REGISTROOK= false;
+        else
+            REGISTROOK= true;
 
         Connector->EndConnection();
     }

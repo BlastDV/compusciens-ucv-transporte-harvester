@@ -22,7 +22,8 @@ HEADERS  += mainwindow.h \
     sessionwindow.h \
     logmaster.h \
     dbconnector.h \
-    logreporter.h
+    logreporter.h \
+    Csp32.h
 
 FORMS    += mainwindow.ui \
     sessionwindow.ui \

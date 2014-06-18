@@ -85,7 +85,7 @@ void SessionWindow::on_SessionSubmitButton_clicked()
 {
     if (InicioSesion (ui->UserInput->text(), ui->PasswordInput->text()))
     {
-        this->hide();
+        this->close();
         w= new MainWindow(this);
 
         connect (w, SIGNAL(CerrarSesion()), this, SLOT(CerrarSesion()));
@@ -102,6 +102,11 @@ void SessionWindow::CerrarSesion()
     disconnect (w, SIGNAL(CerrarSesion()));
     disconnect (w, SIGNAL(ReportarAccion(QString)));
     delete w;
+
+    // Registramos el evento en la BD
+    if (Logger->RegistrarEvento("CERRO SESION"))
+        QMessageBox::information(0, QObject::tr("Gud"), "Evento Registrado");
+
     this->show();
 }
 

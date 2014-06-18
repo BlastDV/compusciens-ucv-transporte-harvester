@@ -1,12 +1,12 @@
 #include <QApplication>
-#include "sessionwindow.h"
+#include "appcontroller.h"
   
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    SessionWindow s;
-    s.show();
+    AppController AppC;
+    AppC.start();
 
     return a.exec();
 }

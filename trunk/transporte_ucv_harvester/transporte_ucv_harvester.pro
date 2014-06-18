@@ -16,14 +16,16 @@ SOURCES += main.cpp\
     sessionwindow.cpp \
     logmaster.cpp \
     dbconnector.cpp \
-    logreporter.cpp
+    logreporter.cpp \
+    appcontroller.cpp
 
 HEADERS  += mainwindow.h \
     sessionwindow.h \
     logmaster.h \
     dbconnector.h \
     logreporter.h \
-    Csp32.h
+    Csp32.h \
+    appcontroller.h
 
 FORMS    += mainwindow.ui \
     sessionwindow.ui \

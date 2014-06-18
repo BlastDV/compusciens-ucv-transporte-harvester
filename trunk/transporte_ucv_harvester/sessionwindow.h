@@ -34,11 +34,9 @@ private:
     QCryptographicHash *Encrypter;
     DBConnector* Connector;
 
-
     QString UserID;
     LogMaster* Logger;
     MainWindow* w;
-
 
     bool InicioSesion (QString UserID, QString Password);
 

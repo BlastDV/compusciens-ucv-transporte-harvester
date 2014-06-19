@@ -55,6 +55,20 @@ $Log: C:/Symbol/Csp32Proj/Csp32/src/vcs/Csp32.cpv $
 
 #include "csp32bridge.h"
 
+// Declaraciones que solo usaran estos metodos
+int    nCspVolume;                                 // Device volume setting
+int    nCspBarcodeRedundancy;                      // Device barcode redundancy setting
+int    nCspContinuousScanning;                     // Device continuous scan setting
+
+char    aCspTlBits[8];                              // Device TL Bits
+char    aCspUploadCount[4];                         // Device upload count
+char    aCspSignature[8];                           // Device signature
+char    szCspUserId[9];                             // Device User ID
+char    szCspSwVersion[9];                          // Device software version
+char    szCspDeviceId[9];                           // Device ID
+char    szCspBarData[MAXSIZE];                      // uploaded barcode storage
+char    aByteBuffer[MAXSIZE];                       // temp storage of CSP device response
+
 Csp32Bridge::Csp32Bridge(QObject *parent) : QObject(parent)
 {
 
@@ -71,6 +85,47 @@ void Csp32Bridge::cspInitParms()
     nCspStoredBarcodes          =  0;   // number of stored barcode strings
 }
 
+
+//Funciones Privadas ************************************************//
+int Csp32Bridge::cspSendCommand(char *aCommand, int nMaxLength)
+{
+    int i;
+
+    // make sure we have a valid port selected...
+    if (nCspActivePort < COM1)
+        return( COMMUNICATIONS_ERROR );
+
+    // delay before sending message
+    Sleep (120);
+
+    // clear the receive queue...
+    while (SioGetc(nCspActivePort) >= 0);
+
+    // send the command string...
+    for ( i = 0; i < nMaxLength; i++)
+        SioPutc(nCspActivePort, aCommand[i]);
+
+    // wait for the reply to be processed, or MAXTIME...
+    nCspDeviceStatus  = cspGetc();
+    aByteBuffer[0] = (char) nCspDeviceStatus;
+
+    // convert Device status to CSP status values
+    nCspDeviceStatus *= -1;
+
+    // if response not available, reply with error
+    if ( nCspDeviceStatus > 0 )
+        return( COMMUNICATIONS_ERROR );
+
+    if ( nCspDeviceStatus != NO_ERROR_ENCOUNTERED )
+        return ( nCspDeviceStatus );
+    else
+        return ( STATUS_OK );
+}
+
+
+//Funciones de comunicacion *****************************************//
+
+//Esta permite cerrar el puerto usado por la aplicacion
 int Csp32Bridge::cspRestore()
 {
     int nRetStatus = COMMUNICATIONS_ERROR;
@@ -92,6 +147,7 @@ int Csp32Bridge::cspRestore()
         return (STATUS_OK);
 }
 
+// Esta inicializa los parametros y cierra cualquier puerto abierto previamente
 int Csp32Bridge::cspInit(int nComPort)
 {
     // Nos aseguramos que el puerto escogido sea el correcto, igual esto redunda aca
@@ -122,4 +178,213 @@ int Csp32Bridge::cspInit(int nComPort)
     }
 
     return (BAD_PARAM);
+}
+
+//Funciones basicas para operar con el dispositivo (Aqui viene lo divertido) **********\\
+
+/*Funcion que permite traer los datos del dispositivo:
+ * - Todos los codigos de Barras
+ * - El id del dispositivo
+ * - La firma digital (?) del mismo
+ *
+ * Esta informacion se guarda en la clase, para obtenerla desde afuera
+ * debe usarse:
+ *
+ * -cspGetBarcode()
+ * -cspGetDeviceId()
+ * -cspGetSignature()
+*/
+int Csp32Bridge::cspReadData()
+{
+    int nRetStatus;
+
+    // Lee los datos del dispositivo CSP
+    nRetStatus = cspReadRawData(NULL, DETERMINE_SIZE);
+
+    // Si no hay respuesta, retornamos un error
+    if (nRetStatus < 0)
+        return (nRetStatus);
+
+    return(nCspStoredBarcodes);
+}
+
+//
+int Csp32Bridge::cspClearBarCodes()
+{
+
+}
+
+//
+int Csp32Bridge::cspPowerDown()
+{
+
+}
+
+
+// Funciones avanzadas ***************************************************/
+
+// Estructura auxiliar
+char aUploadCmd[] =
+{
+    UPLOAD,                  // Upload Command
+    STX,                     // opcode
+    0x00,                    // NULL terminate the message
+    0x05                     // LRC
+};
+
+/* Esta funcion se trae en aBuffer nMaxLength caracteres, haciendo reintentos en la
+ * comunicacion nCspRetryCount veces antes de abortar la operacion.
+ * Tambien permite leer si la firma digital esta presente y si su longitud es la correcta
+ * */
+int Csp32Bridge::cspReadRawData (char aBuffer[], int nMaxLength)
+{
+    long i, k, n, iSigStart;
+    long nRetStatus;
+    char j;
+    char aSignature[2];
+
+    // find out if the signature field is enabled...
+    nRetStatus = cspGetParam(SEND_SIGNATURE, aSignature, 1);
+
+    // if response not available, reply with error
+    if ( nRetStatus != STATUS_OK )
+        return ( nRetStatus );
+
+    // send the command to the CSP device...
+    nRetStatus = cspSendCommand (aUploadCmd, sizeof(aUploadCmd));
+
+    if ( nRetStatus != STATUS_OK )
+        return ( nRetStatus );
+
+    // Response looks good, get the entire message...
+    i = 1;
+
+    // get the STX character...
+    aByteBuffer[i++] = (char) cspGetc();
+
+    // get the Device id characters...
+    for ( j = 0; j < 8 ; j++ )
+        aByteBuffer[i++] = szCspDeviceId[j] = (char) cspGetc();
+
+    // get the upload count characters...
+    for ( j = 0; j < 4 ; j++ )
+        aByteBuffer[i++] = aCspUploadCount[j] = (char) cspGetc();
+
+    // read in the counted strings until a NULL occurs...
+    nCspStoredBarcodes = iSigStart = k = n = 0;
+    while (( aByteBuffer[i++] = j = (char) cspGetc()) > 0x00 )
+    {
+        // get the bar code string characters...
+        iSigStart = k;
+        for ( n = 0; n < (long) j; n++ )
+            aByteBuffer[i++] = szCspBarData[k++] = (char) cspGetc();
+        // insert a <NULL> between strings
+        szCspBarData[k++] = 0;
+        nCspStoredBarcodes++;
+    }
+
+    // "n" has the length of the last counted string...
+    // if "n" is exactly 8 characters,
+    // and the signature is enabled,
+    // then the last 8 characters are the signature...
+    if (( n == 8 ) && (aSignature[0] == PARAM_ON))
+    {
+        // get the signature characters from the last counted string...
+        for ( k = 0; k < sizeof(aCspSignature); k++ )
+            aCspSignature[k] = szCspBarData[iSigStart+k];
+
+        // the signature string is not counted as a barcode!
+        nCspStoredBarcodes--;
+    }
+    else
+    {
+        // Label the signature field 'Disabled'...
+        memcpy(aCspSignature, "Disabled", sizeof(aCspSignature));
+    }
+
+    // verify the LRC...
+    aByteBuffer[i] = cspLrcCheck(aByteBuffer, i);
+
+    if ( aByteBuffer[i] != (char) cspGetc())
+    {
+        return( COMMAND_LRC_ERROR );
+    }
+
+    // should we copy the data to the user's array?
+    if (aBuffer)
+    {
+        if (nMaxLength)
+            memcpy(aBuffer, aByteBuffer, nMaxLength);
+    }
+
+    return(i + 1);
+}
+
+// Estructura de datos auxiliar
+char aGetParametersCmd[] =
+{
+    UPLOAD_PARAMETERS,
+    STX,
+
+    0x01,                    // Read one parameter
+    0x00,                    // TBD parameter
+
+    0x00,                    // NULL terminate the message
+    0x00                     // LRC
+};
+
+#define GPC_PARM_START  ((int) 3)
+#define GPC_SIZE        (sizeof(aGetParametersCmd) - 1)
+
+// Esta funcion permite al usuario leer parametros individuales de la interfaz de forma particular
+int Csp32Bridge::cspGetParam(int nParam, char szString[], int nMaxLength)
+{
+    long i, k;
+    long nRetStatus;
+    char j;
+
+    // see if the CSP device is connected...
+    if ((nRetStatus = cspInterrogate()) != STATUS_OK)
+        return( nRetStatus );
+
+    // fill in the command string...
+    aGetParametersCmd[GPC_PARM_START] = (char) nParam;
+    aGetParametersCmd[GPC_SIZE] = cspLrcCheck(aGetParametersCmd, GPC_SIZE);
+
+    // send the command to the CSP device...
+    nRetStatus = cspSendCommand (aGetParametersCmd, sizeof(aGetParametersCmd));
+
+    if ( nRetStatus != STATUS_OK )
+        return ( nRetStatus );
+
+    // Response looks good, get the entire message...
+    i = 1;
+
+    // get the STX character...
+    aByteBuffer[i++] = (char) cspGetc();
+
+    // read in the counted string until a NULL occurs...
+    // first byte "j" is the length of the counted string...
+    while (( aByteBuffer[i++] = j = (char) cspGetc()) > 0x00 )
+    {
+        // get the parameter character...
+        aByteBuffer[i++] = (char) cspGetc();
+
+        // read the parameter value into szString[] upto nMaxLength characters...
+        for (k = 0; k < (long) (j-1); k++)
+        {
+            if (k < nMaxLength)
+                aByteBuffer[i++] = szString[k] = (char) cspGetc();
+            // parameter exceeded szString[], don't copy over buffer...
+            else
+                aByteBuffer[i++] = (char) cspGetc();
+        }
+    }
+
+    // verify the LRC...
+    aByteBuffer[i] = cspLrcCheck(aByteBuffer, i);
+    if ( aByteBuffer[i] != (char) cspGetc())
+        return( COMMAND_LRC_ERROR );
+
+    return( STATUS_OK );
 }

@@ -17,15 +17,16 @@ SOURCES += main.cpp\
     logmaster.cpp \
     dbconnector.cpp \
     logreporter.cpp \
-    appcontroller.cpp
+    appcontroller.cpp \
+    csp32bridge.cpp
 
 HEADERS  += mainwindow.h \
     sessionwindow.h \
     logmaster.h \
     dbconnector.h \
     logreporter.h \
-    Csp32.h \
-    appcontroller.h
+    appcontroller.h \
+    csp32bridge.h
 
 FORMS    += mainwindow.ui \
     sessionwindow.ui \
@@ -39,6 +40,11 @@ OTHER_FILES += \
     Csp32.def
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/include/ -lCsp32
+
+INCLUDEPATH += $$PWD/include
+DEPENDPATH += $$PWD/include
+
+win32: LIBS += -L$$PWD/include/ -lWSCLib
 
 INCLUDEPATH += $$PWD/include
 DEPENDPATH += $$PWD/include

@@ -36,14 +36,6 @@ RESOURCES += \
     icons.qrc \
     pictures.qrc
 
-OTHER_FILES += \
-    Csp32.def
-
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/include/ -lCsp32
-
-INCLUDEPATH += $$PWD/include
-DEPENDPATH += $$PWD/include
-
 win32: LIBS += -L$$PWD/include/ -lWSCLib
 
 INCLUDEPATH += $$PWD/include

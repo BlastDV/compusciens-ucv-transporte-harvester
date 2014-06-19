@@ -76,6 +76,15 @@ public:
     int cspInit(int nComPort); // Para abrir comunicacion con el lector
     int cspRestore();
 
+    // Funciones basicas
+    int cspReadData();
+    int cspClearBarCodes();
+    int cspPowerDown();
+
+    //Funciones avanzadas
+    int cspReadRawData(char aBuffer[], int nMaxLength);
+    int cspGetParam(int nParam, char szString[], int nMaxLength);
+
     // Variables de control y demas
     int nCspActivePort;
     int nCspDeviceStatus;
@@ -86,6 +95,9 @@ public:
 signals:
 
 public slots:
+
+private:
+    int cspSendCommand (char *aCommand, int nMaxLength);
 
 };
 
@@ -139,3 +151,28 @@ public slots:
 #define MAXSIZE                     ((int)4096)    // tamaño maximo de los codigos leidos
 #define RX_QUE_SIZE                 ((int)1024)    // communications RX buffer setting
 #define TX_QUE_SIZE                 ((int) 512)    // communications Tx buffer setting
+
+// Valores del byte de los comandos
+#define INTERROGATE                 ((char)0x01)
+#define CLEAR_BAR_CODES             ((char)0x02)
+#define DOWNLOAD_PARAMETERS         ((char)0x03)
+#define RESERVED_CODE_4             ((char)0x04)
+#define POWER_DOWN                  ((char)0x05)
+#define RESERVED_CODE_6             ((char)0x06)
+#define UPLOAD                      ((char)0x07)
+#define UPLOAD_PARAMETERS           ((char)0x08)
+#define SEND_SIGNATURE              ((char)0x0C)
+
+// Valores de los parametros
+#define VOLUME_QUIET                ((long) 0)
+#define VOLUME_LOW                  ((long) 1)
+#define VOLUME_MEDIUM               ((long) 2)
+#define VOLUME_HIGH                 ((long) 3)
+
+#define PARAM_OFF                   ((long) 0)
+#define PARAM_ON                    ((long) 1)
+
+#define DETERMINE_SIZE              ((long) 0)
+
+// Definiciones locales
+#define STX                         ((char)0x02)    // <stx> character

@@ -289,6 +289,318 @@ int Csp32Bridge::cspClearBarCodes()
     return( STATUS_OK );
 }
 
+/* Esta funcion ordena al dispositivo a que cierre la comunicacion y entre en
+ * modo de parada hasta que algun otro evento vuelva a ocurrir. */
+char aPowerDownCmd[] =
+{
+    POWER_DOWN,              // Comando de Apagado
+    STX,                     // Codigo de opcion
+    0x00,                    // Caracter nulo para cerrar el mensaje
+    0x07                     // LRC
+};
+
+int Csp32Bridge::cspPowerDown()
+{
+    int i;
+    int nRetStatus;
+
+    // Envia el comando al dispositivo CSP (lector)
+    nRetStatus = cspSendCommand (aPowerDownCmd, sizeof(aPowerDownCmd));
+
+    if ( nRetStatus != STATUS_OK )
+        return ( nRetStatus );
+
+    // Hasta aca todo bien, ahora a obtener la respuesta completa
+    i = 1;
+
+    // Leamos el codigo de opcion (STX)
+    aByteBuffer[i++] = (char) cspGetc();
+
+    // Leamos el caracter nulo
+    aByteBuffer[i++] = (char) cspGetc();
+
+    // Verifiquemos el LRC...
+    aByteBuffer[i] = cspLrcCheck( aByteBuffer, i );
+    if ( aByteBuffer[i] != (char) cspGetc())
+        return( COMMAND_LRC_ERROR );
+
+    return( STATUS_OK );
+}
+
+// FUNCIONES CSP DATA GET
+
+
+/* Esta funcion copia los datos del codigo de barras de la estructura szCspBcString[]
+ * a szBarData[], truncando a los nMaxLength caracteres */
+int Csp32Bridge::cspGetBarcode(char szBarData[], int nBarcodeNumber, int nMaxLength)
+{
+    int i;
+    int nBarFound;
+    int nBarLength;
+
+    // Aseguremonos que el codigo solicitado es valido
+    if (nBarcodeNumber < 0)
+        return( BAD_PARAM );
+
+    if (nBarcodeNumber >= nCspStoredBarcodes)
+        return( BAD_PARAM );
+
+    // Todo ha ido bien, asi que bamos a obtener el codigo
+    i = 0;
+    nBarFound = 0;
+    while (nBarFound < nBarcodeNumber)
+    {
+        // Busquemos el caracter nulo que separa los strings
+        while (szCspBarData[i++] != 0);
+
+        // Saltemos al siguiente codigo de barras
+        nBarFound++;
+    }
+
+    // Ahora que tenemos el codigo, toca procesarlo
+    nBarLength = strlen(&szCspBarData[i]) + 1;
+
+    // El usuario solo pidio el tamaño del string?
+    if (nMaxLength > DETERMINE_SIZE)
+    {
+        // Obtengamos el numero maximo de caracteres a copiar
+        nMaxLength = min(nBarLength,nMaxLength);
+
+        // Copiemos el codigo de barras
+        memcpy(szBarData, &szCspBarData[i], nMaxLength);
+
+        // Y luego el caracter nulo para cerrar el string
+        szBarData[nMaxLength-1] = 0;
+    }
+
+    return(nBarLength);
+}
+
+// Esta funcion devuelve el ID del dispositivo almacenado en la clase
+int Csp32Bridge::cspGetDeviceId(char szDeviceId[9], int nMaxLength)
+{
+    // El usuario solo pidio el tamaño del string?
+    if (nMaxLength > DETERMINE_SIZE)
+    {
+        // Obtengamos el numero maximo de caracteres a copiar
+        nMaxLength = min((int)sizeof(szCspDeviceId),nMaxLength);
+
+        // Copiemos el ID del dispositivo
+        memcpy(szDeviceId, szCspDeviceId, nMaxLength);
+
+        // Y luego el caracter nulo para cerrar el string
+        szDeviceId[nMaxLength-1] = 0;
+    }
+
+    return( sizeof(szCspDeviceId) );
+}
+
+/* Esta funcion devuelve el string de la firma del dispositivo almacenada
+ * en la clase
+ */
+int Csp32Bridge::cspGetSignature(char aSignature[8], int nMaxLength)
+{
+    // El usuario solo pidio el tamaño del string?
+    if (nMaxLength > DETERMINE_SIZE)
+    {
+        // Obtengamos el numero maximo de caracteres a copiar
+        nMaxLength = min((int)sizeof(aCspSignature),nMaxLength);
+
+        // Copiemos la firma del dispositivo
+        memcpy(aSignature, aCspSignature, nMaxLength);
+    }
+
+    return( sizeof(aCspSignature) );
+}
+
+/* Esta funcion devuelve un entero que corresponde al identificador del protocolo
+ * usado por el dispositivo */
+int Csp32Bridge::cspGetProtocol()
+{
+    return (nCspProtocolVersion);
+}
+
+/* Esta funcion retorna la version de firmware (?) del dispositivo CSP guardada
+ * en la clase. El string de salida termina en un caracter nulo*/
+int Csp32Bridge::cspGetSwVersion(char szSwVersion[9], int nMaxLength)
+{
+    // El usuario solo pidio el tamaño del string?
+    if (nMaxLength > DETERMINE_SIZE)
+    {
+        // Obtengamos el numero maximo de caracteres a copiar
+        nMaxLength = min(sizeof(szCspSwVersion),nMaxLength);
+
+        // Copiemos la version de software del dispositivo
+        memcpy(szSwVersion, szCspSwVersion, nMaxLength);
+
+        // Y luego el caracter nulo para cerrar el string
+        szSwVersion[nMaxLength-1] = 0;
+    }
+
+    return( sizeof(szCspSwVersion) );
+}
+
+// FUNCIONES SET DE LA CONFIGURACION DEL DISPOSITIVO
+
+/* Esta funcion guarda 8 Bytes de datos especificos del host en el lector*/
+int Csp32Bridge::cspSetTlBits(char aTlBits[8], int nMaxLength)
+{
+    // El usuario ha proveido suficientes bits TL?
+    if (nMaxLength < 8)
+        return( BAD_PARAM );
+
+    // Establezcamos los bits TL
+    return( cspSetParam( TL_BITS, aTlBits, nMaxLength ) );
+}
+
+/* Esta funcion es para configurar el volumen del BEEP que emite el lector */
+int Csp32Bridge::cspSetVolume(int nVolume)
+{
+    char aVolume[2];
+
+    // El volumen solicitado es valido?
+    if ((nVolume < VOLUME_QUIET) || (nVolume > VOLUME_HIGH))
+        return( BAD_PARAM );
+
+    // Si es asi, configuremos el volumen nuevo
+    aVolume[0] = (char) nVolume;
+    return( cspSetParam( VOLUME, aVolume, 1 ) );
+}
+
+/* Esta funcion alterna la presencia de redundancia de codigos de barra del dispositivo */
+int Csp32Bridge::cspSetBarcodeRedundancy(int nOnOff)
+{
+    char aBcRedundancy[2];
+
+    // La configuracion de redundancia es valida?
+    if ((nOnOff < PARAM_OFF) || (nOnOff > PARAM_ON))
+        return( BAD_PARAM );
+
+    // Si es asi, vamos a configurarla de acuerdo a nOnOff
+    aBcRedundancy[0] = (char) nOnOff;
+    return( cspSetParam( BARCODE_REDUNDANCY, aBcRedundancy, 1 ) );
+}
+
+/* Esta funcion escribe el string del ID de usuario en el dispositivo */
+int Csp32Bridge::cspSetUserId(char szUserId[9], int nMaxLength)
+{
+    // El usuario suministro suficientes datos?
+    if (nMaxLength < 8)
+        return( BAD_PARAM );
+
+    // Configuremos el ID de usuario
+    return( cspSetParam( USER_ID, szUserId, 8 ) );
+}
+
+/* Esta funcion alterna la presencia del escaneo continuo del lector */
+int Csp32Bridge::cspSetContinuousScanning(int nOnOff)
+{
+    char    aContScanning[2];
+
+    // La configuracion de redundancia es valida?
+    if ((nOnOff < PARAM_OFF) || (nOnOff > PARAM_ON))
+        return( BAD_PARAM );
+
+    // Configuremos el escaneo continuo de acuerdo a nOnOff
+    aContScanning[0] = (char) nOnOff;
+    return( cspSetParam( CONTINUOUS_SCANNING, aContScanning, 1 ) );
+}
+
+
+// FUNCIONES GET DE LA CONFIGURACION DEL DISPOSITIVO
+
+/* Esta funcion retorna los bits TL del dispositivo */
+int Csp32Bridge::cspGetTlBits(char aTlBits[8], int nMaxLength)
+{
+    int nRetStatus;
+
+    // Obtengamos los bits TL del dispositivo
+    nRetStatus = cspGetParam(TL_BITS, aCspTlBits, sizeof(aCspTlBits));
+
+    // Si no hay respuesta, retornemos un error
+    if ( nRetStatus != STATUS_OK )
+        return ( nRetStatus );
+
+    // El usuario solo pidio la longitud del string?
+    if (nMaxLength > DETERMINE_SIZE)
+    {
+        // Obtengamos el numero maximo de caracteres a copiar
+        nMaxLength = min(sizeof(aCspTlBits),nMaxLength);
+
+        // Copiemos los bits TL del lector
+        memcpy(aTlBits, aCspTlBits, nMaxLength);
+    }
+
+    return( sizeof(aCspTlBits) );
+}
+
+/* Esta funcion retorna la configuracion de volumen del dispositivo */
+int Csp32Bridge::cspGetVolume()
+{
+    int nRetStatus;
+    char aVolume[2];
+
+
+    // Pidamos la informacion del volumen
+    nRetStatus = cspGetParam(VOLUME, aVolume, 1);
+
+    // Si no hay respuesta, retornamos un error
+    if ( nRetStatus != STATUS_OK )
+        return ( nRetStatus );
+
+    // Retornamos la configuracion actual de volumen
+    nCspVolume = (int) aVolume[0];
+
+    return( nCspVolume );
+}
+
+/* Esta funcion retorna la configuracion de redundancia de codigos del dispositivo */
+int Csp32Bridge::cspGetBarcodeRedundancy()
+{
+    int nRetStatus;
+    char aBcRedundancy[2];
+
+    // Solicita la configuracion de redundancia del lector
+    nRetStatus = cspGetParam(BARCODE_REDUNDANCY, aBcRedundancy, 1);
+
+    // Si no hay respuesta, retornamos un error
+    if ( nRetStatus != STATUS_OK )
+        return ( nRetStatus );
+
+    // Retornamos la configuracion de redundancia actual
+    nCspBarcodeRedundancy = (int) aBcRedundancy[0];
+    return( nCspBarcodeRedundancy );
+}
+
+/* Esta funcion retorna el ID de usuario guardada en la clase, un string terminado en NULL */
+int Csp32Bridge::cspGetUserID(char szUserId[9], int nMaxLength)
+{
+    int nRetStatus;
+
+    // Ahora, obtengamos el USER ID del dispositivo
+    nRetStatus = cspGetParam(USER_ID, szCspUserId, sizeof(szCspUserId) - 1);
+
+    // Si no hay respuesta, retornamos un error
+    if ( nRetStatus != STATUS_OK )
+        return ( nRetStatus );
+
+    // El usuario solo pidio la longitud del string?
+    if (nMaxLength > DETERMINE_SIZE)
+    {
+        // Obtengamos el numero maximo de caracteres a copiar
+        nMaxLength = min(sizeof(szCspUserId),nMaxLength);
+
+        // Copiamos el ID de usuario
+        memcpy(szUserId, szCspUserId, nMaxLength);
+
+        // Y le pegamos el caracter nulo al final
+        szUserId[nMaxLength-1] = 0;
+    }
+
+    return( sizeof(szCspUserId) );
+}
+
+
 
 /** **/
 /** **/

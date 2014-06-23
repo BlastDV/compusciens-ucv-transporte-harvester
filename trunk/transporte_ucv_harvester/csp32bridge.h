@@ -147,6 +147,7 @@ $Log: C:/Symbol/Csp32Proj/Csp32/src/vcs/Csp32.cpv $
 // para futuras revisiones su implementacion
 #include <windows.h> // Para que Wsc funcione porque define algunos tipos encontrados aca
 #include <Wsc.h>
+using namespace std;
 
 class Csp32Bridge : public QObject
 {

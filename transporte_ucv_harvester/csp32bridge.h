@@ -135,7 +135,6 @@ $Log: C:/Symbol/Csp32Proj/Csp32/src/vcs/Csp32.cpv $
 #define RX_QUE_SIZE                 ((int)1024)    // communications RX buffer setting
 #define TX_QUE_SIZE                 ((int) 512)    // communications Tx buffer setting
 
-
 /* Acabada la definiciones de la libreria, pasamos a definir nuestra clase */
 #ifndef CSP32BRIDGE_H
 #define CSP32BRIDGE_H
@@ -216,7 +215,7 @@ private:
     //Otras variables privadas
     int nCspVolume;
     int nCspBarcodeRedundancy;
-    int nCspContinousScanning;
+    int nCspContinuousScanning;
 
     char aCspTlBits[8];
     char aCspUploadCount[4];

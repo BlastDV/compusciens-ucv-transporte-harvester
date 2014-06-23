@@ -56,22 +56,24 @@ NoMangle int DLL_IMPORT_EXPORT SioUnGetc(int,char);
 NoMangle int DLL_IMPORT_EXPORT SioWinError(LPSTR,int);
 #endif
 
-#define COM1   0
-#define COM2   1
-#define COM3   2
-#define COM4   3
-#define COM5   4
-#define COM6   5
-#define COM7   6
-#define COM8   7
-#define COM9   8
-#define COM10  9
-#define COM11 10
-#define COM12 11
-#define COM13 12
-#define COM14 13
-#define COM15 14
-#define COM16 15
+#ifdef COM1
+    #define COM1   0
+    #define COM2   1
+    #define COM3   2
+    #define COM4   3
+    #define COM5   4
+    #define COM6   5
+    #define COM7   6
+    #define COM8   7
+    #define COM9   8
+    #define COM10  9
+    #define COM11 10
+    #define COM12 11
+    #define COM13 12
+    #define COM14 13
+    #define COM15 14
+    #define COM16 15
+#endif
 
 /* Parity Codes */
 

@@ -12,12 +12,15 @@
 #include "sessionwindow.h"
 #include "logmaster.h"
 #include "dbconnector.h"
+#include "csp32bridge.h"
 
 class AppController : public QObject
 {
     Q_OBJECT
 public:
     explicit AppController(QObject *parent = 0);
+
+    Csp32Bridge* reader;
 
 private:
     MainWindow* MainW;

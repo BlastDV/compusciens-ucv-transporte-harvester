@@ -25,9 +25,10 @@ public:
 
     QString ConnectionName;
 
+    QString getUserID();
+
 private slots:
     void on_SessionSubmitButton_clicked();
-    void CerrarSesion ();
 
 private:
     Ui::SessionWindow *ui;
@@ -35,14 +36,13 @@ private:
     DBConnector* Connector;
 
     QString UserID;
-    LogMaster* Logger;
-    MainWindow* w;
 
     bool InicioSesion (QString UserID, QString Password);
 
 signals:
     void ReportarUserID (QString UserID);
     void ReportarAccion (QString action);
+    void SesionAbierta ();
 };
 
 #endif // SESSIONWINDOW_H

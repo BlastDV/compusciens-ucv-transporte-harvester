@@ -779,7 +779,7 @@ int Csp32Bridge::cspReadRawData(char aBuffer[], int nMaxLength )
     if (( n == 8 ) && (aSignature[0] == PARAM_ON))
     {
         // Obtengamos los caracteres de la firma del ultimo string encontrado
-        for ( k = 0; k < sizeof(aCspSignature); k++ )
+        for ( k = 0; k < (int)sizeof(aCspSignature); k++ )
             aCspSignature[k] = szCspBarData[iSigStart+k];
 
         // El string de firma no se cuenta como un codigo de barras!

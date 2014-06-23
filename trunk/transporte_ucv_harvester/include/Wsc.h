@@ -56,7 +56,7 @@ NoMangle int DLL_IMPORT_EXPORT SioUnGetc(int,char);
 NoMangle int DLL_IMPORT_EXPORT SioWinError(LPSTR,int);
 #endif
 
-#ifdef COM1
+#ifndef COM1
     #define COM1   0
     #define COM2   1
     #define COM3   2

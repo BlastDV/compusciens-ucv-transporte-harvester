@@ -52,59 +52,41 @@ $Log: C:/Symbol/Csp32Proj/Csp32/src/vcs/Csp32.cpv $
  *
  ******************************************************************/
 
-#ifndef CSP32BRIDGE_H
-#define CSP32BRIDGE_H
+// Valores de Retorno de los distintos estados
+#define STATUS_OK                   ((int) 0)
+#define COMMUNICATIONS_ERROR        ((int)-1)
+#define BAD_PARAM                   ((int)-2)
+#define SETUP_ERROR                 ((int)-3)
+#define INVALID_COMMAND_NUMBER      ((int)-4)
+#define COMMAND_LRC_ERROR           ((int)-7)
+#define RECEIVED_CHARACTER_ERROR    ((int)-8)
+#define GENERAL_ERROR               ((int)-9)
+#define FILE_NOT_FOUND              ((int) 2)
+#define ACCESS_DENIED               ((int) 5)
 
-#include <QObject>
+// Parametros numericos
+#define TL_BITS                     ((char)0x01)
+#define VOLUME                      ((char)0x02)
+#define BARCODE_REDUNDANCY          ((char)0x04)
+#define USER_ID                     ((char)0x06)
+#define CONTINUOUS_SCANNING         ((char)0x12)
 
-// Nota sobre las siguientes 2 librerias, es probable
-// que Qt proporcione soporte interno para esto, pero quedara
-// para futuras revisiones su implementacion
-#include <windows.h> // Para que Wsc funcione porque define algunos tipos encontrados aca
-#include <Wsc.h>
+// Valores de los parametros
+#define VOLUME_QUIET                ((int) 0)
+#define VOLUME_LOW                  ((int) 1)
+#define VOLUME_MEDIUM               ((int) 2)
+#define VOLUME_HIGH                 ((int) 3)
 
-class Csp32Bridge : public QObject
-{
-    Q_OBJECT
-public:
-    explicit Csp32Bridge(QObject *parent = 0);
+#define PARAM_OFF                   ((int) 0)
+#define PARAM_ON                    ((int) 1)
 
-    // General
-    void cspInitParms ();
+#define DETERMINE_SIZE              ((int) 0)
 
-    // Comunicaciones
-    int cspInit(int nComPort); // Para abrir comunicacion con el lector
-    int cspRestore();
+// Valores de los estados de configuracion del puerto serial...
+#define SERIAL_RS232                ((int) 0)
+#define SERIAL_MODEM                ((int)-1)
+#define SERIAL_UNKNOWN              ((int)-2)
 
-    // Funciones basicas
-    int cspReadData();
-    int cspClearBarCodes();
-    int cspPowerDown();
-
-    //Funciones avanzadas
-    int cspReadRawData(char aBuffer[], int nMaxLength);
-    int cspGetParam(int nParam, char szString[], int nMaxLength);
-
-    // Variables de control y demas
-    int nCspActivePort;
-    int nCspDeviceStatus;
-    int nCspProtocolVersion;
-    int nCspSystemStatus;
-    int nCspStoredBarcodes;
-
-signals:
-
-public slots:
-
-private:
-    int cspSendCommand (char *aCommand, int nMaxLength);
-
-};
-
-#endif
-
-/* Fragmento tomado y modificado de la libreria original Csp32,
- * provista por el SDK del lector. */
 /*******************************************************************
  *              Communications setup section...                    *
  *******************************************************************/
@@ -126,31 +108,13 @@ private:
     #define COM15                   ((int)14)
     #define COM16                   ((int)15)
 #endif
+
 /*******************************************************************
  *              Th, Th, Th, Th, That's All Folks !                 *
  *******************************************************************/
 
-// Valores de Retorno de los distintos estados
-#ifndef STATUS_OK
-    #define STATUS_OK                   ((int) 0)
-    #define COMMUNICATIONS_ERROR        ((int)-1)
-    #define BAD_PARAM                   ((int)-2)
-    #define SETUP_ERROR                 ((int)-3)
-    #define INVALID_COMMAND_NUMBER      ((int)-4)
-    #define COMMAND_LRC_ERROR           ((int)-7)
-    #define RECEIVED_CHARACTER_ERROR    ((int)-8)
-    #define GENERAL_ERROR               ((int)-9)
-    #define FILE_NOT_FOUND              ((int) 2)
-    #define ACCESS_DENIED               ((int) 5)
-#endif
-
-// Valor del estado del dispositivo Csp
-#define NO_ERROR_ENCOUNTERED        ((int)-6)
-
-#define MAXTIME                     ((int)  18)    // 18 ticks, ~ 1 segundo
-#define MAXSIZE                     ((int)4096)    // tamaño maximo de los codigos leidos
-#define RX_QUE_SIZE                 ((int)1024)    // communications RX buffer setting
-#define TX_QUE_SIZE                 ((int) 512)    // communications Tx buffer setting
+// Definiciones locales
+#define STX                         ((char)0x02)    // <stx> character
 
 // Valores del byte de los comandos
 #define INTERROGATE                 ((char)0x01)
@@ -163,16 +127,111 @@ private:
 #define UPLOAD_PARAMETERS           ((char)0x08)
 #define SEND_SIGNATURE              ((char)0x0C)
 
-// Valores de los parametros
-#define VOLUME_QUIET                ((long) 0)
-#define VOLUME_LOW                  ((long) 1)
-#define VOLUME_MEDIUM               ((long) 2)
-#define VOLUME_HIGH                 ((long) 3)
+// Valor del estado del dispositivo Csp
+#define NO_ERROR_ENCOUNTERED        ((int)-6)
 
-#define PARAM_OFF                   ((long) 0)
-#define PARAM_ON                    ((long) 1)
+#define MAXTIME                     ((int)  18)    // 18 ticks, ~ 1 segundo
+#define MAXSIZE                     ((int)4096)    // tamaño maximo de los codigos leidos
+#define RX_QUE_SIZE                 ((int)1024)    // communications RX buffer setting
+#define TX_QUE_SIZE                 ((int) 512)    // communications Tx buffer setting
 
-#define DETERMINE_SIZE              ((long) 0)
 
-// Definiciones locales
-#define STX                         ((char)0x02)    // <stx> character
+/* Acabada la definiciones de la libreria, pasamos a definir nuestra clase */
+#ifndef CSP32BRIDGE_H
+#define CSP32BRIDGE_H
+
+#include <QObject>
+
+// Nota sobre las siguientes 2 librerias, es probable
+// que Qt proporcione soporte interno para esto, pero quedara
+// para futuras revisiones su implementacion
+#include <windows.h> // Para que Wsc funcione porque define algunos tipos encontrados aca
+#include <Wsc.h>
+
+class Csp32Bridge : public QObject
+{
+    Q_OBJECT
+public:
+    explicit Csp32Bridge(QObject *parent = 0);
+
+    // Comunicaciones
+    int cspInit(int nComPort); // Para abrir comunicacion con el lector
+    int cspRestore();
+
+    // Funciones basicas
+    int cspReadData();
+    int cspClearBarCodes();
+    int cspPowerDown();
+
+    // Funciones para obtener los datos
+    int cspGetBarcode(char szBarData[], int nBarcodeNumber, int nMaxLength);
+    int cspGetDeviceId(char szDeviceId[9], int nMaxLength);
+    int cspGetSignature(char aSignature[8], int nMaxLength);
+    int cspGetProtocol();
+    int cspGetSystemStatus();
+    int cspGetSwVersion(char szSwVersion[9], int nMaxLength);
+
+    // Metodos SET para la configuracion
+    int cspSetTlBits(char aTlBits[8], int nMaxLength);
+    int cspSetVolume(int nVolume);
+    int cspSetBarcodeRedundancy(int nOnOff);
+    int cspSetUserId(char szUserId[9], int nMaxLength);
+    int cspSetContinuousScanning(int nOnOff);
+
+    // Metodos GET para la configuracion
+    int cspGetTlBits(char aTlBits[8], int nMaxLength);
+    int cspGetVolume(void);
+    int cspGetBarcodeRedundancy(void);
+    int cspGetUserID(char szUserId[9], int nMaxLength);
+    int cspGetContinuousScanning(void);
+
+    // Metodos para configurar nuestra clase
+    int cspSetRetryCount(int nRetryCount);
+    int cspGetRetryCount();
+
+    // Funciones para debuggear
+    int cspGetCommInfo(int nComPort);
+
+    //Funciones avanzadas
+    int cspReadRawData(char aBuffer[], int nMaxLength);
+    int cspSetParam(int nParam, char szString[], int nMaxLength);
+    int cspGetParam(int nParam, char szString[], int nMaxLength);
+    int cspInterrogate();
+
+    // Variables de control y demas
+    int nCspActivePort;
+    int nCspDeviceStatus;
+    int nCspProtocolVersion;
+    int nCspSystemStatus;
+    int nCspStoredBarcodes;
+    int nCspRetryCount;
+
+signals:
+
+public slots:
+
+private:
+
+    //Otras variables privadas
+    int nCspVolume;
+    int nCspBarcodeRedundancy;
+    int nCspContinousScanning;
+
+    char aCspTlBits[8];
+    char aCspUploadCount[4];
+    char aCspSignature[8];
+    char szCspUserId[9];
+    char szCspSwVersion[9];
+    char szCspDeviceId[9];
+    char szCspBarData[MAXSIZE];
+    char aByteBuffer[MAXSIZE];
+
+    //Metodos privados
+    int cspGetc();
+    char cspLrcCheck(char aLrcBytes[], int nMaxLength);
+    void cspInitParms();
+    int cspSendCommand(char *aCommand, int nMaxLength);
+
+};
+
+#endif

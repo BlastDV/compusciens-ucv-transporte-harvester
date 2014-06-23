@@ -26,9 +26,13 @@ private:
     MainWindow* MainW;
     SessionWindow* SessionW;
 
+    LogMaster* Logger;
+
 signals:
 
 public slots:
+    void SesionAbierta();
+    void SesionCerrada();
 
 public:
     void start();

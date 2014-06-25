@@ -38,6 +38,8 @@ void AppController::SesionAbierta()
     //MainW->show();
 
     LogRep= new LogReporter ();
+    LogRep->UpdateUser("admin");
+    LogRep->LoadEvents();
     //LogRep->UpdateUser(UserID);
 
     LogRep->show();

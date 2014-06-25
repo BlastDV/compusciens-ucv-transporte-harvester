@@ -45,7 +45,7 @@ bool LogReporter::LoadEvents()
     else
     {
         // No importa el nombre de usuario sino sus permisos
-        QSqlQuery* Rightsquery= new QsqlQuery (Connector->Connector);
+        QSqlQuery* Rightsquery= new QSqlQuery (Connector->Connector);
         if (!Rightsquery->exec(QString("SELECT permisos FROM usuarios WHERE id=")+QString("'")+UserID+QString("'")))
         {
             QMessageBox::critical(0, QObject::tr("Error"),
@@ -58,7 +58,11 @@ bool LogReporter::LoadEvents()
         {
             Rightsquery->first();
 
-
+            ui->EventsList->insertRow(0);
+            ui->EventsList->setRowHeight(0, 30);
+            QMessageBox::critical(0, QObject::tr("=)"),
+            "Ola ke ase");
+            //ui->EventsList->rowAt(1)
         }
     }
 

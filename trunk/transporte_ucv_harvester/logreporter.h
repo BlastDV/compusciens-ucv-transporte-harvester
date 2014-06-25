@@ -6,6 +6,7 @@
 #define LOGREPORTER_H
 
 #include <QWidget>
+#include <QMessageBox>
 #include "dbconnector.h"
 
 namespace Ui

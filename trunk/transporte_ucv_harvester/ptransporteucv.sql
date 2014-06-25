@@ -1,5 +1,5 @@
 /*
-SQLyog Community v11.42 (32 bit)
+SQLyog Community v11.5 (32 bit)
 MySQL - 5.6.19-log : Database - ptransporteucv
 *********************************************************************
 */
@@ -28,11 +28,11 @@ CREATE TABLE `actividades` (
   PRIMARY KEY (`id`),
   KEY `Usuario hace algo` (`usuario`),
   CONSTRAINT `Usuario hace algo` FOREIGN KEY (`usuario`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
 
 /*Data for the table `actividades` */
 
-insert  into `actividades`(`usuario`,`tiempo`,`actividad`,`id`) values ('admin','2014-06-15 16:50:30','INICIO SESION',6),('admin','2014-06-15 19:04:11','INICIO SESION',7),('admin','2014-06-15 19:51:51','INICIO SESION',8),('admin','2014-06-15 19:53:01','INICIO SESION',9),('admin','2014-06-15 19:58:59','INICIO SESION',10),('admin','2014-06-15 20:00:03','INICIO SESION',11),('admin','2014-06-15 20:00:35','INICIO SESION',12),('admin','2014-06-15 20:01:58','INICIO SESION',13);
+insert  into `actividades`(`usuario`,`tiempo`,`actividad`,`id`) values ('krys','2014-06-25 11:48:50','INICIO SESION',61),('admin','2014-06-25 11:53:41','INICIO SESION',62),('admin','2014-06-25 11:54:20','INICIO SESION',63),('admin','2014-06-25 11:55:20','INICIO SESION',64),('admin','2014-06-25 11:55:59','INICIO SESION',65),('admin','2014-06-25 11:56:24','INICIO SESION',66),('admin','2014-06-25 11:58:10','INICIO SESION',67);
 
 /*Table structure for table `paradas` */
 
@@ -112,13 +112,13 @@ DROP TABLE IF EXISTS `usuarios`;
 CREATE TABLE `usuarios` (
   `password` varchar(41) NOT NULL COMMENT 'La clave encriptada',
   `id` varchar(15) NOT NULL COMMENT 'El id del usuario',
-  `permisos` int(10) unsigned DEFAULT NULL COMMENT 'El id de los permisos correspondientes',
+  `permisos` varchar(20) NOT NULL COMMENT 'El id de los permisos correspondientes',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `usuarios` */
 
-insert  into `usuarios`(`password`,`id`,`permisos`) values ('d033e22ae348aeb5660fc2140aec35850c4da997','admin',NULL);
+insert  into `usuarios`(`password`,`id`,`permisos`) values ('d033e22ae348aeb5660fc2140aec35850c4da997','admin','RW'),('8cb2237d0679ca88db6464eac60da96345513964','josue','NN'),('8cb2237d0679ca88db6464eac60da96345513964','krys','RN');
 
 /*Table structure for table `viajes` */
 

@@ -13,6 +13,7 @@
 #include "logmaster.h"
 #include "dbconnector.h"
 #include "csp32bridge.h"
+#include "logreporter.h"
 
 class AppController : public QObject
 {
@@ -27,6 +28,8 @@ private:
     SessionWindow* SessionW;
 
     LogMaster* Logger;
+    LogReporter* LogRep;
+    DBConnector* Connector;
 
 signals:
 

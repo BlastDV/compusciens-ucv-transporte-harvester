@@ -43,3 +43,8 @@ bool LogMaster::UpdateUser(QString user)
 
     return true;
 }
+
+QString LogMaster::getUserID()
+{
+    return UserID;
+}

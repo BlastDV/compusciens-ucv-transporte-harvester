@@ -16,7 +16,7 @@ SessionWindow::~SessionWindow()
     delete ui;
 }
 
-bool SessionWindow::InicioSesion(QString UserID, QString Password)
+bool SessionWindow::InicioSesion(QString User, QString Password)
 {
     bool INICIOOK= false; // Para devolver el resultado de la operacion
 
@@ -36,7 +36,7 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
 
         // Connector->Connector le dice a Loginquery con cual BD y conexion funcionar
         QSqlQuery* Loginquery= new QSqlQuery (Connector->Connector);
-        if (!Loginquery->exec(QString("SELECT * FROM usuarios WHERE id=")+QString("'")+UserID+QString("'")))
+        if (!Loginquery->exec(QString("SELECT * FROM usuarios WHERE id=")+QString("'")+User+QString("'")))
         {
             QMessageBox::critical(0, QObject::tr("Error"),
             "No se ha podido iniciar sesión, revise sus datos");
@@ -58,7 +58,9 @@ bool SessionWindow::InicioSesion(QString UserID, QString Password)
             else
             {
                 QMessageBox::critical(0, QObject::tr("Inicio de Sesión"),
-                "Bienvenido " + UserID);
+                "Bienvenido " + User);
+
+                UserID= User;
 
                 INICIOOK= true;
             }
@@ -84,4 +86,11 @@ void SessionWindow::on_SessionSubmitButton_clicked()
 QString SessionWindow::getUserID()
 {
     return (UserID);
+}
+
+//Esto borrara todos los inputs para que deban ser nuevamente llenados
+void SessionWindow::ResetInputs()
+{
+    ui->UserInput->clear();
+    ui->PasswordInput->clear();
 }

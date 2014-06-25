@@ -16,6 +16,7 @@ public:
 public slots:
     bool RegistrarEvento (QString evento);
     bool UpdateUser (QString user);
+    QString getUserID();
 
 private:
     DBConnector* Connector;

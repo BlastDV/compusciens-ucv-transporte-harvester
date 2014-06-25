@@ -21,6 +21,8 @@ public:
     QString UserID;
     QString ConnectionName;
 
+    bool UpdateUser(QString User);
+
 private:
     Ui::MainWindow *ui;
     LogReporter* LogRep;

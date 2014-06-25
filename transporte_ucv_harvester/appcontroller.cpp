@@ -30,12 +30,17 @@ void AppController::SesionAbierta()
         QMessageBox::information(0, QObject::tr("Gud"), "Evento Registrado");
 
     MainW= new MainWindow();
-    MainW->UserID= SessionW->getUserID();
+    MainW->UpdateUser(SessionW->getUserID());
 
     connect(MainW, SIGNAL(CerrarSesion()), this, SLOT(SesionCerrada()));
     connect(MainW, SIGNAL(ReportarAccion(QString)), Logger, SLOT(RegistrarEvento(QString)));
 
-    MainW->show();
+    //MainW->show();
+
+    LogRep= new LogReporter ();
+    //LogRep->UpdateUser(UserID);
+
+    LogRep->show();
 }
 
 void AppController::SesionCerrada()
@@ -48,5 +53,7 @@ void AppController::SesionCerrada()
         QMessageBox::information(0, QObject::tr("Gud"), "Evento Registrado");
 
     MainW->close();
+
+    SessionW->ResetInputs();
     SessionW->show();
 }

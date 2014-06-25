@@ -24,7 +24,15 @@ void MainWindow::on_actionVerLog_triggered()
     LogRep= new LogReporter (this);
 
     QMessageBox::critical(0, QObject::tr("Gud"), "YEAH");
-    LogRep->UserID= UserID;
+    LogRep->UpdateUser(UserID);
 
     LogRep->show();
+}
+
+// Esta funcion actualiza el usuario actual de la clase
+bool MainWindow::UpdateUser(QString User)
+{
+    UserID= User;
+
+    return true;
 }

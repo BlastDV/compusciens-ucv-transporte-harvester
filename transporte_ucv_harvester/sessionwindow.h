@@ -1,3 +1,7 @@
+/* Esta clase maneja lo relacionado al inicio de sesion, encriptando la clave
+ * ofrecida por el usuario para compararla con la que podria encontrarse en la BD,
+ * y permitiendo el flujo de la aplicacion si las credenciales son correctas. */
+
 #ifndef SESSIONWINDOW_H
 #define SESSIONWINDOW_H
 
@@ -6,8 +10,6 @@
 #include <QtSql/QtSql>
 
 //Clases para el resto del programa
-#include "mainwindow.h"
-#include "logmaster.h"
 #include "dbconnector.h"
 
 namespace Ui
@@ -26,6 +28,7 @@ public:
     QString ConnectionName;
 
     QString getUserID();
+    void ResetInputs();
 
 private slots:
     void on_SessionSubmitButton_clicked();
@@ -37,7 +40,7 @@ private:
 
     QString UserID;
 
-    bool InicioSesion (QString UserID, QString Password);
+    bool InicioSesion (QString User, QString Password);
 
 signals:
     void ReportarUserID (QString UserID);

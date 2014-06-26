@@ -9,15 +9,10 @@ AppController::AppController(QObject *parent) : QObject(parent)
 //Esta funcion se encarga de arrancar con la aplicacion
 void AppController::start()
 {
-    reader= new Csp32Bridge();
-
-    //printf("Ola ke ase: %d\n", reader->cspGetc());
-
     SessionW= new SessionWindow();
 
     connect(SessionW, SIGNAL(SesionAbierta()), this, SLOT(SesionAbierta()));
     SessionW->show();
-
 }
 
 //Esto se activara al abrir sesion correctamente
@@ -35,14 +30,15 @@ void AppController::SesionAbierta()
     connect(MainW, SIGNAL(CerrarSesion()), this, SLOT(SesionCerrada()));
     connect(MainW, SIGNAL(ReportarAccion(QString)), Logger, SLOT(RegistrarEvento(QString)));
 
-    //MainW->show();
+    MainW->show();
 
-    LogRep= new LogReporter ();
+    /*LogRep= new LogReporter ();
     LogRep->UpdateUser("admin");
     LogRep->LoadEvents();
     //LogRep->UpdateUser(UserID);
 
-    LogRep->show();
+
+    LogRep->show();*/
 }
 
 void AppController::SesionCerrada()

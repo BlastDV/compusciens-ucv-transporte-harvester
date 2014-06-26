@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     dbconnector.cpp \
     logreporter.cpp \
     appcontroller.cpp \
-    csp32bridge.cpp
+    csp32bridge.cpp \
+    deviceconnector.cpp
 
 HEADERS  += mainwindow.h \
     sessionwindow.h \
@@ -26,11 +27,13 @@ HEADERS  += mainwindow.h \
     dbconnector.h \
     logreporter.h \
     appcontroller.h \
-    csp32bridge.h
+    csp32bridge.h \
+    deviceconnector.h
 
 FORMS    += mainwindow.ui \
     sessionwindow.ui \
-    logreporter.ui
+    logreporter.ui \
+    deviceconnector.ui
 
 RESOURCES += \
     icons.qrc \

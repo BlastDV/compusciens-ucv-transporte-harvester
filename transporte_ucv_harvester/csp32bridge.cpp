@@ -54,6 +54,7 @@ $Log: C:/Symbol/Csp32Proj/Csp32/src/vcs/Csp32.cpv $
 
 
 #include "csp32bridge.h"
+#include "stdio.h"
 
 Csp32Bridge::Csp32Bridge(QObject *parent) : QObject(parent)
 {

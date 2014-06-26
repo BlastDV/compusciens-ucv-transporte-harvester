@@ -62,7 +62,8 @@
     <property name="title">
      <string>Datos</string>
     </property>
-    <addaction name="actionSubir"/>
+    <addaction name="actionConectarDispositivo"/>
+    <addaction name="actionSubir_datos"/>
    </widget>
    <widget class="QMenu" name="menuLog">
     <property name="title">
@@ -100,14 +101,19 @@
     <string>Cerrar Sesión</string>
    </property>
   </action>
-  <action name="actionSubir">
-   <property name="text">
-    <string>Subir</string>
-   </property>
-  </action>
   <action name="actionVerLog">
    <property name="text">
     <string>Ver el registro de sucesos</string>
+   </property>
+  </action>
+  <action name="actionSubir_datos">
+   <property name="text">
+    <string>Subir datos</string>
+   </property>
+  </action>
+  <action name="actionConectarDispositivo">
+   <property name="text">
+    <string>Conectar dispositivo</string>
    </property>
   </action>
  </widget>

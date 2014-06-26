@@ -57,7 +57,7 @@ bool SessionWindow::InicioSesion(QString User, QString Password)
             }
             else
             {
-                QMessageBox::critical(0, QObject::tr("Inicio de Sesión"),
+                QMessageBox::information(0, QObject::tr("Inicio de Sesión"),
                 "Bienvenido " + User);
 
                 UserID= User;

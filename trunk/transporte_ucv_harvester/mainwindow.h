@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include "logreporter.h"
+#include "deviceconnector.h"
 
 namespace Ui
 {
@@ -27,9 +28,14 @@ private:
     Ui::MainWindow *ui;
     LogReporter* LogRep;
 
+    DeviceConnector* DevConnector; // Para la ventana de conexion con el lector
+
 private slots:
     void on_actionCerrarSesion_triggered();
     void on_actionVerLog_triggered();
+
+    void on_actionConectarDispositivo_triggered();
+    void DeviceConnectionAborted();
 
 signals:
     void CerrarSesion ();

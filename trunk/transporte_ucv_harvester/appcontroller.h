@@ -12,16 +12,16 @@
 #include "sessionwindow.h"
 #include "logmaster.h"
 #include "dbconnector.h"
-#include "csp32bridge.h"
+
+//Clases de prueba para el desarrollo, remover al construir la version final!!!
 #include "logreporter.h"
+#include "deviceconnector.h"
 
 class AppController : public QObject
 {
     Q_OBJECT
 public:
     explicit AppController(QObject *parent = 0);
-
-    Csp32Bridge* reader;
 
 private:
     MainWindow* MainW;
@@ -30,6 +30,8 @@ private:
     LogMaster* Logger;
     LogReporter* LogRep;
     DBConnector* Connector;
+
+    DeviceConnector* DevConnector;
 
 signals:
 

@@ -28,11 +28,11 @@ CREATE TABLE `actividades` (
   PRIMARY KEY (`id`),
   KEY `Usuario hace algo` (`usuario`),
   CONSTRAINT `Usuario hace algo` FOREIGN KEY (`usuario`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8;
 
 /*Data for the table `actividades` */
 
-insert  into `actividades`(`usuario`,`tiempo`,`actividad`,`id`) values ('krys','2014-06-25 11:48:50','INICIO SESION',61),('admin','2014-06-25 11:53:41','INICIO SESION',62),('admin','2014-06-25 11:54:20','INICIO SESION',63),('admin','2014-06-25 11:55:20','INICIO SESION',64),('admin','2014-06-25 11:55:59','INICIO SESION',65),('admin','2014-06-25 11:56:24','INICIO SESION',66),('admin','2014-06-25 11:58:10','INICIO SESION',67);
+insert  into `actividades`(`usuario`,`tiempo`,`actividad`,`id`) values ('krys','2014-06-25 11:48:50','INICIO SESION',61),('krys','2014-06-26 14:44:56','INICIO SESION',74),('admin','2014-06-26 14:49:07','INICIO SESION',75),('admin','2014-06-26 17:06:55','INICIO SESION',76),('admin','2014-06-26 17:14:37','INICIO SESION',77),('admin','2014-06-26 17:18:16','INICIO SESION',78),('admin','2014-06-26 17:24:18','INICIO SESION',79),('admin','2014-06-26 17:26:33','INICIO SESION',80),('admin','2014-06-26 17:31:44','INICIO SESION',81),('admin','2014-06-26 17:32:43','INICIO SESION',82),('admin','2014-06-26 17:37:11','INICIO SESION',83),('admin','2014-06-26 17:37:28','INICIO SESION',84),('admin','2014-06-30 11:43:19','INICIO SESION',85),('admin','2014-06-30 12:45:06','CONECTO LECTOR',86),('josue','2014-06-30 14:29:37','CERRO SESION',87);
 
 /*Table structure for table `paradas` */
 
@@ -118,7 +118,7 @@ CREATE TABLE `usuarios` (
 
 /*Data for the table `usuarios` */
 
-insert  into `usuarios`(`password`,`id`,`permisos`) values ('d033e22ae348aeb5660fc2140aec35850c4da997','admin','RW'),('8cb2237d0679ca88db6464eac60da96345513964','josue','NN'),('8cb2237d0679ca88db6464eac60da96345513964','krys','RN');
+insert  into `usuarios`(`password`,`id`,`permisos`) values ('d033e22ae348aeb5660fc2140aec35850c4da997','admin','RW'),('8cb2237d0679ca88db6464eac60da96345513964','josue','N'),('8cb2237d0679ca88db6464eac60da96345513964','krys','R');
 
 /*Table structure for table `viajes` */
 

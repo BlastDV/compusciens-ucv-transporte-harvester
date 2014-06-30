@@ -33,6 +33,12 @@ private:
     DBConnector* Connector;
     PermissionReporter* PermissionRep;
 
+private slots:
+    void FilterUsers (QString userid);
+    void MarkRow (int row, int column);
+
+    void on_DeleteButton_clicked();
+
 protected:
 
 

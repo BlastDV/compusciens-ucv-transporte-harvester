@@ -12,7 +12,15 @@ void AppController::start()
     SessionW= new SessionWindow();
 
     connect(SessionW, SIGNAL(SesionAbierta()), this, SLOT(SesionAbierta()));
-    SessionW->show();
+    //SessionW->show();
+
+    LogRep= new LogReporter ();
+    LogRep->UpdateUser("admin");
+    LogRep->LoadEvents();
+    //LogRep->UpdateUser(UserID);
+
+
+    LogRep->show();
 }
 
 //Esto se activara al abrir sesion correctamente
@@ -30,15 +38,7 @@ void AppController::SesionAbierta()
     connect(MainW, SIGNAL(CerrarSesion()), this, SLOT(SesionCerrada()));
     connect(MainW, SIGNAL(ReportarAccion(QString)), Logger, SLOT(RegistrarEvento(QString)));
 
-    MainW->show();
-
-    /*LogRep= new LogReporter ();
-    LogRep->UpdateUser("admin");
-    LogRep->LoadEvents();
-    //LogRep->UpdateUser(UserID);
-
-
-    LogRep->show();*/
+    //MainW->show();
 }
 
 void AppController::SesionCerrada()

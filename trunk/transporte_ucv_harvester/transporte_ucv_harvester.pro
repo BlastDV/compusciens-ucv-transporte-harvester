@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     logreporter.cpp \
     appcontroller.cpp \
     csp32bridge.cpp \
-    deviceconnector.cpp
+    deviceconnector.cpp \
+    permissionreporter.cpp
 
 HEADERS  += mainwindow.h \
     sessionwindow.h \
@@ -28,7 +29,8 @@ HEADERS  += mainwindow.h \
     logreporter.h \
     appcontroller.h \
     csp32bridge.h \
-    deviceconnector.h
+    deviceconnector.h \
+    permissionreporter.h
 
 FORMS    += mainwindow.ui \
     sessionwindow.ui \

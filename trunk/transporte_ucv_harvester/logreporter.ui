@@ -44,12 +44,12 @@
      </column>
      <column>
       <property name="text">
-       <string>Evento</string>
+       <string>Tiempo</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Tiempo</string>
+       <string>Evento</string>
       </property>
      </column>
     </widget>

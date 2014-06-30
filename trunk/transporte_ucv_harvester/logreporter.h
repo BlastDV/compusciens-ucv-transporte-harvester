@@ -8,6 +8,7 @@
 #include <QWidget>
 #include <QMessageBox>
 #include "dbconnector.h"
+#include "permissionreporter.h"
 
 namespace Ui
 {
@@ -30,6 +31,7 @@ private:
     Ui::LogReporter *ui;
     QString UserID;
     DBConnector* Connector;
+    PermissionReporter* PermissionRep;
 
 protected:
 

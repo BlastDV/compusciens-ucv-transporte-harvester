@@ -163,6 +163,7 @@ bool LogReporter::LoadEvents()
 
 
         }
+        Connector->EndConnection();
     }
     return true;
 }
@@ -242,7 +243,21 @@ void LogReporter::on_DeleteButton_clicked()
         // Si el usuario confirma la accion, seguimos
         if (Question.exec()==1)
         {
+            // Abramos una conexion a la BD
+            if (!Connector->RequestConnection())
+            {
+                QMessageBox::critical(0, QObject::tr("Error"),
+                "No se ha podido podido acceder a la base de datos, revise el estado"
+                "de la misma.\n\nMensaje: Error DBA1\n"+ Connector->getLastError().text());
+            }
+            else
+            {
+                // Vamos a crear el query para eliminar la entrada(s)
+                QSqlQuery* Deletequery= new QSqlQuery (Connector->Connector);
 
+
+                //if ()
+            }
         }
     }
 }

@@ -182,6 +182,9 @@ void DeviceConnector::on_InitButton_clicked()
     {
         HabilitarComandos("PUERTO_INICIADO");
         ui->ResultsPrompt->appendPlainText(QString("Puerto %1 iniciado correctamente.").arg(SelectedCOM + 1));
+
+        // Y reportamos al log
+        emit(RegistrarEvento(QString("ABRIO PUERTO %1").arg(SelectedCOM + 1)));
     }
 }
 
@@ -196,6 +199,9 @@ void DeviceConnector::on_RestoreButton_clicked()
     {
         HabilitarComandos("PUERTO_LIBERADO");
         ui->ResultsPrompt->appendPlainText(QString("Puerto %1 liberado correctamente.").arg(SelectedCOM + 1));
+
+        // Y reportamos al log
+        emit(RegistrarEvento(QString("LIBERO PUERTO %1").arg(SelectedCOM + 1)));
     }
 }
 

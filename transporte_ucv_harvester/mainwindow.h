@@ -36,6 +36,8 @@ private slots:
 
     void on_actionConectarDispositivo_triggered();
     void DeviceConnectionAborted();
+    void ReportarMensaje(QString mensaje);
+
 
 signals:
     void CerrarSesion ();

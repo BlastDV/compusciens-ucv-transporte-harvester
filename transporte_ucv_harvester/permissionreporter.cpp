@@ -43,3 +43,9 @@ bool PermissionReporter::CanWriteLog()
 {
     return WRITELOGREP;
 }
+
+/* Esta clase tiene como unico fin el hacer debug sobre la misma*/
+void PermissionReporter::DumpPermissions()
+{
+
+}

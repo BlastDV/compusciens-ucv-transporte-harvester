@@ -4,6 +4,7 @@
 #include <QWidget>
 
 #include "csp32bridge.h"
+#include "logmaster.h"
 
 namespace Ui {
 class DeviceConnector;
@@ -38,12 +39,17 @@ private:
     Ui::DeviceConnector *ui;
 
     Csp32Bridge* Reader;
+    LogMaster* Logger;
+    QString UserID;
+
     int SelectedCOM;
 
 signals:
     /* Esto informa a la clase padre cuando
      * el usuario presione Cancelar*/
     void CancelPressed();
+    // Esto permite a appcontroller registrar las acciones del usuario
+    void RegistrarEvento(QString);
 };
 
 #endif // DEVICECONNECTOR_H

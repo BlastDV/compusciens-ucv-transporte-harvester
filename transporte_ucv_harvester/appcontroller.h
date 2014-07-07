@@ -39,6 +39,8 @@ public slots:
     void SesionAbierta();
     void SesionCerrada();
 
+    void RegistrarAccion(QString accion);
+
 public:
     void start();
 

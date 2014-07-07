@@ -16,78 +16,79 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`ptransporteucv` /*!40100 DEFAULT CHARAC
 
 USE `ptransporteucv`;
 
-/*Table structure for table `actividades` */
+/*Table structure for table `actividad` */
 
-DROP TABLE IF EXISTS `actividades`;
+DROP TABLE IF EXISTS `actividad`;
 
-CREATE TABLE `actividades` (
+CREATE TABLE `actividad` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `usuario` varchar(45) NOT NULL COMMENT 'El usuario actor',
   `tiempo` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'El momento del evento',
   `actividad` varchar(150) DEFAULT NULL COMMENT 'Descripcion del evento',
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`),
-  KEY `Usuario hace algo` (`usuario`),
-  CONSTRAINT `Usuario hace algo` FOREIGN KEY (`usuario`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_actividad_usuario_idx` (`usuario`),
+  CONSTRAINT `fk_actividad_usuario` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8;
 
-/*Data for the table `actividades` */
+/*Data for the table `actividad` */
 
-insert  into `actividades`(`usuario`,`tiempo`,`actividad`,`id`) values ('krys','2014-06-25 11:48:50','INICIO SESION',61),('krys','2014-06-26 14:44:56','INICIO SESION',74),('admin','2014-06-26 14:49:07','INICIO SESION',75),('admin','2014-06-26 17:06:55','INICIO SESION',76),('admin','2014-06-26 17:14:37','INICIO SESION',77),('admin','2014-06-26 17:18:16','INICIO SESION',78),('admin','2014-06-26 17:24:18','INICIO SESION',79),('admin','2014-06-26 17:26:33','INICIO SESION',80),('admin','2014-06-26 17:31:44','INICIO SESION',81),('admin','2014-06-26 17:32:43','INICIO SESION',82),('admin','2014-06-26 17:37:11','INICIO SESION',83),('admin','2014-06-26 17:37:28','INICIO SESION',84),('admin','2014-06-30 11:43:19','INICIO SESION',85),('admin','2014-06-30 12:45:06','CONECTO LECTOR',86),('josue','2014-06-30 14:29:37','CERRO SESION',87);
+/*Table structure for table `parada` */
 
-/*Table structure for table `paradas` */
+DROP TABLE IF EXISTS `parada`;
 
-DROP TABLE IF EXISTS `paradas`;
-
-CREATE TABLE `paradas` (
-  `nombre_parada` varchar(45) NOT NULL,
+CREATE TABLE `parada` (
   `id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
+  `nombre` varchar(45) NOT NULL,
+  `descripcion` varchar(255) DEFAULT NULL COMMENT 'Descripción de la parada: puntos de referencia del lugar, otros nombres, etc.',
+  `ruta_id` int(10) unsigned NOT NULL COMMENT 'Ruta a la que pertenece',
+  PRIMARY KEY (`id`),
+  KEY `fk_parada_ruta_idx` (`ruta_id`),
+  CONSTRAINT `fk_parada_ruta` FOREIGN KEY (`ruta_id`) REFERENCES `ruta` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `paradas` */
+/*Data for the table `parada` */
 
-/*Table structure for table `pasajeros` */
+/*Table structure for table `pasajero` */
 
-DROP TABLE IF EXISTS `pasajeros`;
+DROP TABLE IF EXISTS `pasajero`;
 
-CREATE TABLE `pasajeros` (
+CREATE TABLE `pasajero` (
   `cedula` int(8) unsigned NOT NULL COMMENT 'La cedula de los pasajeros',
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `pasajeros` */
+/*Data for the table `pasajero` */
 
-/*Table structure for table `registros` */
+/*Table structure for table `registro` */
 
-DROP TABLE IF EXISTS `registros`;
+DROP TABLE IF EXISTS `registro`;
 
-CREATE TABLE `registros` (
-  `viaje_id` bigint(20) unsigned NOT NULL COMMENT 'El viaje asociado al registro',
-  `pasajero_id` int(10) unsigned NOT NULL COMMENT 'La lista de pasajeros asociada al viaje',
+CREATE TABLE `registro` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `viaje_id` bigint(20) unsigned NOT NULL COMMENT 'El viaje asociado al registro',
+  `pasajero_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `Un registro, un viaje` (`viaje_id`),
-  CONSTRAINT `Un registro, un viaje` FOREIGN KEY (`viaje_id`) REFERENCES `viajes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_registro_viaje_idx` (`viaje_id`),
+  KEY `fk_registro_pasajero_idx` (`pasajero_id`),
+  CONSTRAINT `fk_registro_viaje` FOREIGN KEY (`viaje_id`) REFERENCES `viaje` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_registro_pasajero` FOREIGN KEY (`pasajero_id`) REFERENCES `pasajero` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `registros` */
+/*Data for the table `registro` */
 
-/*Table structure for table `rutas` */
+/*Table structure for table `ruta` */
 
-DROP TABLE IF EXISTS `rutas`;
+DROP TABLE IF EXISTS `ruta`;
 
-CREATE TABLE `rutas` (
+CREATE TABLE `ruta` (
   `origen` varchar(45) NOT NULL COMMENT 'El origen de la ruta',
   `destino` varchar(45) NOT NULL COMMENT 'El final de la ruta',
-  `paradas_id` int(10) unsigned NOT NULL COMMENT 'Referencia las paradas de la ruta',
   `id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `Muchas paradas, una ruta` (`paradas_id`),
-  CONSTRAINT `Muchas paradas, una ruta` FOREIGN KEY (`paradas_id`) REFERENCES `paradas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `rutas` */
+/*Data for the table `ruta` */
 
 /*Table structure for table `transportista` */
 
@@ -105,40 +106,40 @@ CREATE TABLE `transportista` (
 
 /*Data for the table `transportista` */
 
-/*Table structure for table `usuarios` */
+/*Table structure for table `usuario` */
 
-DROP TABLE IF EXISTS `usuarios`;
+DROP TABLE IF EXISTS `usuario`;
 
-CREATE TABLE `usuarios` (
-  `password` varchar(41) NOT NULL COMMENT 'La clave encriptada',
+CREATE TABLE `usuario` (
   `id` varchar(15) NOT NULL COMMENT 'El id del usuario',
+  `password` varchar(41) NOT NULL COMMENT 'La clave encriptada',
   `permisos` varchar(20) NOT NULL COMMENT 'El id de los permisos correspondientes',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `usuarios` */
+/*Data for the table `usuario` */
 
-insert  into `usuarios`(`password`,`id`,`permisos`) values ('d033e22ae348aeb5660fc2140aec35850c4da997','admin','RW'),('8cb2237d0679ca88db6464eac60da96345513964','josue','N'),('8cb2237d0679ca88db6464eac60da96345513964','krys','R');
+insert  into `usuario`(`id`,`password`,`permisos`) values ('admin','d033e22ae348aeb5660fc2140aec35850c4da997','RW'),('josue','8cb2237d0679ca88db6464eac60da96345513964','NN'),('krys','8cb2237d0679ca88db6464eac60da96345513964','RN');
 
-/*Table structure for table `viajes` */
+/*Table structure for table `viaje` */
 
-DROP TABLE IF EXISTS `viajes`;
+DROP TABLE IF EXISTS `viaje`;
 
-CREATE TABLE `viajes` (
+CREATE TABLE `viaje` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `fecha` date NOT NULL COMMENT 'La fecha del viaje',
   `hora_salida` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Hora de partida',
-  `hora_llegada` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Hora de llegada',
+  `hora_llegada` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Hora de llegada',
   `ruta_id` int(10) unsigned NOT NULL COMMENT 'La ruta del viaje',
   `ci_transportista` int(8) unsigned NOT NULL COMMENT 'La cedula del chofer',
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`),
-  KEY `Un viaje, un transportista` (`ci_transportista`),
-  KEY `Un viaje, una ruta` (`ruta_id`),
-  CONSTRAINT `Un viaje, un transportista` FOREIGN KEY (`ci_transportista`) REFERENCES `transportista` (`cedula`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `Un viaje, una ruta` FOREIGN KEY (`ruta_id`) REFERENCES `rutas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_viaje_transportista` (`ci_transportista`),
+  KEY `fk_viaje_ruta` (`ruta_id`),
+  CONSTRAINT `fk_viaje_transportista` FOREIGN KEY (`ci_transportista`) REFERENCES `transportista` (`cedula`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_viaje_ruta` FOREIGN KEY (`ruta_id`) REFERENCES `ruta` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `viajes` */
+/*Data for the table `viaje` */
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

@@ -24,7 +24,7 @@ bool LogMaster::RegistrarEvento(QString evento)
         // Si la conexion pudo abrirse, se procede a insertar el evento
         // Este se compone de un usuario, un tiempo y una actividad
         QSqlQuery* InsertQuery= new QSqlQuery (Connector->Connector);
-        if (!InsertQuery->exec(QString("INSERT INTO actividades (usuario, tiempo, actividad) VALUES (")+
+        if (!InsertQuery->exec(QString("INSERT INTO actividad (usuario, tiempo, actividad) VALUES (")+
                               QString("'")+UserID+QString("', '")+QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss")+QString("', ")+
                               QString("'")+evento+QString("')")))
             REGISTROOK= false;

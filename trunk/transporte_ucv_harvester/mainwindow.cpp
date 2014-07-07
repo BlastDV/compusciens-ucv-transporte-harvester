@@ -8,7 +8,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     /* Aunque quiza no sea del todo correcto, vamos a instanciar esto
      * aca puesto que necesitaremos sus datos durante la ejecucion de todo
      * el programa. */
+    ui->centralWidget->setStyleSheet("");
     DevConnector= new DeviceConnector();
+    connect(DevConnector, SIGNAL(RegistrarEvento(QString)), this, SLOT(ReportarMensaje(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -30,7 +32,6 @@ void MainWindow::on_actionVerLog_triggered()
 
     LogRep->UpdateUser(UserID);
     LogRep->show();
-    //LogRep->dumpObjectTree();
 }
 
 // Esta funcion actualiza el usuario actual de la clase
@@ -54,4 +55,11 @@ void MainWindow::DeviceConnectionAborted()
 {
     disconnect(DevConnector, SIGNAL(CancelPressed()), this, SLOT(DeviceConnectionAborted()));
     DevConnector->hide();
+}
+
+/* Esta funcion enviara cualquier mensaje de sus clases hijas a la clase
+ * padre appcontroller */
+void MainWindow::ReportarMensaje(QString mensaje)
+{
+    emit ReportarAccion(mensaje);
 }

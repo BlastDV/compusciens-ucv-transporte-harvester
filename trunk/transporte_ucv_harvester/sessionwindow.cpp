@@ -36,7 +36,7 @@ bool SessionWindow::InicioSesion(QString User, QString Password)
 
         // Connector->Connector le dice a Loginquery con cual BD y conexion funcionar
         QSqlQuery* Loginquery= new QSqlQuery (Connector->Connector);
-        if (!Loginquery->exec(QString("SELECT * FROM usuarios WHERE id=")+QString("'")+User+QString("'")))
+        if (!Loginquery->exec(QString("SELECT * FROM usuario WHERE id=")+QString("'")+User+QString("'")))
         {
             QMessageBox::critical(0, QObject::tr("Error"),
             "No se ha podido iniciar sesión, revise sus datos");
@@ -48,7 +48,7 @@ bool SessionWindow::InicioSesion(QString User, QString Password)
             Loginquery->first();
 
             // Ahora evaluemos que las claves coinciden
-            if (Loginquery->value(0)!=Encryptedpassword)
+            if (Loginquery->value(1).toString()!=Encryptedpassword)
             {
                 QMessageBox::critical(0, QObject::tr("Error"),
                 "No se ha podido iniciar sesión, revise sus datos");

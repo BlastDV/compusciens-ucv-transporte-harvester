@@ -14,6 +14,7 @@ LogReporter::LogReporter(QWidget *parent) : QWidget(parent), ui(new Ui::LogRepor
 
     connect(ui->UserFilter, SIGNAL(currentIndexChanged(QString)), this, SLOT(FilterUsers(QString)));
     connect(ui->EventsList, SIGNAL(cellClicked(int,int)), this, SLOT(MarkRow(int,int)));
+
 }
 
 LogReporter::~LogReporter()
@@ -25,6 +26,10 @@ LogReporter::~LogReporter()
 bool LogReporter::UpdateUser(QString user)
 {
     UserID= user;
+
+    // Una vez que tenemos usuario, cargamos los eventos
+    LoadEvents();
+
     return true;
 }
 
@@ -50,7 +55,7 @@ bool LogReporter::LoadEvents()
     {
         // No importa el nombre de usuario sino sus permisos
         QSqlQuery* Rightsquery= new QSqlQuery (Connector->Connector);
-        if (!Rightsquery->exec(QString("SELECT permisos FROM usuarios WHERE id=")+QString("'")+UserID+QString("'")))
+        if (!Rightsquery->exec(QString("SELECT permisos FROM usuario WHERE id=")+QString("'")+UserID+QString("'")))
         {
             QMessageBox::critical(0, QObject::tr("Error"),
             "No se han podido determinar sus permisos. Revise el estado "
@@ -82,13 +87,13 @@ bool LogReporter::LoadEvents()
             // UserID puede leer todo el log?
             if (PermissionRep->CanReadAllLog())
             {
-                Query= QString("SELECT * from actividades");
+                Query= QString("SELECT * from actividad");
 
                 ui->UsersFrame->show(); // Le mostramos la opcion Filtrar
             }
             else
             {
-                Query= QString("SELECT * FROM actividades WHERE usuario=")+QString("'")+UserID+QString("'");
+                Query= QString("SELECT * FROM actividad WHERE usuario=")+QString("'")+UserID+QString("'");
 
                 ui->UsersFrame->hide(); // No lo dejamos ver la opcion Filtrar
             }
@@ -117,13 +122,13 @@ bool LogReporter::LoadEvents()
 
                         QTableWidgetItem *Usuario, *Evento, *Tiempo;
 
-                        Usuario= new QTableWidgetItem (Eventsquery->value(0).toString()); // Texto
+                        Usuario= new QTableWidgetItem (Eventsquery->value(1).toString()); // Texto
                         Usuario->setFlags(Usuario->flags() ^ Qt::ItemIsEditable); // No editable
 
-                        Tiempo= new QTableWidgetItem (Eventsquery->value(1).toString()); // Texto
+                        Tiempo= new QTableWidgetItem (Eventsquery->value(2).toString()); // Texto
                         Tiempo->setFlags(Tiempo->flags() ^ Qt::ItemIsEditable); // No editable
 
-                        Evento= new QTableWidgetItem (Eventsquery->value(2).toString()); // Texto
+                        Evento= new QTableWidgetItem (Eventsquery->value(3).toString()); // Texto
                         Evento->setFlags(Evento->flags() ^ Qt::ItemIsEditable); // No editable
 
                         ui->EventsList->setItem(ui->EventsList->rowCount()-1, 0, Usuario);
@@ -160,8 +165,6 @@ bool LogReporter::LoadEvents()
                 ui->EventsList->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 
             }
-
-
         }
         Connector->EndConnection();
     }

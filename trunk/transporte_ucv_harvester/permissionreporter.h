@@ -26,6 +26,7 @@ public:
 
     bool CanReadAllLog ();
     bool CanWriteLog ();
+    void DumpPermissions();
 
 signals:
 

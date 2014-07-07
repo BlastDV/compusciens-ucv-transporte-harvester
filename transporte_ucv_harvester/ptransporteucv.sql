@@ -28,9 +28,11 @@ CREATE TABLE `actividad` (
   PRIMARY KEY (`id`),
   KEY `fk_actividad_usuario_idx` (`usuario`),
   CONSTRAINT `fk_actividad_usuario` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8;
 
 /*Data for the table `actividad` */
+
+insert  into `actividad`(`id`,`usuario`,`tiempo`,`actividad`) values (88,'admin','2014-07-07 12:10:20','INICIO SESION'),(89,'admin','2014-07-07 12:10:36','INICIO SESION'),(90,'admin','2014-07-07 12:11:45','INICIO SESION'),(91,'admin','2014-07-07 12:11:56','ABRIO PUERTO 1'),(92,'admin','2014-07-07 12:11:57','LIBERO PUERTO 1'),(93,'admin','2014-07-07 12:11:58','ABRIO PUERTO 1'),(94,'admin','2014-07-07 12:13:40','INICIO SESION'),(95,'admin','2014-07-07 12:15:51','INICIO SESION'),(96,'admin','2014-07-07 12:17:19','INICIO SESION'),(97,'admin','2014-07-07 12:17:45','INICIO SESION'),(98,'admin','2014-07-07 12:18:57','INICIO SESION'),(99,'admin','2014-07-07 12:20:22','INICIO SESION'),(100,'admin','2014-07-07 12:21:05','INICIO SESION'),(101,'admin','2014-07-07 12:21:17','CERRO SESION'),(102,'krys','2014-07-07 12:21:56','INICIO SESION'),(103,'krys','2014-07-07 12:22:28','CERRO SESION'),(104,'admin','2014-07-07 12:22:34','INICIO SESION'),(105,'admin','2014-07-07 12:23:37','CERRO SESION'),(106,'krys','2014-07-07 12:26:39','INICIO SESION'),(107,'krys','2014-07-07 12:26:59','INICIO SESION'),(108,'admin','2014-07-07 12:42:48','INICIO SESION'),(109,'admin','2014-07-07 12:44:59','INICIO SESION'),(110,'admin','2014-07-07 12:46:48','INICIO SESION'),(111,'admin','2014-07-07 12:53:15','INICIO SESION');
 
 /*Table structure for table `parada` */
 
@@ -119,7 +121,7 @@ CREATE TABLE `usuario` (
 
 /*Data for the table `usuario` */
 
-insert  into `usuario`(`id`,`password`,`permisos`) values ('admin','d033e22ae348aeb5660fc2140aec35850c4da997','RW'),('josue','8cb2237d0679ca88db6464eac60da96345513964','NN'),('krys','8cb2237d0679ca88db6464eac60da96345513964','RN');
+insert  into `usuario`(`id`,`password`,`permisos`) values ('admin','d033e22ae348aeb5660fc2140aec35850c4da997','RW'),('josue','8cb2237d0679ca88db6464eac60da96345513964','NN'),('krys','8cb2237d0679ca88db6464eac60da96345513964','R');
 
 /*Table structure for table `viaje` */
 

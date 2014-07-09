@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include "logreporter.h"
 #include "deviceconnector.h"
+#include "dbconnector.h"
 
 namespace Ui
 {
@@ -27,8 +28,10 @@ public:
 private:
     Ui::MainWindow *ui;
     LogReporter* LogRep;
-
+    DBConnector* Connector;
     DeviceConnector* DevConnector; // Para la ventana de conexion con el lector
+
+    void LoadInitialData(); // Para la ventana de subida de datos inicial
 
 private slots:
     void on_actionCerrarSesion_triggered();

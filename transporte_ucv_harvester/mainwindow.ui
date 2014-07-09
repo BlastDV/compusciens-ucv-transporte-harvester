@@ -66,6 +66,12 @@
        </property>
        <item>
         <widget class="QFrame" name="LeftFrame">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -78,9 +84,72 @@
             <property name="title">
              <string>Datos del Transportista</string>
             </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+            <property name="checkable">
+             <bool>false</bool>
+            </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
+              <widget class="QFrame" name="frame">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QFormLayout" name="formLayout_3">
+                <property name="topMargin">
+                 <number>9</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>1</number>
+                </property>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="lastname1Label">
+                  <property name="text">
+                   <string>Primer apellido:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QComboBox" name="comboBox">
+                  <item>
+                   <property name="text">
+                    <string>Buscar por apellido</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="cedulaLabel">
+                  <property name="text">
+                   <string>Cedula:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="lineEdit">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="placeholderText">
+                   <string>Buscar por cédula</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
               <widget class="QFrame" name="DriverDataFrame">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="frameShape">
                 <enum>QFrame::StyledPanel</enum>
                </property>
@@ -88,6 +157,12 @@
                 <enum>QFrame::Raised</enum>
                </property>
                <layout class="QFormLayout" name="formLayout">
+                <property name="fieldGrowthPolicy">
+                 <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                </property>
+                <property name="topMargin">
+                 <number>1</number>
+                </property>
                 <item row="0" column="0">
                  <widget class="QLabel" name="name1Label">
                   <property name="text">
@@ -102,24 +177,10 @@
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="lastname1Label">
-                  <property name="text">
-                   <string>Primer apellido:</string>
-                  </property>
-                 </widget>
-                </item>
                 <item row="1" column="0">
                  <widget class="QLabel" name="name2Label">
                   <property name="text">
                    <string>Segundo nombre:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="0">
-                 <widget class="QLabel" name="lastname2Label">
-                  <property name="text">
-                   <string>Segundo apellido:</string>
                   </property>
                  </widget>
                 </item>
@@ -130,14 +191,14 @@
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="1">
-                 <widget class="QLabel" name="lastname1Text">
+                <item row="2" column="0">
+                 <widget class="QLabel" name="lastname2Label">
                   <property name="text">
-                   <string>lastname1</string>
+                   <string>Segundo apellido:</string>
                   </property>
                  </widget>
                 </item>
-                <item row="3" column="1">
+                <item row="2" column="1">
                  <widget class="QLabel" name="lastname2Text">
                   <property name="text">
                    <string>lastname2</string>
@@ -147,6 +208,19 @@
                </layout>
               </widget>
              </item>
+             <item>
+              <spacer name="verticalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
             </layout>
            </widget>
           </item>
@@ -155,6 +229,78 @@
             <property name="title">
              <string>Datos de la Ruta</string>
             </property>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QFrame" name="RouteDataFrame">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QFormLayout" name="formLayout_2">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="rutaLabel">
+                  <property name="text">
+                   <string>Ruta:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="paradasLabel">
+                  <property name="text">
+                   <string>Paradas:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="hsalidaLabel">
+                  <property name="text">
+                   <string>Hora de Salida:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QLabel" name="hllegadaLabel">
+                  <property name="text">
+                   <string>Hora de Llegada:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <widget class="QLabel" name="fechaLabel">
+                  <property name="text">
+                   <string>Fecha:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QComboBox" name="RouteList"/>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QComboBox" name="RouteStopsList"/>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QTimeEdit" name="RouteHSalida">
+                  <property name="calendarPopup">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QTimeEdit" name="RouteHLlegada"/>
+                </item>
+                <item row="4" column="1">
+                 <widget class="QDateEdit" name="RouteDate">
+                  <property name="calendarPopup">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
@@ -199,35 +345,6 @@
            <number>9</number>
           </property>
           <item>
-           <widget class="QToolButton" name="button1">
-            <property name="minimumSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Test</string>
-            </property>
-            <property name="icon">
-             <iconset resource="icons.qrc">
-              <normaloff>:/icons/generic_button.png</normaloff>:/icons/generic_button.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="pushButton">
             <property name="minimumSize">
              <size>
@@ -237,47 +354,12 @@
             </property>
             <property name="maximumSize">
              <size>
-              <width>32</width>
-              <height>32</height>
+              <width>160000</width>
+              <height>160000</height>
              </size>
             </property>
             <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="icons.qrc">
-              <normaloff>:/icons/generic_button.png</normaloff>:/icons/generic_button.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="toolButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
+             <string>Subir Datos</string>
             </property>
             <property name="icon">
              <iconset resource="icons.qrc">
@@ -357,14 +439,6 @@
    <addaction name="menuUsuarios"/>
    <addaction name="menuLog"/>
    <addaction name="menuAyuda"/>
-  </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>true</bool>
-   </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAcerca_de">

@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ConnectionName= "MainWindow";
     Connector= new DBConnector(this);
     Connector->ConnectionName= ConnectionName;
+
+    LoadInitialData();
 }
 
 MainWindow::~MainWindow()
@@ -78,6 +80,35 @@ void MainWindow::LoadInitialData()
     // Vamos a crear una conexion para poder traer ciertos datos
     if (!Connector->RequestConnection())
     {
-        QMessageBox::critical(this, "Error", "")
+        QMessageBox::critical(0, "Error",
+        "No se ha podido recuperar la lista de transportistas."
+        "Revise el estado de la Base de Datos.\n\nMensaje: Error DBA1\n"+
+        Connector->getLastError().text());
+    }
+    else
+    {
+        // Connector->Connector le dice a Infoquery con cual BD y conexion funcionar
+        QSqlQuery* Infoquery= new QSqlQuery (Connector->Connector);
+
+        if(!Infoquery->exec(QString("SELECT * FROM transportista")))
+        {
+            QMessageBox::critical(0, QObject::tr("Error"),
+            "No se ha podido recuperar la lista de transportistas."
+            "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ1\n");
+        }
+        else
+        {
+            Infoquery->first();
+
+            // Ahora con los datos obtenidos del SELECT, vamos a llenar la interfaz
+
+            // Llenamos la lista de apellidos
+            do
+            {
+                ui->LastNameList->addItem(Infoquery->value(2).toString());
+            }
+            while (Infoquery->next());
+        }
+
     }
 }

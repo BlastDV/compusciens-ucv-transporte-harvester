@@ -73,8 +73,8 @@ CREATE TABLE `registro` (
   PRIMARY KEY (`id`),
   KEY `fk_registro_viaje_idx` (`viaje_id`),
   KEY `fk_registro_pasajero_idx` (`pasajero_id`),
-  CONSTRAINT `fk_registro_viaje` FOREIGN KEY (`viaje_id`) REFERENCES `viaje` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_registro_pasajero` FOREIGN KEY (`pasajero_id`) REFERENCES `pasajero` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_registro_pasajero` FOREIGN KEY (`pasajero_id`) REFERENCES `pasajero` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_registro_viaje` FOREIGN KEY (`viaje_id`) REFERENCES `viaje` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `registro` */
@@ -108,6 +108,8 @@ CREATE TABLE `transportista` (
 
 /*Data for the table `transportista` */
 
+insert  into `transportista`(`primer_nombre`,`segundo_nombre`,`primer_apellido`,`segundo_apellido`,`fecha_nac`,`cedula`) values ('Ricardo','Antonio','Pereira','Mora','1976-12-07',14396554),('Alberto','José','Maneiro','Fuentes','1980-04-30',16475014),('Ruben','Yaimeru','Maza','Marquez','1993-02-10',20875996),('Pedro','Alejandro','Fernandes','Olarte','1993-06-29',21536559);
+
 /*Table structure for table `usuario` */
 
 DROP TABLE IF EXISTS `usuario`;
@@ -137,8 +139,8 @@ CREATE TABLE `viaje` (
   PRIMARY KEY (`id`),
   KEY `fk_viaje_transportista` (`ci_transportista`),
   KEY `fk_viaje_ruta` (`ruta_id`),
-  CONSTRAINT `fk_viaje_transportista` FOREIGN KEY (`ci_transportista`) REFERENCES `transportista` (`cedula`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_viaje_ruta` FOREIGN KEY (`ruta_id`) REFERENCES `ruta` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_viaje_ruta` FOREIGN KEY (`ruta_id`) REFERENCES `ruta` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_viaje_transportista` FOREIGN KEY (`ci_transportista`) REFERENCES `transportista` (`cedula`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `viaje` */

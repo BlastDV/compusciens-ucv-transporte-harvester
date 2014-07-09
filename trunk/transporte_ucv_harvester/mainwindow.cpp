@@ -8,9 +8,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     /* Aunque quiza no sea del todo correcto, vamos a instanciar esto
      * aca puesto que necesitaremos sus datos durante la ejecucion de todo
      * el programa. */
-    ui->centralWidget->setStyleSheet("");
     DevConnector= new DeviceConnector();
     connect(DevConnector, SIGNAL(RegistrarEvento(QString)), this, SLOT(ReportarMensaje(QString)));
+
+    ConnectionName= "MainWindow";
+    Connector= new DBConnector(this);
+    Connector->ConnectionName= ConnectionName;
 }
 
 MainWindow::~MainWindow()
@@ -62,4 +65,19 @@ void MainWindow::DeviceConnectionAborted()
 void MainWindow::ReportarMensaje(QString mensaje)
 {
     emit ReportarAccion(mensaje);
+}
+
+/* Esta funcion preparara la interfaz de subida de datos con valores por defecto,
+ * haciendo consultas en la BD y llenando ciertos campos necesarios para facilitar
+ * esta tarea al usuario */
+void MainWindow::LoadInitialData()
+{
+    ui->centralWidget->setStyleSheet("");
+    ui->RouteDate->setDate(QDate::currentDate());
+
+    // Vamos a crear una conexion para poder traer ciertos datos
+    if (!Connector->RequestConnection())
+    {
+        QMessageBox::critical(this, "Error", "")
+    }
 }

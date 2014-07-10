@@ -72,6 +72,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -81,6 +87,12 @@
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <widget class="QGroupBox" name="DriverFrame">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="title">
              <string>Datos del Transportista</string>
             </property>
@@ -93,6 +105,12 @@
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
               <widget class="QFrame" name="frame">
+               <property name="layoutDirection">
+                <enum>Qt::LeftToRight</enum>
+               </property>
+               <property name="autoFillBackground">
+                <bool>false</bool>
+               </property>
                <property name="frameShape">
                 <enum>QFrame::StyledPanel</enum>
                </property>
@@ -131,6 +149,12 @@
                 </item>
                 <item row="1" column="1">
                  <widget class="QLineEdit" name="CedulaInput">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
                   <property name="text">
                    <string/>
                   </property>
@@ -170,24 +194,10 @@
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="1">
-                 <widget class="QLabel" name="name1Text">
-                  <property name="text">
-                   <string>name1</string>
-                  </property>
-                 </widget>
-                </item>
                 <item row="1" column="0">
                  <widget class="QLabel" name="name2Label">
                   <property name="text">
                    <string>Segundo nombre:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QLabel" name="name2Text">
-                  <property name="text">
-                   <string>name2</string>
                   </property>
                  </widget>
                 </item>
@@ -198,10 +208,24 @@
                   </property>
                  </widget>
                 </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="Nombre1Input">
+                  <property name="readOnly">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="Nombre2Input">
+                  <property name="readOnly">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
                 <item row="2" column="1">
-                 <widget class="QLabel" name="lastname2Text">
-                  <property name="text">
-                   <string>lastname2</string>
+                 <widget class="QLineEdit" name="Apellido2Input">
+                  <property name="readOnly">
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>
@@ -314,7 +338,73 @@
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3"/>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QGroupBox" name="CodesFrame">
+            <property name="title">
+             <string>Lista de Codigos Escaneados</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <item>
+              <widget class="QTableWidget" name="CodesTable">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Plain</enum>
+               </property>
+               <column>
+                <property name="text">
+                 <string>- En el dispositivo -</string>
+                </property>
+               </column>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="ReadCodesButton">
+               <property name="text">
+                <string>Leer Códigos</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="InfoFrame">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Información</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <item>
+              <widget class="QPlainTextEdit" name="InfoText">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>100</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>100</height>
+                </size>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>

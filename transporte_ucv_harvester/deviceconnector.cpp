@@ -205,9 +205,16 @@ void DeviceConnector::on_RestoreButton_clicked()
     }
 }
 
+// Cuando el usuario decide cancelar, todo se restaura
 void DeviceConnector::on_CancelButton_clicked()
 {
     RestoreObject();
 
     emit CancelPressed();
+}
+
+// Cuando el usuario decide guardar, el proceso continua
+void DeviceConnector::on_AcceptButton_clicked()
+{
+    emit AcceptPressed();
 }

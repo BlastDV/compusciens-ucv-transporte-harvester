@@ -16,6 +16,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     Connector->ConnectionName= ConnectionName;
 
     LoadInitialData();
+
+    /* Ahora establecemos las conexiones con los distintos objetos de la interfaz */
+    connect(ui->CedulaInput, SIGNAL(textEdited(QString)), this, SLOT(UpdateTransportistaC(QString)));
+    connect(ui->LastNameList, SIGNAL(currentIndexChanged(QString)), this, SLOT(UpdateTransportistaA(QString)));
+    connect(ui->RouteList, SIGNAL(currentIndexChanged(QString)), this, SLOT(UpdateRoute(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -51,8 +56,18 @@ bool MainWindow::UpdateUser(QString User)
 void MainWindow::on_actionConectarDispositivo_triggered()
 {
     connect(DevConnector, SIGNAL(CancelPressed()), this, SLOT(DeviceConnectionAborted()));
+    connect(DevConnector, SIGNAL(AcceptPressed()), this, SLOT(DeviceConnectionAccepted()));
     DevConnector->InitObject();
     DevConnector->show();
+}
+
+// Esta funcion se ejecuta si el usuario ejecuta y guarda la conexion al lector
+void MainWindow::DeviceConnectionAccepted()
+{
+    disconnect(DevConnector, SIGNAL(AcceptPressed()), this, SLOT(DeviceConnectionAccepted()));
+    DevConnector->hide();
+
+
 }
 
 // Esta funcion se ejecuta si el usuario cancela la conexion al lector
@@ -74,41 +89,272 @@ void MainWindow::ReportarMensaje(QString mensaje)
  * esta tarea al usuario */
 void MainWindow::LoadInitialData()
 {
+    ui->CodesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+
     ui->centralWidget->setStyleSheet("");
     ui->RouteDate->setDate(QDate::currentDate());
+    ui->RouteHLlegada->setTime(QTime::currentTime());
 
     // Vamos a crear una conexion para poder traer ciertos datos
     if (!Connector->RequestConnection())
     {
         QMessageBox::critical(0, "Error",
-        "No se ha podido recuperar la lista de transportistas."
+        "No se ha podido recuperar la lista de transportistas. "
         "Revise el estado de la Base de Datos.\n\nMensaje: Error DBA1\n"+
         Connector->getLastError().text());
     }
     else
     {
         // Connector->Connector le dice a Infoquery con cual BD y conexion funcionar
-        QSqlQuery* Infoquery= new QSqlQuery (Connector->Connector);
+        QSqlQuery* Lastnamequery= new QSqlQuery (Connector->Connector);
 
-        if(!Infoquery->exec(QString("SELECT * FROM transportista")))
+        if(!Lastnamequery->exec(QString("SELECT primer_apellido FROM transportista")))
         {
             QMessageBox::critical(0, QObject::tr("Error"),
-            "No se ha podido recuperar la lista de transportistas."
+            "No se ha podido recuperar la lista de transportistas. "
             "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ1\n");
         }
         else
         {
-            Infoquery->first();
+            Lastnamequery->first();
 
             // Ahora con los datos obtenidos del SELECT, vamos a llenar la interfaz
 
             // Llenamos la lista de apellidos
             do
             {
-                ui->LastNameList->addItem(Infoquery->value(2).toString());
+                ui->LastNameList->addItem(Lastnamequery->value(0).toString());
             }
-            while (Infoquery->next());
+            while (Lastnamequery->next());
+
+            // Ahora llenemos la lista de rutass
+            QSqlQuery* Routequery= new QSqlQuery (Connector->Connector);
+
+            if (!Routequery->exec(QString("SELECT * FROM ruta")))
+            {
+                QMessageBox::critical(0, QObject::tr("Error"),
+                "No se ha podido recuperar la lista de rutas. "
+                "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ2\n");
+            }
+            else
+            {
+                Routequery->first();
+
+                // Guardemos el ID de la primera ruta
+                int FirstRoute= Routequery->value(2).toInt();
+
+                // Ahora con los datos obtenidos del SELECT, vamos a llenar la interfaz
+
+                // Llenamos la lista de rutas
+                do
+                {
+                    QString NombreRuta= QString(Routequery->value(0).toString()) + QString(" - ")
+                            +QString(Routequery->value(1).toString());
+                    ui->RouteList->addItem(NombreRuta);
+
+                    // Y el "vector" de rutas
+                    RouteLocalList[NombreRuta]= Routequery->value(2).toInt();
+
+                }
+                while (Routequery->next());
+
+                // Ahora llenamos la lista de paradas segun la primera ruta
+                QSqlQuery* Stopquery= new QSqlQuery (Connector->Connector);
+
+                if (!Stopquery->exec(QString("SELECT * FROM parada WHERE ruta_id= %1").arg(FirstRoute)))
+                {
+                    QMessageBox::critical(0, QObject::tr("Error"),
+                    "No se ha podido recuperar la lista de paradas. "
+                    "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ3\n");
+                }
+                else
+                {
+                    Stopquery->first();
+
+                    // Ahora con los datos obtenidos del SELECT, vamos a llenar la interfaz
+
+                    // Llenamos la lista de paradas
+                    do
+                    {
+                        ui->RouteStopsList->addItem(QString(Stopquery->value(1).toString()));
+                    }
+                    while (Stopquery->next());
+                }
+            }
         }
 
+        Connector->EndConnection();
     }
+}
+
+/* Las siguientes funciones sirven para actualizar la interfaz segun el usuario
+ * lo requiera. Otro transportista, otra ruta, etc. */
+void MainWindow::UpdateTransportistaC(QString cedula)
+{
+    int id= cedula.toInt();
+
+    // Vamos a crear una conexion para poder traer ciertos datos
+    if (!Connector->RequestConnection())
+    {
+        QMessageBox::critical(0, "Error",
+        "No se ha podido recuperar la lista de transportistas. "
+        "Revise el estado de la Base de Datos.\n\nMensaje: Error DBA1\n"+
+        Connector->getLastError().text());
+    }
+    else
+    {
+        QSqlQuery* Driverquery= new QSqlQuery (Connector->Connector);
+
+        if (!Driverquery->exec(QString("SELECT * FROM transportista WHERE cedula=%1").arg(id)))
+        {
+            QMessageBox::critical(0, QObject::tr("Error"),
+            "No se ha podido recuperar la lista de transportistas. "
+            "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ1\n");
+        }
+        else
+        {
+            Driverquery->first();
+
+            if (Driverquery->isValid())
+            {
+                ui->Nombre1Input->setText(Driverquery->value(0).toString());
+                ui->Nombre2Input->setText(Driverquery->value(1).toString());
+                ui->Apellido2Input->setText(Driverquery->value(3).toString());
+                ui->LastNameList->setCurrentIndex(ui->LastNameList->findText(Driverquery->value(2).toString()));
+            }
+            else
+            {
+                ui->Nombre1Input->setText("");
+                ui->Nombre2Input->setText("");
+                ui->Apellido2Input->setText("");
+                ui->LastNameList->setCurrentIndex(0);
+            }
+        }
+    }
+}
+
+void MainWindow::UpdateTransportistaA(QString apellido)
+{
+    if (ui->LastNameList->currentIndex()==0) // "Buscar por apellido"
+    {
+        ui->Nombre1Input->setText("");
+        ui->Nombre2Input->setText("");
+        ui->LastNameList->setCurrentIndex(0);
+        ui->Apellido2Input->setText("");
+        ui->CedulaInput->setText("");
+    }
+    else
+    {
+        // Vamos a crear una conexion para poder traer ciertos datos
+        if (!Connector->RequestConnection())
+        {
+            QMessageBox::critical(0, "Error",
+            "No se ha podido recuperar la lista de transportistas. "
+            "Revise el estado de la Base de Datos.\n\nMensaje: Error DBA1\n"+
+            Connector->getLastError().text());
+        }
+        else
+        {
+            QSqlQuery* Driverquery= new QSqlQuery (Connector->Connector);
+
+            if (!Driverquery->exec(QString("SELECT * FROM transportista WHERE primer_apellido=") +
+                                   QString("'")+apellido+QString("'")))
+            {
+                QMessageBox::critical(0, QObject::tr("Error"),
+                "No se ha podido recuperar la lista de transportistas. "
+                "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ1\n");
+            }
+            else
+            {
+                Driverquery->first();
+
+                if (Driverquery->isValid())
+                {
+                    ui->Nombre1Input->setText(Driverquery->value(0).toString());
+                    ui->Nombre2Input->setText(Driverquery->value(1).toString());
+                    ui->Apellido2Input->setText(Driverquery->value(3).toString());
+                    ui->CedulaInput->setText(Driverquery->value(5).toString());
+                }
+            }
+        }
+    }
+}
+
+void MainWindow::UpdateRoute(QString id)
+{
+    // Vamos a crear una conexion para poder traer ciertos datos
+    if (!Connector->RequestConnection())
+    {
+        QMessageBox::critical(0, "Error",
+        "No se ha podido recuperar la lista de rutas. "
+        "Revise el estado de la Base de Datos.\n\nMensaje: Error DBA1\n"+
+        Connector->getLastError().text());
+    }
+    else
+    {
+        // Vamos a tomar el ID de la ruta que han seleccionado
+        int RouteID= RouteLocalList.value(id);
+
+        QSqlQuery* Stopquery= new QSqlQuery (Connector->Connector);
+
+        if (!Stopquery->exec(QString("SELECT * FROM parada WHERE ruta_id= %1").arg(RouteID)))
+        {
+            QMessageBox::critical(0, QObject::tr("Error"),
+            "No se ha podido recuperar la lista de paradas. "
+            "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ3\n");
+        }
+        else
+        {
+            Stopquery->first();
+            ui->RouteStopsList->clear();
+
+            // Ahora con los datos obtenidos del SELECT, vamos a llenar la interfaz
+
+            // Llenamos la lista de paradas
+            if (Stopquery->isValid())
+            {
+                do
+                {
+                    ui->RouteStopsList->addItem(QString(Stopquery->value(1).toString()));
+                }
+                while (Stopquery->next());
+            }
+        }
+    }
+}
+
+/* Esta es la funcion mas importante del programa, se encargara de tomar los
+ * codigos almacenados en el lector y presentarlos en la interfaz, permitiendo
+ * que el usuario pueda trabajar con esta informacion para subirla a la BD */
+void MainWindow::ReadCodes()
+{
+    int OpResult= DevConnector->Reader->cspReadData();
+
+    if (OpResult> STATUS_OK)
+    {
+        qDebug("Ola ke ase\n");
+        for (int i=0; i<OpResult; i++)
+        {
+            ui->CodesTable->insertRow(ui->CodesTable->rowCount());
+            ui->CodesTable->setRowHeight(ui->CodesTable->rowCount()-1, 20);
+
+            qDebug("It: %d\n", i);
+            QTableWidgetItem *Codigo;
+            char Code[80];
+
+            // Recuperamos el codigo en "Code"
+            DevConnector->Reader->cspGetBarcode(Code, i, sizeof(Code));
+
+            Codigo= new QTableWidgetItem (QString(Code));
+            Codigo->setFlags(Codigo->flags() ^ Qt::ItemIsEditable); // No editable
+
+            ui->CodesTable->setItem(ui->CodesTable->rowCount()-1, 0, Codigo);
+        }
+    }
+}
+
+/* Esto servira para traernos los codigos del lector */
+void MainWindow::on_ReadCodesButton_clicked()
+{
+    ReadCodes();
 }

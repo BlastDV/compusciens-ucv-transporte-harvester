@@ -20,6 +20,12 @@ public:
 
     void InitObject(); // Esta clase debe llamarse cada vez que se muestre esto
 
+    /* Aunque probablemente esta no sea la mejor solucion, poner este objeto
+     * como publico facilita mucho las operaciones desde MainWindow. Por los
+     * momentos nos iremos por esta via */
+    Csp32Bridge* Reader;
+
+
 private slots:
     void BloquearComandos();
     void DesbloquearComandos();
@@ -35,10 +41,12 @@ private slots:
     void on_RestoreButton_clicked();
     void on_CancelButton_clicked();
 
+    void on_AcceptButton_clicked();
+
 private:
     Ui::DeviceConnector *ui;
 
-    Csp32Bridge* Reader;
+
     LogMaster* Logger;
     QString UserID;
 
@@ -48,6 +56,8 @@ signals:
     /* Esto informa a la clase padre cuando
      * el usuario presione Cancelar*/
     void CancelPressed();
+    void AcceptPressed(); // El usuario guardo los cambios
+
     // Esto permite a appcontroller registrar las acciones del usuario
     void RegistrarEvento(QString);
 };

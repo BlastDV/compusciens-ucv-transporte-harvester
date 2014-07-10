@@ -50,6 +50,8 @@ CREATE TABLE `parada` (
 
 /*Data for the table `parada` */
 
+insert  into `parada`(`id`,`nombre`,`descripcion`,`ruta_id`) values (10001,'Casalta II','Bloque 5, Casalta II',2019),(10002,'Propatria','Estación de Metro Propatria',2019),(10003,'Av. Sucre','Estacion de Metro Gato Negro',2019),(10004,'Av. Urdaneta','Centro Comercial Galerías Ávila',2019),(10005,'UCV_CENTRAL','UCV Sede principal',2019),(20001,'El Junquito','Km. 4, Coco Frío',1047),(20002,'El Amparo','Modulo Policial El Amparo',1047),(20003,'Plaza Catia','Plaza Catia',1047),(30001,'UCV_CENTRAL','UCV Sede principal',1045),(30002,'Petare','Estacion de Metro Petare',1045),(30003,'Guarenas','Guarenas',1045),(30004,'Guatire','Guatire',1045);
+
 /*Table structure for table `pasajero` */
 
 DROP TABLE IF EXISTS `pasajero`;
@@ -92,6 +94,8 @@ CREATE TABLE `ruta` (
 
 /*Data for the table `ruta` */
 
+insert  into `ruta`(`origen`,`destino`,`id`) values ('UCV_CENTRAL','Guatire',1045),('UCV_CENTRAL','Guarenas',1046),('El Junquito','UCV_CENTRAL',1047),('UCV_CENTRAL','Los Teques',1050),('UCV_CENTRAL','La Guaira',1053),('Petare','UCV_CENTRAL',1061),('UCV_Veterinaria','UCV_CENTRAL',1123),('Casalta II','UCV_CENTRAL',2019),('UCV_CENTRAL','El Junquito',2022);
+
 /*Table structure for table `transportista` */
 
 DROP TABLE IF EXISTS `transportista`;
@@ -108,7 +112,7 @@ CREATE TABLE `transportista` (
 
 /*Data for the table `transportista` */
 
-insert  into `transportista`(`primer_nombre`,`segundo_nombre`,`primer_apellido`,`segundo_apellido`,`fecha_nac`,`cedula`) values ('Ricardo','Antonio','Pereira','Mora','1976-12-07',14396554),('Alberto','José','Maneiro','Fuentes','1980-04-30',16475014),('Ruben','Yaimeru','Maza','Marquez','1993-02-10',20875996),('Pedro','Alejandro','Fernandes','Olarte','1993-06-29',21536559);
+insert  into `transportista`(`primer_nombre`,`segundo_nombre`,`primer_apellido`,`segundo_apellido`,`fecha_nac`,`cedula`) values ('Ernesto','Saul','Camacho','Montilla','1971-07-07',13286741),('Ricardo','Antonio','Pereira','Mora','1976-12-07',14396554),('Alberto','José','Maneiro','Fuentes','1980-04-30',16475014),('Antonio','José','Rivas','Beltrand','1989-09-09',16589741),('Ruben','Yaimeru','Maza','Marquez','1993-02-10',20875996),('Pedro','Alejandro','Fernandes','Olarte','1993-06-29',21536559);
 
 /*Table structure for table `usuario` */
 

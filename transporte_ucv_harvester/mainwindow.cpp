@@ -90,6 +90,7 @@ void MainWindow::ReportarMensaje(QString mensaje)
 void MainWindow::LoadInitialData()
 {
     ui->CodesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    ui->ReadingProgressBar->hide();
 
     ui->centralWidget->setStyleSheet("");
     ui->RouteDate->setDate(QDate::currentDate());
@@ -325,20 +326,42 @@ void MainWindow::UpdateRoute(QString id)
 
 /* Esta es la funcion mas importante del programa, se encargara de tomar los
  * codigos almacenados en el lector y presentarlos en la interfaz, permitiendo
- * que el usuario pueda trabajar con esta informacion para subirla a la BD */
+ * que el usuario pueda trabajar con esta informacion para subirla a la BD. En
+ * primer lugar, debe elegirse un transportista. Seguidamente se debe leer desde
+ * el dispositivo, lo que producira una creaccion de pestañas por cada viaje realizado.
+ * Expresando el tipo de usuario y su cedula por viaje. Finalmente, debe especificarse
+ * la ruta para cada viaje.
+ */
 void MainWindow::ReadCodes()
 {
+    // Preparamos y mostramos la barra de carga
+    ui->ReadingProgressBar->setValue(0);
+    ui->ReadingProgressBar->show();
+
+    // Bloqueamos el boton de Leer para evitar errores de comunicacion
+    ui->ReadCodesButton->setEnabled(false);
+
+    // Informamos al usuario sobre lo que se esta ejecutando actualmente
+    ui->InfoText->clear();
+    ui->InfoText->appendPlainText("Leyendo...");
+
     int OpResult= DevConnector->Reader->cspReadData();
 
     if (OpResult> STATUS_OK)
     {
-        qDebug("Ola ke ase\n");
+        // Informamos
+        ui->InfoText->appendPlainText(QString("%1 códigos recuperados").arg(OpResult));
+
+        /* Para evitar generar una sobrecarga excesiva con la barra de carga,
+         * solo la actualizaremos cada 10% de progreso. El 10% debe ser calculado
+         * dinamicamente */
+        int Cuota= OpResult/10;
+
         for (int i=0; i<OpResult; i++)
         {
             ui->CodesTable->insertRow(ui->CodesTable->rowCount());
             ui->CodesTable->setRowHeight(ui->CodesTable->rowCount()-1, 20);
 
-            qDebug("It: %d\n", i);
             QTableWidgetItem *Codigo;
             char Code[80];
 
@@ -349,8 +372,23 @@ void MainWindow::ReadCodes()
             Codigo->setFlags(Codigo->flags() ^ Qt::ItemIsEditable); // No editable
 
             ui->CodesTable->setItem(ui->CodesTable->rowCount()-1, 0, Codigo);
+
+            // 10% progresado?
+            if (i % Cuota==0)
+            {
+                ui->ReadingProgressBar->setValue(ui->ReadingProgressBar->value()+10);
+            }
         }
     }
+    else
+    {
+        // Informamos
+        ui->InfoText->appendPlainText("No se han podido recuperar los códigos. ¿El lector está conectado?");
+    }
+
+    // Finalmente, rehabilitamos la interfaz y escondemos la barra de carga
+    ui->ReadingProgressBar->hide();
+    ui->ReadCodesButton->setEnabled(true);
 }
 
 /* Esto servira para traernos los codigos del lector */

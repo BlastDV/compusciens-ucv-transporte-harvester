@@ -51,7 +51,7 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_9">
        <property name="leftMargin">
         <number>1</number>
        </property>
@@ -65,28 +65,28 @@
         <number>1</number>
        </property>
        <item>
-        <widget class="QFrame" name="LeftFrame">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
+        <widget class="QFrame" name="TopFrame">
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="leftMargin">
+           <number>9</number>
+          </property>
+          <property name="rightMargin">
+           <number>9</number>
+          </property>
           <item>
-           <widget class="QGroupBox" name="DriverFrame">
+           <widget class="QGroupBox" name="LeftCenterFrame">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -103,8 +103,14 @@
              <bool>false</bool>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
+             <property name="topMargin">
+              <number>1</number>
+             </property>
+             <property name="bottomMargin">
+              <number>1</number>
+             </property>
              <item>
-              <widget class="QFrame" name="frame">
+              <widget class="QFrame" name="DriverSearchFrame">
                <property name="layoutDirection">
                 <enum>Qt::LeftToRight</enum>
                </property>
@@ -249,75 +255,202 @@
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="RouteFrame">
+           <widget class="QGroupBox" name="RightCenterFrame">
             <property name="title">
-             <string>Datos de la Ruta</string>
+             <string>Códigos Escaneados</string>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_5">
+            <layout class="QVBoxLayout" name="verticalLayout_7">
              <item>
-              <widget class="QFrame" name="RouteDataFrame">
-               <property name="frameShape">
-                <enum>QFrame::StyledPanel</enum>
+              <widget class="QTabWidget" name="TripWindow">
+               <property name="currentIndex">
+                <number>0</number>
                </property>
-               <property name="frameShadow">
-                <enum>QFrame::Raised</enum>
+               <widget class="QWidget" name="Trip1">
+                <attribute name="title">
+                 <string>Viaje 1</string>
+                </attribute>
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <widget class="QTableWidget" name="CodesTable">
+                   <property name="minimumSize">
+                    <size>
+                     <width>256</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Plain</enum>
+                   </property>
+                   <column>
+                    <property name="text">
+                     <string>En el dispositivo</string>
+                    </property>
+                   </column>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QGroupBox" name="RouteFrame">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="title">
+                    <string>Datos de la Ruta</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_5">
+                    <property name="leftMargin">
+                     <number>1</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>1</number>
+                    </property>
+                    <item>
+                     <widget class="QFrame" name="RouteDataFrame">
+                      <property name="frameShape">
+                       <enum>QFrame::StyledPanel</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QFormLayout" name="formLayout_2">
+                       <property name="leftMargin">
+                        <number>9</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>9</number>
+                       </property>
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="rutaLabel">
+                         <property name="text">
+                          <string>Ruta:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QLabel" name="paradasLabel">
+                         <property name="text">
+                          <string>Paradas:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="0">
+                        <widget class="QLabel" name="hsalidaLabel">
+                         <property name="text">
+                          <string>Hora de Salida:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="0">
+                        <widget class="QLabel" name="hllegadaLabel">
+                         <property name="text">
+                          <string>Hora de Llegada:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="4" column="0">
+                        <widget class="QLabel" name="fechaLabel">
+                         <property name="text">
+                          <string>Fecha:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QComboBox" name="RouteList"/>
+                       </item>
+                       <item row="1" column="1">
+                        <widget class="QComboBox" name="RouteStopsList"/>
+                       </item>
+                       <item row="2" column="1">
+                        <widget class="QTimeEdit" name="RouteHSalida">
+                         <property name="calendarPopup">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="1">
+                        <widget class="QTimeEdit" name="RouteHLlegada"/>
+                       </item>
+                       <item row="4" column="1">
+                        <widget class="QDateEdit" name="RouteDate">
+                         <property name="calendarPopup">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="tab_2">
+                <attribute name="title">
+                 <string>Tab 2</string>
+                </attribute>
+               </widget>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="ReadCodesButton">
+               <property name="text">
+                <string>Leer Códigos</string>
                </property>
-               <layout class="QFormLayout" name="formLayout_2">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="rutaLabel">
-                  <property name="text">
-                   <string>Ruta:</string>
+              </widget>
+             </item>
+             <item>
+              <widget class="QProgressBar" name="ReadingProgressBar">
+               <property name="value">
+                <number>100</number>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="textVisible">
+                <bool>false</bool>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="textDirection">
+                <enum>QProgressBar::TopToBottom</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="InfoFrame">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="title">
+                <string>Información</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_8">
+                <item>
+                 <widget class="QPlainTextEdit" name="InfoText">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>50</height>
+                   </size>
                   </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="paradasLabel">
-                  <property name="text">
-                   <string>Paradas:</string>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>50</height>
+                   </size>
                   </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="hsalidaLabel">
-                  <property name="text">
-                   <string>Hora de Salida:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="0">
-                 <widget class="QLabel" name="hllegadaLabel">
-                  <property name="text">
-                   <string>Hora de Llegada:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="4" column="0">
-                 <widget class="QLabel" name="fechaLabel">
-                  <property name="text">
-                   <string>Fecha:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QComboBox" name="RouteList"/>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QComboBox" name="RouteStopsList"/>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QTimeEdit" name="RouteHSalida">
-                  <property name="calendarPopup">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="1">
-                 <widget class="QTimeEdit" name="RouteHLlegada"/>
-                </item>
-                <item row="4" column="1">
-                 <widget class="QDateEdit" name="RouteDate">
-                  <property name="calendarPopup">
-                   <bool>true</bool>
+                  <property name="frameShadow">
+                   <enum>QFrame::Sunken</enum>
                   </property>
                  </widget>
                 </item>
@@ -331,84 +464,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QFrame" name="CenterFrame">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <widget class="QGroupBox" name="CodesFrame">
-            <property name="title">
-             <string>Lista de Codigos Escaneados</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_7">
-             <item>
-              <widget class="QTableWidget" name="CodesTable">
-               <property name="frameShape">
-                <enum>QFrame::StyledPanel</enum>
-               </property>
-               <property name="frameShadow">
-                <enum>QFrame::Plain</enum>
-               </property>
-               <column>
-                <property name="text">
-                 <string>- En el dispositivo -</string>
-                </property>
-               </column>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="ReadCodesButton">
-               <property name="text">
-                <string>Leer Códigos</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="InfoFrame">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="title">
-             <string>Información</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_8">
-             <item>
-              <widget class="QPlainTextEdit" name="InfoText">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>100</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>100</height>
-                </size>
-               </property>
-               <property name="frameShadow">
-                <enum>QFrame::Sunken</enum>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QFrame" name="RightFrame">
+        <widget class="QFrame" name="BottomFrame">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -421,60 +477,56 @@
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="leftMargin">
-           <number>1</number>
+           <number>9</number>
           </property>
           <property name="topMargin">
-           <number>9</number>
-          </property>
-          <property name="rightMargin">
            <number>1</number>
           </property>
-          <property name="bottomMargin">
+          <property name="rightMargin">
            <number>9</number>
           </property>
+          <property name="bottomMargin">
+           <number>1</number>
+          </property>
           <item>
-           <widget class="QPushButton" name="pushButton">
-            <property name="minimumSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
+           <widget class="QGroupBox" name="groupBox">
+            <property name="title">
+             <string>Acciones</string>
             </property>
-            <property name="maximumSize">
-             <size>
-              <width>160000</width>
-              <height>160000</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Subir Datos</string>
-            </property>
-            <property name="icon">
-             <iconset resource="icons.qrc">
-              <normaloff>:/icons/generic_button.png</normaloff>:/icons/generic_button.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="QPushButton" name="pushButton">
+               <property name="minimumSize">
+                <size>
+                 <width>32</width>
+                 <height>32</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>160000</width>
+                 <height>160000</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Subir Datos</string>
+               </property>
+               <property name="icon">
+                <iconset resource="icons.qrc">
+                 <normaloff>:/icons/generic_button.png</normaloff>:/icons/generic_button.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </widget>

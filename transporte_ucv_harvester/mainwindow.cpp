@@ -93,6 +93,8 @@ void MainWindow::LoadInitialData()
     ui->AllCodesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->ReadingProgressBar->hide();
 
+    ui->RightCenterFrame->setEnabled(false);
+
     ui->centralWidget->setStyleSheet("");
     ui->RouteDate->setDate(QDate::currentDate());
     ui->RouteHLlegada->setTime(QTime::currentTime());

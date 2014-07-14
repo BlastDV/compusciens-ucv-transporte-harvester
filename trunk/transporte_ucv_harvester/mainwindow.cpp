@@ -90,6 +90,7 @@ void MainWindow::ReportarMensaje(QString mensaje)
 void MainWindow::LoadInitialData()
 {
     ui->CodesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    ui->AllCodesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->ReadingProgressBar->hide();
 
     ui->centralWidget->setStyleSheet("");
@@ -337,6 +338,9 @@ void MainWindow::ReadCodes()
     // Preparamos y mostramos la barra de carga
     ui->ReadingProgressBar->setValue(0);
     ui->ReadingProgressBar->show();
+
+    QPushButton* test= new QPushButton ("Probando", this);
+    ui->TripWindow->insertTab(ui->TripWindow->count()-1, test, "ola ke ase");
 
     // Bloqueamos el boton de Leer para evitar errores de comunicacion
     ui->ReadCodesButton->setEnabled(false);

@@ -263,7 +263,7 @@
              <item>
               <widget class="QTabWidget" name="TripWindow">
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="Trip1">
                 <attribute name="title">
@@ -390,10 +390,21 @@
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="tab_2">
+               <widget class="QWidget" name="AllTab">
                 <attribute name="title">
-                 <string>Tab 2</string>
+                 <string>Todos</string>
                 </attribute>
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QTableWidget" name="AllCodesTable">
+                   <column>
+                    <property name="text">
+                     <string>En el dispositivo</string>
+                    </property>
+                   </column>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </widget>
              </item>

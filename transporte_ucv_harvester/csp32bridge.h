@@ -207,6 +207,10 @@ public:
     int nCspRetryCount;
 
 signals:
+    /* Esta señal permitira informar a la clase padre que
+     * el lector se encuentra leyendo actualmente
+     */
+    void ReadingCodes();
 
 public slots:
 

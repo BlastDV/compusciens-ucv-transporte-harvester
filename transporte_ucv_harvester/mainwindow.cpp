@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
      * el programa. */
     DevConnector= new DeviceConnector();
     connect(DevConnector, SIGNAL(RegistrarEvento(QString)), this, SLOT(ReportarMensaje(QString)));
+    connect(DevConnector, SIGNAL(ReadingCodes()), this, SLOT(GetReadingUpdate()));
 
     ConnectionName= "MainWindow";
     Connector= new DBConnector(this);
@@ -93,7 +94,7 @@ void MainWindow::LoadInitialData()
     ui->AllCodesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->ReadingProgressBar->hide();
 
-    ui->RightCenterFrame->setEnabled(false);
+    //ui->RightCenterFrame->setEnabled(false);
 
     ui->centralWidget->setStyleSheet("");
     ui->RouteDate->setDate(QDate::currentDate());
@@ -358,11 +359,6 @@ void MainWindow::ReadCodes()
         // Informamos
         ui->InfoText->appendPlainText(QString("%1 códigos recuperados").arg(OpResult));
 
-        /* Para evitar generar una sobrecarga excesiva con la barra de carga,
-         * solo la actualizaremos cada 10% de progreso. El 10% debe ser calculado
-         * dinamicamente */
-        int Cuota= OpResult/10;
-
         for (int i=0; i<OpResult; i++)
         {
             ui->CodesTable->insertRow(ui->CodesTable->rowCount());
@@ -378,12 +374,6 @@ void MainWindow::ReadCodes()
             Codigo->setFlags(Codigo->flags() ^ Qt::ItemIsEditable); // No editable
 
             ui->CodesTable->setItem(ui->CodesTable->rowCount()-1, 0, Codigo);
-
-            // 10% progresado?
-            if (i % Cuota==0)
-            {
-                ui->ReadingProgressBar->setValue(ui->ReadingProgressBar->value()+10);
-            }
         }
     }
     else
@@ -393,12 +383,20 @@ void MainWindow::ReadCodes()
     }
 
     // Finalmente, rehabilitamos la interfaz y escondemos la barra de carga
+    ui->ReadingProgressBar->setValue(100);
     ui->ReadingProgressBar->hide();
     ui->ReadCodesButton->setEnabled(true);
+}
+
+// Esto recibe la actualizacion del proceso de lectura de DeviceConnector
+void MainWindow::GetReadingUpdate()
+{
+    if (ui->ReadingProgressBar->value()<90)
+        ui->ReadingProgressBar->setValue(ui->ReadingProgressBar->value()+5);
 }
 
 /* Esto servira para traernos los codigos del lector */
 void MainWindow::on_ReadCodesButton_clicked()
 {
-    ReadCodes();
+        ReadCodes();
 }

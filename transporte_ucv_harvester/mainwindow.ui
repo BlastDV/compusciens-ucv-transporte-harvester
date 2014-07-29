@@ -239,6 +239,13 @@
               </widget>
              </item>
              <item>
+              <widget class="QPushButton" name="FindTransportistButton">
+               <property name="text">
+                <string>Determinar automáticamente</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <spacer name="verticalSpacer_2">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>

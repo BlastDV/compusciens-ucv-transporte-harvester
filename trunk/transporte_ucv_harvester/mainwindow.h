@@ -53,6 +53,9 @@ private slots:
 
     // Esta funcion es la que mas nos interesa
     void ReadCodes();
+    // Esta recibe la actualizacion de DeviceConnector y actualiza
+    // la barra de progreso de la interfaz
+    void GetReadingUpdate();
 
     void on_ReadCodesButton_clicked();
 

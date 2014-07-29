@@ -407,17 +407,29 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="ReadCodesButton">
-               <property name="text">
-                <string>Leer Códigos</string>
+              <widget class="QFrame" name="CodesButtonsFrame">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
                </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="BackToDriverButton">
-               <property name="text">
-                <string>Cambiar Transportista</string>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
                </property>
+               <layout class="QVBoxLayout" name="verticalLayout_2">
+                <item>
+                 <widget class="QPushButton" name="ReadCodesButton">
+                  <property name="text">
+                   <string>Leer Códigos</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="BackToDriverButton">
+                  <property name="text">
+                   <string>Cambiar Transportista</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
              <item>

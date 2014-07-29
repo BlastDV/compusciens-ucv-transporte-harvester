@@ -337,14 +337,14 @@ void MainWindow::UpdateRoute(QString id)
  * Expresando el tipo de usuario y su cedula por viaje. Finalmente, debe especificarse
  * la ruta para cada viaje.
  */
-void MainWindow::ReadCodes()
+void MainWindow::ReadCodes(bool automatico)
 {
     // Preparamos y mostramos la barra de carga
     ui->ReadingProgressBar->setValue(0);
     ui->ReadingProgressBar->show();
 
-    // Bloqueamos el boton de Leer para evitar errores de comunicacion
-    ui->ReadCodesButton->setEnabled(false);
+    // Bloqueamos los botones para evitar errores de comunicacion
+    ui->CodesButtonsFrame->setEnabled(false);
 
     // Informamos al usuario sobre lo que se esta ejecutando actualmente
     ui->InfoText->clear();
@@ -367,9 +367,15 @@ void MainWindow::ReadCodes()
         Header->setText("En el dispositivo");
         AllCodesTable->setHorizontalHeaderItem(0, Header);
 
-        // Ahora creamos un layout e insertamos la tabla ahi
+        // Crearemos un texto informativo
+        QLabel* AllCodesInfo= new QLabel;
+        AllCodesInfo->setText("Esta es la lista de todos los códigos presentes en el dispositivo.");
+        AllCodesInfo->setWordWrap(true);
+
+        // Ahora creamos un layout e insertamos la tabla y el texto ahi
         QHBoxLayout *HLayout = new QHBoxLayout;
         HLayout->addWidget(AllCodesTable);
+        HLayout->addWidget(AllCodesInfo);
 
         // Creamos un nuevo Widget que insertaremos como nueva pestaña
         // Y le ponemos como Layout al que hemos creado arriba
@@ -395,7 +401,23 @@ void MainWindow::ReadCodes()
 
             // Y lo insertamos en la tabla de todos los codigos
             AllCodesTable->setItem(AllCodesTable->rowCount()-1, 0, Codigo);
+
+            // Finalmente insertamos el codigo en la lista global
+            CodesList.append(QString(Code));
         }
+
+        /* Llegados a este punto, toca crear la lista de pasajeros por viajes de acuerdo
+         * al analisis de la lista de codigos. El algoritmo tendra dos versiones: aquella
+         * en la que el usuario ha especificado explicitamente cual es el transportista activo
+         * y aquella en la que ha decidido que el sistema lo determine automaticamente. Para este
+         * ultimo caso, si se detecta mas de un transportista en la lista, el sistema
+         * preguntara al usuario cual de ellos es el actual.
+         */
+        if (automatico)
+            CalculateTrips();
+        else
+            CalculateTrips(ui->CedulaInput->text());
+
     }
     else
     {
@@ -406,7 +428,18 @@ void MainWindow::ReadCodes()
     // Finalmente, rehabilitamos la interfaz y escondemos la barra de carga
     ui->ReadingProgressBar->setValue(100);
     ui->ReadingProgressBar->hide();
-    ui->ReadCodesButton->setEnabled(true);
+    ui->CodesButtonsFrame->setEnabled(true);
+}
+
+// Funciones de apoyo para ReadCodes()
+void MainWindow::CalculateTrips()
+{
+
+}
+
+void MainWindow::CalculateTrips(QString cedula)
+{
+    qDebug(cedula.toStdString().c_str());
 }
 
 // Esto recibe la actualizacion del proceso de lectura de DeviceConnector
@@ -419,7 +452,7 @@ void MainWindow::GetReadingUpdate()
 /* Esto servira para traernos los codigos del lector */
 void MainWindow::on_ReadCodesButton_clicked()
 {
-        ReadCodes();
+        ReadCodes(false);
 }
 
 /* Esto se ejecutara cuando el usuario haya elegido al transportista correspondiente

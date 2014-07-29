@@ -33,8 +33,11 @@ private:
     DeviceConnector* DevConnector; // Para la ventana de conexion con el lector y la comunicacion
                                     // con el mismo
     QMap <QString, int> RouteLocalList; // Esto nos permitira disminuir la cantidad de
-
     // consultas a la BD al momento de actualizar la lista de paradas dinamicamente
+
+    // Esta lista tendra todos los codigos recuperados del dispositivo. Permitira que las operaciones
+    // que dependan de los mismos sean mas rapidas
+    QList <QString> CodesList;
 
     void LoadInitialData(); // Para la ventana de subida de datos inicial
 
@@ -52,7 +55,11 @@ private slots:
     void UpdateRoute(QString id);
 
     // Esta funcion es la que mas nos interesa
-    void ReadCodes();
+    void ReadCodes(bool automatico);
+    // A su vez se apoyara en esta
+    void CalculateTrips (QString cedula);
+    void CalculateTrips ();
+
     // Esta recibe la actualizacion de DeviceConnector y actualiza
     // la barra de progreso de la interfaz
     void GetReadingUpdate();

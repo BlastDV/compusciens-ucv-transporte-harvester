@@ -80,7 +80,7 @@
            <number>9</number>
           </property>
           <item>
-           <widget class="QGroupBox" name="LeftCenterFrame">
+           <widget class="QGroupBox" name="DriversFrame">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -246,6 +246,13 @@
               </widget>
              </item>
              <item>
+              <widget class="QPushButton" name="DriverReadyButton">
+               <property name="text">
+                <string>Listo</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <spacer name="verticalSpacer_2">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
@@ -262,7 +269,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="RightCenterFrame">
+           <widget class="QGroupBox" name="CodesFrame">
             <property name="title">
              <string>Códigos Escaneados</string>
             </property>
@@ -270,7 +277,7 @@
              <item>
               <widget class="QTabWidget" name="TripWindow">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="Trip1">
                 <attribute name="title">
@@ -397,28 +404,19 @@
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="AllTab">
-                <attribute name="title">
-                 <string>Todos</string>
-                </attribute>
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
-                 <item>
-                  <widget class="QTableWidget" name="AllCodesTable">
-                   <column>
-                    <property name="text">
-                     <string>En el dispositivo</string>
-                    </property>
-                   </column>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
               </widget>
              </item>
              <item>
               <widget class="QPushButton" name="ReadCodesButton">
                <property name="text">
                 <string>Leer Códigos</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="BackToDriverButton">
+               <property name="text">
+                <string>Cambiar Transportista</string>
                </property>
               </widget>
              </item>

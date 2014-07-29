@@ -91,10 +91,11 @@ void MainWindow::ReportarMensaje(QString mensaje)
 void MainWindow::LoadInitialData()
 {
     ui->CodesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-    ui->AllCodesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    //ui->AllCodesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->ReadingProgressBar->hide();
 
-    //ui->RightCenterFrame->setEnabled(false);
+    // Bloqueamos la seccion de codigos
+    ui->CodesFrame->setEnabled(false);
 
     ui->centralWidget->setStyleSheet("");
     ui->RouteDate->setDate(QDate::currentDate());
@@ -342,9 +343,6 @@ void MainWindow::ReadCodes()
     ui->ReadingProgressBar->setValue(0);
     ui->ReadingProgressBar->show();
 
-    QPushButton* test= new QPushButton ("Probando", this);
-    ui->TripWindow->insertTab(ui->TripWindow->count()-1, test, "ola ke ase");
-
     // Bloqueamos el boton de Leer para evitar errores de comunicacion
     ui->ReadCodesButton->setEnabled(false);
 
@@ -359,10 +357,32 @@ void MainWindow::ReadCodes()
         // Informamos
         ui->InfoText->appendPlainText(QString("%1 códigos recuperados").arg(OpResult));
 
+        /* Vamos a crear una pestaña que muestre todos los codigos leidos en una tabla */
+        /* Primero creemos la tabla*/
+        QTableWidget* AllCodesTable= new QTableWidget(0, 1, this);
+        AllCodesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+
+        // Luego añadimos la columna "En el dispositivo"
+        QTableWidgetItem *Header = new QTableWidgetItem();
+        Header->setText("En el dispositivo");
+        AllCodesTable->setHorizontalHeaderItem(0, Header);
+
+        // Ahora creamos un layout e insertamos la tabla ahi
+        QHBoxLayout *HLayout = new QHBoxLayout;
+        HLayout->addWidget(AllCodesTable);
+
+        // Creamos un nuevo Widget que insertaremos como nueva pestaña
+        // Y le ponemos como Layout al que hemos creado arriba
+        QWidget* AllCodesTab= new QWidget;
+        AllCodesTab->setLayout(HLayout);
+
+        // Insertamos el widget como nueva pestaña
+        ui->TripWindow->insertTab(0, AllCodesTab, "Todos los Códigos");
+
         for (int i=0; i<OpResult; i++)
         {
-            ui->CodesTable->insertRow(ui->CodesTable->rowCount());
-            ui->CodesTable->setRowHeight(ui->CodesTable->rowCount()-1, 20);
+            AllCodesTable->insertRow(AllCodesTable->rowCount());
+            AllCodesTable->setRowHeight(AllCodesTable->rowCount()-1, 20);
 
             QTableWidgetItem *Codigo;
             char Code[80];
@@ -373,7 +393,8 @@ void MainWindow::ReadCodes()
             Codigo= new QTableWidgetItem (QString(Code));
             Codigo->setFlags(Codigo->flags() ^ Qt::ItemIsEditable); // No editable
 
-            ui->CodesTable->setItem(ui->CodesTable->rowCount()-1, 0, Codigo);
+            // Y lo insertamos en la tabla de todos los codigos
+            AllCodesTable->setItem(AllCodesTable->rowCount()-1, 0, Codigo);
         }
     }
     else
@@ -399,4 +420,28 @@ void MainWindow::GetReadingUpdate()
 void MainWindow::on_ReadCodesButton_clicked()
 {
         ReadCodes();
+}
+
+/* Esto se ejecutara cuando el usuario haya elegido al transportista correspondiente
+ * al lector actual */
+void MainWindow::on_DriverReadyButton_clicked()
+{
+    // Bloqueamos la seccion de transportistas
+    ui->DriversFrame->setEnabled(false);
+
+    // Y desbloqueamos la de codigos
+    ui->CodesFrame->setEnabled(true);
+}
+
+
+void MainWindow::on_BackToDriverButton_clicked()
+{
+    // Bloqueamos la seccion de codigos
+    ui->CodesFrame->setEnabled(false);
+
+    // La limpiamos
+    ui->TripWindow->clear();
+
+    // Y desbloqueamos la de transportista
+    ui->DriversFrame->setEnabled(true);
 }

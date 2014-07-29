@@ -59,6 +59,10 @@ private slots:
 
     void on_ReadCodesButton_clicked();
 
+    void on_DriverReadyButton_clicked();
+
+    void on_BackToDriverButton_clicked();
+
 signals:
     void CerrarSesion ();
     void ReportarAccion (QString action);

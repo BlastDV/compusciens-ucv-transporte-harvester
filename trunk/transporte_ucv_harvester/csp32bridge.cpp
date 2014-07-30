@@ -731,7 +731,7 @@ int Csp32Bridge::cspReadRawData(char aBuffer[], int nMaxLength )
 {
     /* Informaremos 5+n veces sobre el progreso de este procedimiento */
     // Informemos 1
-    emit ReadingCodes();
+    emit ReadingCodes(1);
 
     int i, k, n, iSigStart;
     int nRetStatus;
@@ -769,7 +769,7 @@ int Csp32Bridge::cspReadRawData(char aBuffer[], int nMaxLength )
     nCspStoredBarcodes = iSigStart = k = n = 0;
 
     // Informemos 2
-    emit ReadingCodes();
+    emit ReadingCodes(9);
 
     int UpdateMark= 0;
 
@@ -783,14 +783,14 @@ int Csp32Bridge::cspReadRawData(char aBuffer[], int nMaxLength )
         szCspBarData[k++] = 0;
         nCspStoredBarcodes++;
 
-        // Informemos n veces
+        // Informemos n veces (Se detendra al 90%)
         UpdateMark++;
         if (UpdateMark % 2==0)
-            emit ReadingCodes();
+            emit ReadingCodes(5);
     }
 
-    // Informemos 3
-    emit ReadingCodes();
+    // Informemos 3 (95%)
+    emit ReadingCodes(5);
 
     // "n" tiene la longitud del ultimo string encontrado...
     // Si n tiene exactamente 8 caracteres y la firma esta activada,
@@ -810,8 +810,8 @@ int Csp32Bridge::cspReadRawData(char aBuffer[], int nMaxLength )
         memcpy(aCspSignature, "Disabled", sizeof(aCspSignature));
     }
 
-    // Informemos 4
-    emit ReadingCodes();
+    // Informemos 4 (99%)
+    emit ReadingCodes(4);
 
     // Verifiquemos el LRC
     aByteBuffer[i] = cspLrcCheck(aByteBuffer, i);
@@ -827,8 +827,8 @@ int Csp32Bridge::cspReadRawData(char aBuffer[], int nMaxLength )
             memcpy(aBuffer, aByteBuffer, nMaxLength);
     }
 
-    // Informemos 5
-    emit ReadingCodes();
+    // Informemos 5 (100%)
+    emit ReadingCodes(1);
 
     return(i + 1);
 }

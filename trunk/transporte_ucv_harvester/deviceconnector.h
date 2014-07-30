@@ -32,7 +32,7 @@ private slots:
     void HabilitarComandos(QString scenario);
     void CheckCOMPorts();
     void RestoreObject(); // Clase para reiniciar el objeto
-    void GetReadingUpdate(); // Recibe la señal de actualizacion de la clase Csp32Bridge
+    void GetReadingUpdate(int progreso); // Recibe la señal de actualizacion de la clase Csp32Bridge
 
     void on_COM1Button_clicked();
     void on_COM2Button_clicked();
@@ -60,7 +60,7 @@ signals:
     void AcceptPressed(); // El usuario guardo los cambios
 
     // Esto informa a la clase padre sobre el progreso del proceso de recuperacion de codigos
-    void ReadingCodes();
+    void ReadingCodes(int progreso);
 
     // Esto permite a appcontroller registrar las acciones del usuario
     void RegistrarEvento(QString);

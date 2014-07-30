@@ -210,7 +210,7 @@ signals:
     /* Esta señal permitira informar a la clase padre que
      * el lector se encuentra leyendo actualmente
      */
-    void ReadingCodes();
+    void ReadingCodes(int progreso);
 
 public slots:
 

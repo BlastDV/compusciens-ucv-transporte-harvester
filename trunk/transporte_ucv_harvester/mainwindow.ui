@@ -416,9 +416,9 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_2">
                 <item>
-                 <widget class="QPushButton" name="ReadCodesButton">
+                 <widget class="QPushButton" name="CalculateTripsButton">
                   <property name="text">
-                   <string>Leer Códigos</string>
+                   <string>Calcular Viajes</string>
                   </property>
                  </widget>
                 </item>
@@ -540,6 +540,29 @@
                </property>
                <property name="text">
                 <string>Subir Datos</string>
+               </property>
+               <property name="icon">
+                <iconset resource="icons.qrc">
+                 <normaloff>:/icons/generic_button.png</normaloff>:/icons/generic_button.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButton_2">
+               <property name="minimumSize">
+                <size>
+                 <width>32</width>
+                 <height>32</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Leer Códigos</string>
                </property>
                <property name="icon">
                 <iconset resource="icons.qrc">

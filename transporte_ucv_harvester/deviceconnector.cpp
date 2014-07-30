@@ -5,7 +5,7 @@ DeviceConnector::DeviceConnector(QWidget *parent): QWidget(parent), ui(new Ui::D
 {
     ui->setupUi(this);
     Reader= new Csp32Bridge(this);
-    connect(Reader, SIGNAL(ReadingCodes()), this, SLOT(GetReadingUpdate()));
+    connect(Reader, SIGNAL(ReadingCodes(int)), this, SLOT(GetReadingUpdate(int)));
 }
 
 DeviceConnector::~DeviceConnector()
@@ -94,9 +94,9 @@ void DeviceConnector::HabilitarComandos(QString scenario)
 }
 
 // Recibe la actualizacion de Csp32Bridge e informa a la clase padre
-void DeviceConnector::GetReadingUpdate()
+void DeviceConnector::GetReadingUpdate(int progreso)
 {
-    emit ReadingCodes();
+    emit ReadingCodes(progreso);
 }
 
 /** Funciones de la interfaz **/

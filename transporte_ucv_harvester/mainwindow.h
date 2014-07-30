@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QtGui>
 #include "logreporter.h"
 #include "deviceconnector.h"
 #include "dbconnector.h"
@@ -39,6 +40,9 @@ private:
     // que dependan de los mismos sean mas rapidas
     QList <QString> CodesList;
 
+    // Esta otra tendra las cedulas de todos los transportistas en la BD
+    QList <QString> CedulaList;
+
     void LoadInitialData(); // Para la ventana de subida de datos inicial
 
 private slots:
@@ -54,21 +58,23 @@ private slots:
     void UpdateTransportistaA(QString apellido);
     void UpdateRoute(QString id);
 
-    // Esta funcion es la que mas nos interesa
-    void ReadCodes(bool automatico);
+    // Esta funcion es una de las primordiales
+    void ReadCodes();
     // A su vez se apoyara en esta
     void CalculateTrips (QString cedula);
     void CalculateTrips ();
 
     // Esta recibe la actualizacion de DeviceConnector y actualiza
     // la barra de progreso de la interfaz
-    void GetReadingUpdate();
+    void GetReadingUpdate(int);
 
-    void on_ReadCodesButton_clicked();
+    void on_CalculateTripsButton_clicked();
 
     void on_DriverReadyButton_clicked();
 
     void on_BackToDriverButton_clicked();
+
+    void on_FindTransportistButton_clicked();
 
 signals:
     void CerrarSesion ();

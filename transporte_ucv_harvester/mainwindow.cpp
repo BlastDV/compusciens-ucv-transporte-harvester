@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
      * el programa. */
     DevConnector= new DeviceConnector();
     connect(DevConnector, SIGNAL(RegistrarEvento(QString)), this, SLOT(ReportarMensaje(QString)));
-    connect(DevConnector, SIGNAL(ReadingCodes()), this, SLOT(GetReadingUpdate()));
+    connect(DevConnector, SIGNAL(ReadingCodes(int)), this, SLOT(GetReadingUpdate(int)));
 
     ConnectionName= "MainWindow";
     Connector= new DBConnector(this);
@@ -114,7 +114,7 @@ void MainWindow::LoadInitialData()
         // Connector->Connector le dice a Infoquery con cual BD y conexion funcionar
         QSqlQuery* Lastnamequery= new QSqlQuery (Connector->Connector);
 
-        if(!Lastnamequery->exec(QString("SELECT primer_apellido FROM transportista")))
+        if(!Lastnamequery->exec(QString("SELECT primer_apellido, cedula FROM transportista")))
         {
             QMessageBox::critical(0, QObject::tr("Error"),
             "No se ha podido recuperar la lista de transportistas. "
@@ -130,6 +130,7 @@ void MainWindow::LoadInitialData()
             do
             {
                 ui->LastNameList->addItem(Lastnamequery->value(0).toString());
+                CedulaList.append(Lastnamequery->value(1).toString());
             }
             while (Lastnamequery->next());
 
@@ -329,16 +330,23 @@ void MainWindow::UpdateRoute(QString id)
     }
 }
 
-/* Esta es la funcion mas importante del programa, se encargara de tomar los
- * codigos almacenados en el lector y presentarlos en la interfaz, permitiendo
- * que el usuario pueda trabajar con esta informacion para subirla a la BD. En
- * primer lugar, debe elegirse un transportista. Seguidamente se debe leer desde
- * el dispositivo, lo que producira una creaccion de pestañas por cada viaje realizado.
- * Expresando el tipo de usuario y su cedula por viaje. Finalmente, debe especificarse
- * la ruta para cada viaje.
+/* Esta funcion permitira extraer los codigos del lector para luego poder trabajar
+ * con los mismos. La idea es que este proceso se ejecute una sola vez por lector,
+ * aunque podria ser ejecutado multiples veces.
  */
-void MainWindow::ReadCodes(bool automatico)
+void MainWindow::ReadCodes()
 {
+    /* Preparamos y mostramos un dialogo de progreso */
+    QProgressDialog ReadingProgress;
+    ReadingProgress.setWindowTitle("Recuperando códigos...");
+    ReadingProgress.setWindowModality(Qt::WindowModal);
+    ReadingProgress.setMaximum(100);
+    ReadingProgress.setMinimum(0);
+    ReadingProgress.setValue(0);
+    ReadingProgress.setCancelButton(0);
+    connect(DevConnector, SIGNAL(ReadingCodes(int)), &ReadingProgress, SLOT(setValue(int)));
+    ReadingProgress.show();
+/*
     // Preparamos y mostramos la barra de carga
     ui->ReadingProgressBar->setValue(0);
     ui->ReadingProgressBar->show();
@@ -349,7 +357,7 @@ void MainWindow::ReadCodes(bool automatico)
     // Informamos al usuario sobre lo que se esta ejecutando actualmente
     ui->InfoText->clear();
     ui->InfoText->appendPlainText("Leyendo...");
-
+*/
     int OpResult= DevConnector->Reader->cspReadData();
 
     if (OpResult> STATUS_OK)
@@ -413,11 +421,11 @@ void MainWindow::ReadCodes(bool automatico)
          * ultimo caso, si se detecta mas de un transportista en la lista, el sistema
          * preguntara al usuario cual de ellos es el actual.
          */
-        if (automatico)
+        /*if (automatico)
             CalculateTrips();
         else
             CalculateTrips(ui->CedulaInput->text());
-
+*/
     }
     else
     {
@@ -434,7 +442,103 @@ void MainWindow::ReadCodes(bool automatico)
 // Funciones de apoyo para ReadCodes()
 void MainWindow::CalculateTrips()
 {
+    // Esto nos permitira saber las coincidencias de transportistas en
+    // la lista de codigos escaneados
+    QList <QString> FoundDrivers;
 
+    // Vamos a comparar cada codigo con cada cedula de los transportistas
+    for (int i=0; i<CodesList.count(); i++)
+    {
+        for (int j=0; j<CedulaList.count(); j++)
+        {
+            // Hay coincidencia?
+            if (CodesList.at(i)==CedulaList.at(j))
+            {
+                FoundDrivers.append(CedulaList.at(j));
+            }
+        }
+    }
+
+    // Una vez que hemos revisado las coincidencias, vamos a mostrarselas
+    // al usuario
+
+    /* DEBUG */
+    FoundDrivers.append("21536559");
+    FoundDrivers.append("14199311");
+
+    if (!FoundDrivers.isEmpty())
+    {
+        /* Vamos a recuperar la informacion de los transportistas desde
+         * la base de datos
+        */
+
+        // Vamos a crear una conexion
+        if (!Connector->RequestConnection())
+        {
+            QMessageBox::critical(0, "Error",
+            "No se ha podido recuperar la información de los transportistas encontrados.\n"
+            "Revise el estado de la Base de Datos.\n\nMensaje: Error DBA1\n"+
+            Connector->getLastError().text());
+        }
+        else
+        {
+            QStringList Drivers;
+            QSqlQuery* Driverquery= new QSqlQuery (Connector->Connector);
+
+            // Preparemos la lista de resultadoss
+            for (int k=0; k<FoundDrivers.count(); k++)
+            {
+                int id= FoundDrivers.at(k).toInt();
+
+                if (!Driverquery->exec(QString("SELECT primer_apellido, segundo_apellido, primer_nombre, segundo_nombre FROM transportista WHERE cedula=%1").arg(id)))
+                {
+                    QMessageBox::critical(0, "Error",
+                    "No se ha podido recuperar la información de los transportistas encontrados.\n"
+                    "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ1\n");
+                }
+                else
+                {
+                    Driverquery->first();
+
+                    if (Driverquery->isValid())
+                    {
+                        Drivers.append(FoundDrivers.at(k) + ", " + Driverquery->value(0).toString() + " " + Driverquery->value(1).toString()
+                                       + " " + Driverquery->value(2).toString() + " " + Driverquery->value(3).toString());
+                    }
+                    else
+                    {
+                        Drivers.append(FoundDrivers.at(k) + ", error de base de datos.");
+                    }
+                }
+            }
+
+            // Ahora preparemos y mostremos la ventana de resultados
+            bool OK;
+            QString PickedDriver= QInputDialog::getItem(this, "Transportistas encontrados",
+                                                        "Seleccione uno de los siguientes transportistas:",
+                                                        Drivers, 0, false, &OK);
+
+            // Si el usuario elige un transportista
+            if (OK)
+            {
+                // Vamos a confirmar el resto del procedimiento
+
+                QString Cedula= PickedDriver.mid(0, PickedDriver.indexOf(",", 0, Qt::CaseInsensitive));
+                UpdateTransportistaC(Cedula);
+            }
+            else
+            {
+                // Ignore
+            }
+        }
+    }
+    else
+    {
+        QMessageBox::information(0, "Resultados de la busqueda",
+        "No se han encontrado transportistas.\n\n"
+        "¿El lector pertenece a un transportista nuevo?\n"
+        "¿El transportista uso correctamente el lector?");
+    }
 }
 
 void MainWindow::CalculateTrips(QString cedula)
@@ -443,16 +547,23 @@ void MainWindow::CalculateTrips(QString cedula)
 }
 
 // Esto recibe la actualizacion del proceso de lectura de DeviceConnector
-void MainWindow::GetReadingUpdate()
+void MainWindow::GetReadingUpdate(int)
 {
     if (ui->ReadingProgressBar->value()<90)
         ui->ReadingProgressBar->setValue(ui->ReadingProgressBar->value()+5);
 }
 
 /* Esto servira para traernos los codigos del lector */
-void MainWindow::on_ReadCodesButton_clicked()
+void MainWindow::on_CalculateTripsButton_clicked()
 {
-        ReadCodes(false);
+    ReadCodes();
+}
+
+/* Esto hara lo mismo que on_CalculateTripsButton_clicked() pero
+ * buscara automaticamente al transportista */
+void MainWindow::on_FindTransportistButton_clicked()
+{
+    ReadCodes();
 }
 
 /* Esto se ejecutara cuando el usuario haya elegido al transportista correspondiente
@@ -478,3 +589,5 @@ void MainWindow::on_BackToDriverButton_clicked()
     // Y desbloqueamos la de transportista
     ui->DriversFrame->setEnabled(true);
 }
+
+

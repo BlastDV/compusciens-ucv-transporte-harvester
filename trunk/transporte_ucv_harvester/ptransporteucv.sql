@@ -1,6 +1,6 @@
 /*
 SQLyog Community v11.5 (32 bit)
-MySQL - 5.6.19-log : Database - ptransporteucv
+MySQL - 5.6.19 : Database - ptransporteucv
 *********************************************************************
 */
 
@@ -107,12 +107,13 @@ CREATE TABLE `transportista` (
   `segundo_apellido` varchar(45) NOT NULL,
   `fecha_nac` date DEFAULT NULL,
   `cedula` int(8) unsigned NOT NULL,
+  `activo` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'El transportista esta activo?',
   PRIMARY KEY (`cedula`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `transportista` */
 
-insert  into `transportista`(`primer_nombre`,`segundo_nombre`,`primer_apellido`,`segundo_apellido`,`fecha_nac`,`cedula`) values ('Ernesto','Saul','Camacho','Montilla','1971-07-07',13286741),('Ricardo','Antonio','Pereira','Mora','1976-12-07',14396554),('Alberto','José','Maneiro','Fuentes','1980-04-30',16475014),('Antonio','José','Rivas','Beltrand','1989-09-09',16589741),('Ruben','Yaimeru','Maza','Marquez','1993-02-10',20875996),('Pedro','Alejandro','Fernandes','Olarte','1993-06-29',21536559);
+insert  into `transportista`(`primer_nombre`,`segundo_nombre`,`primer_apellido`,`segundo_apellido`,`fecha_nac`,`cedula`,`activo`) values ('Raul','Ernesto','Pereira','Figueroa','1970-10-03',12394033,1),('Ernest','Saul','Camacho','Montilla','1971-07-07',13286741,1),('Ricardo','Antonio','Pereira','Mora','1976-12-07',14396554,1),('Alberto','José','Maneiro','Fuentes','1980-04-30',16475014,1),('Antonio','José','Rivas','Beltrand','1989-09-09',16589741,1),('Ruben','Yaimeru','Maza','Marquez','1993-02-10',20875996,0),('Pedro','Alejandro','Fernandes','Olarte','1993-06-29',21536559,1);
 
 /*Table structure for table `usuario` */
 

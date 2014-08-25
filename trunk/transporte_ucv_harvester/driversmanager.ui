@@ -292,6 +292,9 @@
             </property>
             <item>
              <widget class="QLineEdit" name="CedulaSearchInput">
+              <property name="inputMask">
+               <string/>
+              </property>
               <property name="placeholderText">
                <string>Buscar por cédula</string>
               </property>
@@ -338,6 +341,29 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
+       <widget class="QPushButton" name="NewButton">
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Nuevo</string>
+        </property>
+        <property name="icon">
+         <iconset resource="icons.qrc">
+          <normaloff>:/icons/generic_button.png</normaloff>:/icons/generic_button.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="ModButton">
         <property name="minimumSize">
          <size>
@@ -379,7 +405,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="SaveModButton">
+       <widget class="QPushButton" name="SaveRegButton">
         <property name="minimumSize">
          <size>
           <width>32</width>
@@ -388,6 +414,29 @@
         </property>
         <property name="text">
          <string>Guardar</string>
+        </property>
+        <property name="icon">
+         <iconset resource="icons.qrc">
+          <normaloff>:/icons/generic_button.png</normaloff>:/icons/generic_button.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="CancelModButton">
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Cancelar</string>
         </property>
         <property name="icon">
          <iconset resource="icons.qrc">
@@ -425,7 +474,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="SuspendButton">
+       <widget class="QPushButton" name="AlternSuspendButton">
         <property name="minimumSize">
          <size>
           <width>32</width>
@@ -454,7 +503,7 @@
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>40</width>
+          <width>20</width>
           <height>20</height>
          </size>
         </property>

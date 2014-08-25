@@ -54,7 +54,7 @@ private slots:
     void DeviceConnectionAccepted();
     void ReportarMensaje(QString mensaje);
 
-    void UpdateTransportistaC(QString cedula); // Por razones internas de Qt
+    void UpdateTransportistaC(QString cedula); // Por razones internas de Qt usaremos QString
     void UpdateTransportistaA(QString apellido);
     void UpdateRoute(QString id);
 
@@ -69,11 +69,8 @@ private slots:
     void GetReadingUpdate(int);
 
     void on_CalculateTripsButton_clicked();
-
     void on_DriverReadyButton_clicked();
-
     void on_BackToDriverButton_clicked();
-
     void on_FindTransportistButton_clicked();
 
 signals:

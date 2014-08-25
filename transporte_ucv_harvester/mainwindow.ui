@@ -31,16 +31,7 @@
 </string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="leftMargin">
-     <number>1</number>
-    </property>
-    <property name="topMargin">
-     <number>1</number>
-    </property>
-    <property name="rightMargin">
-     <number>1</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>1</number>
     </property>
     <item>
@@ -52,16 +43,7 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_9">
-       <property name="leftMargin">
-        <number>1</number>
-       </property>
-       <property name="topMargin">
-        <number>1</number>
-       </property>
-       <property name="rightMargin">
-        <number>1</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>1</number>
        </property>
        <item>
@@ -612,14 +594,22 @@
     <property name="title">
      <string>Usuarios</string>
     </property>
+    <addaction name="actionAdministrar_usuarios"/>
+    <addaction name="separator"/>
     <addaction name="actionCerrarSesion"/>
    </widget>
    <widget class="QMenu" name="menuDatos">
     <property name="title">
      <string>Datos</string>
     </property>
-    <addaction name="actionConectarDispositivo"/>
-    <addaction name="actionSubir_datos"/>
+    <widget class="QMenu" name="menuAdministrar_base_de_datos">
+     <property name="title">
+      <string>Administrar base de datos</string>
+     </property>
+     <addaction name="actionAdminTransportistas"/>
+     <addaction name="actionAdminRutas"/>
+    </widget>
+    <addaction name="menuAdministrar_base_de_datos"/>
    </widget>
    <widget class="QMenu" name="menuLog">
     <property name="title">
@@ -627,7 +617,16 @@
     </property>
     <addaction name="actionVerLog"/>
    </widget>
+   <widget class="QMenu" name="menuDispositivo">
+    <property name="title">
+     <string>Dispositivo</string>
+    </property>
+    <addaction name="actionConectarDispositivo"/>
+    <addaction name="separator"/>
+    <addaction name="actionConfigurar"/>
+   </widget>
    <addaction name="menuArchivo"/>
+   <addaction name="menuDispositivo"/>
    <addaction name="menuDatos"/>
    <addaction name="menuUsuarios"/>
    <addaction name="menuLog"/>
@@ -646,7 +645,7 @@
   </action>
   <action name="actionCerrarSesion">
    <property name="text">
-    <string>Cerrar Sesión</string>
+    <string>Cerrar sesión</string>
    </property>
   </action>
   <action name="actionVerLog">
@@ -654,14 +653,29 @@
     <string>Ver el registro de sucesos</string>
    </property>
   </action>
-  <action name="actionSubir_datos">
-   <property name="text">
-    <string>Subir datos</string>
-   </property>
-  </action>
   <action name="actionConectarDispositivo">
    <property name="text">
-    <string>Conectar dispositivo</string>
+    <string>Conectar</string>
+   </property>
+  </action>
+  <action name="actionAdminRutas">
+   <property name="text">
+    <string>Rutas y paradas</string>
+   </property>
+  </action>
+  <action name="actionAdminTransportistas">
+   <property name="text">
+    <string>Transportistas</string>
+   </property>
+  </action>
+  <action name="actionConfigurar">
+   <property name="text">
+    <string>Configurar</string>
+   </property>
+  </action>
+  <action name="actionAdministrar_usuarios">
+   <property name="text">
+    <string>Administrar</string>
    </property>
   </action>
  </widget>

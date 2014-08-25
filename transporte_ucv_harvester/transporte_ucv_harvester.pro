@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     appcontroller.cpp \
     csp32bridge.cpp \
     deviceconnector.cpp \
-    permissionreporter.cpp
+    permissionreporter.cpp \
+    driversmanager.cpp
 
 HEADERS  += mainwindow.h \
     sessionwindow.h \
@@ -30,12 +31,14 @@ HEADERS  += mainwindow.h \
     appcontroller.h \
     csp32bridge.h \
     deviceconnector.h \
-    permissionreporter.h
+    permissionreporter.h \
+    driversmanager.h
 
 FORMS    += mainwindow.ui \
     sessionwindow.ui \
     logreporter.ui \
-    deviceconnector.ui
+    deviceconnector.ui \
+    driversmanager.ui
 
 RESOURCES += \
     icons.qrc \

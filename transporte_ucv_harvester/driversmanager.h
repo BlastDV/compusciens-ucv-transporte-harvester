@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QMessageBox>
 #include "dbconnector.h"
+#include "permissionreporter.h"
 
 namespace Ui
 {
@@ -16,13 +17,17 @@ class DriversManager : public QWidget
     
 public:
     explicit DriversManager(QWidget *parent = 0);
+    explicit DriversManager(QWidget *parent, QString user);
     ~DriversManager();
 
     QString ConnectionName;
+    bool UpdateUser (QString user);
     
 private:
     Ui::DriversManager *ui;
     DBConnector* Connector;
+    PermissionReporter* PermissionRep;
+    QString UserID;
 
     bool EDITING;
     int RegIndex;
@@ -33,7 +38,8 @@ private:
 
     // Este metodo llenara la interfaz con el primer registro
     // de transportistas de la BD
-    void LoadInitialData();
+    void LoadData();
+    void EraseData();
     void FillInputs(QSqlQuery Input);
     void EraseInputs();
 

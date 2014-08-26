@@ -29,21 +29,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-// Cuando se haga click en "Cerrar Sesion", se emitira una señal a SessionWindow para que haga lo propio
-void MainWindow::on_actionCerrarSesion_triggered()
-{
-    emit CerrarSesion();
-}
 
-// Cuando se haga click en "Ver el registro de Sucesos", se ejecutara lo siguiente que consiste en crear el objeto LogReporter
-// y mostrarlo, para posteriormente destruirlo
-void MainWindow::on_actionVerLog_triggered()
-{
-    LogRep= new LogReporter ();
-
-    LogRep->UpdateUser(UserID);
-    LogRep->show();
-}
 
 // Esta funcion actualiza el usuario actual de la clase
 bool MainWindow::UpdateUser(QString User)
@@ -577,7 +563,7 @@ void MainWindow::on_DriverReadyButton_clicked()
     ui->CodesFrame->setEnabled(true);
 }
 
-
+// Esto se activara cuando el usuario eliga volver a la eleccion de transportista
 void MainWindow::on_BackToDriverButton_clicked()
 {
     // Bloqueamos la seccion de codigos
@@ -590,4 +576,28 @@ void MainWindow::on_BackToDriverButton_clicked()
     ui->DriversFrame->setEnabled(true);
 }
 
+// Esto se ejecutara cuando el usuario haga click en Administrar base de datos/Transportistas
+void MainWindow::on_actionAdminTransportistas_triggered()
+{
+    // Creamos el objeto
+    DriversManager* DriversM= new DriversManager();
 
+    DriversM->UpdateUser(UserID);
+    DriversM->show();
+}
+
+// Cuando se haga click en "Cerrar Sesion", se emitira una señal a SessionWindow para que haga lo propio
+void MainWindow::on_actionCerrarSesion_triggered()
+{
+    emit CerrarSesion();
+}
+
+// Cuando se haga click en "Ver el registro de Sucesos", se ejecutara lo siguiente que consiste en crear el objeto LogReporter
+// y mostrarlo, para posteriormente destruirlo
+void MainWindow::on_actionVerLog_triggered()
+{
+    LogRep= new LogReporter ();
+
+    LogRep->UpdateUser(UserID);
+    LogRep->show();
+}

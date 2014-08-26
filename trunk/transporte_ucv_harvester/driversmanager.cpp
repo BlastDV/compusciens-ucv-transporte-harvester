@@ -5,6 +5,12 @@ DriversManager::DriversManager(QWidget *parent) : QWidget(parent), ui(new Ui::Dr
 {
     ui->setupUi(this);
 
+    // Ningun usuario nos ve por ahora
+    UserID= "default";
+
+    // Este sera nuestro informante de permisos
+    PermissionRep= new PermissionReporter(this);
+
     // Inicializamos el indice de registros
     RegIndex= -1;
 
@@ -24,10 +30,11 @@ DriversManager::DriversManager(QWidget *parent) : QWidget(parent), ui(new Ui::Dr
     ActivateValidators();
 
     // Llenamos la interfaz de informacion
-    LoadInitialData();
+    LoadData();
 
-    // Y la mostramos segun convenga
-    SetView("Inicio");
+    // Y la mostramos de forma preliminar, esto es: vacia. Por razones de seguridad
+    // en posibles usos incorrectos de esta clase. Debe llamarse UpdateUser() antes de mostrarla!!!
+    SetView("default");
 }
 
 DriversManager::~DriversManager()
@@ -113,6 +120,12 @@ void DriversManager::FillInputs(QSqlQuery Input)
 
     // Esta activo?
     ui->ActiveInput->setChecked(Input.value(6).toInt());
+
+    // Y cambiamos el texto del boton de acuerdo al estado actual del Checkbox
+    if (!ui->ActiveInput->isChecked())
+        ui->AlternSuspendButton->setText("Habilitar");
+    else
+        ui->AlternSuspendButton->setText("Suspender");
 }
 
 // Esta funcion limpiara los inputs
@@ -127,8 +140,26 @@ void DriversManager::EraseInputs()
     ui->ActiveInput->setChecked(false);
 }
 
+// Esta funcion limpiara las estructuras de datos de la clase dejandola vacia
+void DriversManager::EraseData()
+{
+    // Vaciamos los QMap
+    IndexLocalList.clear();
+    CedulaLocalList.clear();
+
+    // Borramos la lista de apellidos, dejando el mensaje original
+    ui->ApellidoSearchList->clear();
+    ui->ApellidoSearchList->addItem("Buscar por apellido");
+
+    // Inicializamos el indice de registros
+    RegIndex= -1;
+
+    // No estamos editando
+    EDITING= false;
+}
+
 // Llena la interfaz con toda la informacion respectiva de la BD
-void DriversManager::LoadInitialData()
+void DriversManager::LoadData()
 {
     // Vamos a crear una conexion para poder traer ciertos datos
     if (!Connector->RequestConnection())
@@ -139,7 +170,7 @@ void DriversManager::LoadInitialData()
                               Connector->getLastError().text());
     }
     else
-    {
+    {   
         // Connector->Connector le dice a Infoquery con cual BD y conexion funcionar
         QSqlQuery* DataQuery= new QSqlQuery (Connector->Connector);
 
@@ -151,6 +182,9 @@ void DriversManager::LoadInitialData()
         }
         else
         {
+            // Si hemos llegado hasta aca, quiere decir que tenemos datos nuevos
+            // con los que trabajar. Borremos primero las estructuras de datos
+            EraseData();
 
             QStringList AuxLastNameList;
             QVector <QString> AuxCedulaList;
@@ -198,7 +232,7 @@ void DriversManager::LoadInitialData()
 void DriversManager::ActivateValidators()
 {
     // Creemos las validaciones de texto
-    QRegExp TextReg("[a-zA-z]*");
+    QRegExp TextReg("[a-zA-z]([a-zA-z]|[ ])*");
     QValidator *TextValidator= new QRegExpValidator(TextReg, this);
 
     ui->Nombre1Input->setValidator(TextValidator);
@@ -214,12 +248,64 @@ void DriversManager::ActivateValidators()
     ui->CedulaSearchInput->setValidator(NumValidator);
 }
 
+// Esta funcion se encargara de leer los permisos del usuario actual y tomar decisiones en base a eso
+bool DriversManager::UpdateUser (QString user)
+{
+    UserID= user;
+
+    // Abramos una conexion a la BD
+    if (!Connector->RequestConnection())
+    {
+        QMessageBox::critical(0, QObject::tr("Error"),
+                              "No se ha podido podido acceder a la base de datos, revise el estado "
+                              "de la misma.<br><br>Mensaje: Error DBA1<br>"+ Connector->getLastError().text());
+
+        return false;
+    }
+    else
+    {
+        // No importa el nombre de usuario sino sus permisos
+        QSqlQuery* Rightsquery= new QSqlQuery (Connector->Connector);
+        if (!Rightsquery->exec(QString("SELECT permisos FROM usuario WHERE id=")+QString("'")+UserID+QString("'")))
+        {
+            QMessageBox::critical(0, QObject::tr("Error"),
+                                  "No se han podido determinar sus permisos. Revise el estado "
+                                  "de la Base de Datos<br><br>Mensaje: Error DBQ1<br>"+ Connector->getLastError().text());
+
+            return false;
+        }
+        else
+        {
+            Rightsquery->first();
+
+            // Obtenidos los permisos, vamos a decodificarlos
+            PermissionRep->CalculatePermissions(Rightsquery->value(0).toString());
+            SetView("Inicio");
+
+            // Listos para usar!
+        }
+
+        Connector->EndConnection();
+        return true;
+    }
+}
+
 // Este metodo actualizara la vista de acuerdo a variables como los permisos
 // de usuario y/o la accion actual
 void DriversManager::SetView(QString Modalidad)
 {
+    if (Modalidad=="default")
+    {
+        ui->TopFrame->hide();
+        ui->ActionsFrame->hide();
+    }
     if (Modalidad=="Inicio")
     {
+        // Se muestran los bloques de la interfaz ahora que la clase ha
+        // sido usada correctamente.
+        ui->TopFrame->show();
+        ui->ActionsFrame->show();
+
         // Bloqueo de Inputs
         ui->Nombre1Input->setReadOnly(true);
         ui->Nombre2Input->setReadOnly(true);
@@ -232,6 +318,20 @@ void DriversManager::SetView(QString Modalidad)
         // Bloqueo de Acciones
         ui->SaveRegButton->hide();
         ui->CancelModButton->hide();
+        if (PermissionRep->CanOnlyReadDriversManager())
+            ui->ActionsFrame->hide();
+        else
+        {
+            if (!PermissionRep->CanCreateDrivers())
+                ui->NewButton->hide();
+            if (!PermissionRep->CanEditDrivers())
+                ui->ModButton->hide();
+            if (!PermissionRep->CanSuspendDrivers())
+                ui->AlternSuspendButton->hide();
+            if (!PermissionRep->CanDeleteDrivers())
+                ui->DelButton->hide();
+        }
+
     }
     else
     if (Modalidad=="Nuevo")
@@ -294,10 +394,17 @@ void DriversManager::SetView(QString Modalidad)
         ui->ActiveInput->setEnabled(false);
 
         // Desbloqueo de Acciones
-        ui->NewButton->show();
-        ui->ModButton->show();
-        ui->DelButton->show();
-        ui->AlternSuspendButton->show();
+        if (!PermissionRep->CanOnlyReadDriversManager())
+        {
+            if (PermissionRep->CanCreateDrivers())
+                ui->NewButton->show();
+            if (PermissionRep->CanEditDrivers())
+                ui->ModButton->show();
+            if (PermissionRep->CanDeleteDrivers())
+                ui->DelButton->show();
+            if (PermissionRep->CanSuspendDrivers())
+                ui->AlternSuspendButton->show();
+        }
 
         // Bloqueo de Acciones
         ui->SaveRegButton->hide();
@@ -459,6 +566,8 @@ void DriversManager::on_SaveRegButton_clicked()
                     "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ1<br>");
                 else
                 {
+                    // LoadData se encarga de poner EDITING en falso
+                    LoadData();
                     SetView("Restaurar");
                 }
             }
@@ -503,25 +612,113 @@ void DriversManager::on_SaveRegButton_clicked()
                             Connector->getLastError().text());
                         else
                         {
-                            qDebug("Done");
+                            LoadData();
+                            SetView("Restaurar");
                         }
                     }
                 }
             }
         }
+
+        Connector->EndConnection();
     }
 }
 
 // Esto se ejecutara cuando se presione el boton "Eliminar"
 void DriversManager::on_DelButton_clicked()
 {
+    QString Mensaje= "Esta a punto de eliminar al transportista <b>"+ui->Nombre1Input->text()+" "+ui->Apellido1Input->text()+"</b> de la base de datos.";
+    QMessageBox* Confirmation= new QMessageBox(QMessageBox::Warning, "Confirmación requerida", Mensaje);
+    Confirmation->setInformativeText("¿Está seguro?");
 
+    QPushButton* Yes= new QPushButton("Si", this);
+    QPushButton* Cancelar= new QPushButton("Cancelar", this);
+
+    Confirmation->addButton(Yes, QMessageBox::YesRole);
+    Confirmation->addButton(Cancelar, QMessageBox::RejectRole);
+    Confirmation->setDefaultButton(Cancelar);
+
+    int Answer = Confirmation->exec();
+
+    if (Answer==0) //Si
+    {
+        // Vamos a crear una conexion para poder traer ciertos datos
+        if (!Connector->RequestConnection())
+        {
+            QMessageBox::critical(0, "Error",
+            "No se ha podido acceder a la Base de Datos."
+            "Revise el estado de la misma.\n\nMensaje: Error DBA1\n"+
+            Connector->getLastError().text());
+        }
+        else
+        {
+            // Connector->Connector le dice al query con cual BD y conexion funcionar
+            QSqlQuery* DelQuery= new QSqlQuery (Connector->Connector);
+
+            // Ejecutemos la eliminacion
+            if (!DelQuery->exec(QString("DELETE FROM transportista WHERE cedula=%1").arg(ui->CedulaInput->text().toInt())))
+            {
+                QMessageBox::critical(0, "Error",
+                "No se ha podido eliminar el registro."
+                "<br><br>Mensaje: Error DBA1<br>"+
+                Connector->getLastError().text());
+            }
+            else
+            {
+                // Exito en el borrado, actualizamos las estructuras y seguimos
+                LoadData();
+                SetView("Inicio");
+            }
+
+            Connector->EndConnection();
+        }
+    }
 }
 
 // Esto se ejecutara cuando se presione el boton "Suspender"
 void DriversManager::on_AlternSuspendButton_clicked()
 {
+    // Para este caso vamos a desmarcar/marcar el checkbox de "Activo" y luego procedemos a guardar
+    // todo
+    ui->ActiveInput->setChecked(!ui->ActiveInput->isChecked());
 
+    // Vamos a crear una conexion para poder traer ciertos datos
+    if (!Connector->RequestConnection())
+    {
+        QMessageBox::critical(0, "Error",
+        "No se ha podido acceder a la Base de Datos."
+        "Revise el estado de la misma.\n\nMensaje: Error DBA1\n"+
+        Connector->getLastError().text());
+    }
+    else
+    {
+        // Connector->Connector le dice al query con cual BD y conexion funcionar
+        QSqlQuery* UpdQuery= new QSqlQuery (Connector->Connector);
+
+        // Ejecutemos la eliminacion
+        if (!UpdQuery->exec(QString("UPDATE transportista SET ")+
+                            QString("activo=%1 ").arg(ui->ActiveInput->isChecked())+
+                            QString("WHERE cedula=%1").arg(ui->CedulaInput->text().toInt())))
+        {
+            QMessageBox::critical(0, "Error",
+            "No se ha podido actualizar el registro."
+            "<br><br>Mensaje: Error DBA1<br>"+
+            Connector->getLastError().text());
+        }
+        else
+        {
+            // Exito en la modificacion, actualizamos las estructuras y seguimos
+            SetView("Restaurar");
+        }
+
+        Connector->EndConnection();
+    }
+
+    // Y cambiamos el texto del boton de acuerdo al estado actual del Checkbox
+    if (!ui->ActiveInput->isChecked())
+        ui->AlternSuspendButton->setText("Habilitar");
+    else
+        ui->AlternSuspendButton->setText("Suspender");
 }
 
 // Esto se ejecutara cuando se presione el boton "<|"

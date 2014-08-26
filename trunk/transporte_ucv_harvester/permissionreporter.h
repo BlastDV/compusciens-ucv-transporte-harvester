@@ -24,15 +24,36 @@ public:
 
     void CalculatePermissions(QString input);
 
+    // Permisos del Log
     bool CanReadAllLog ();
     bool CanWriteLog ();
+    bool CanOnlyReadLog();
+
+    // Permisos del Administrador de Transportistas
+    bool CanReadDriversManager();
+    bool CanCreateDrivers();
+    bool CanEditDrivers();
+    bool CanSuspendDrivers();
+    bool CanDeleteDrivers();
+    bool CanOnlyReadDriversManager();
+
     void DumpPermissions();
 
 signals:
 
 private:
+    // Permisos del Log
     bool READALLLOGREP;
     bool WRITELOGREP;
+    bool READONLYLOG;
+
+    // Permisos del Administrador de Transportistas
+    bool READDRIVERSMANAGER;
+    bool CREATEDRIVERS;
+    bool EDITDRIVERS;
+    bool SUSPENDDRIVERS;
+    bool DELETEDRIVERS;
+    bool READONLYDRIVERSMANAGER;
 
 
 public slots:

@@ -9,21 +9,21 @@ AppController::AppController(QObject *parent) : QObject(parent)
 //Esta funcion se encarga de arrancar con la aplicacion
 void AppController::start()
 {
-    MainW= new MainWindow();
+    //MainW= new MainWindow();
     //MainW->UpdateUser(SessionW->getUserID());
-    MainW->show();
-    /*
+    //MainW->show();
+
     SessionW= new SessionWindow();
 
     connect(SessionW, SIGNAL(SesionAbierta()), this, SLOT(SesionAbierta()));
-    SessionW->show();*/
+    SessionW->show();
 
-    /*LogRep= new LogReporter ();
-    LogRep->UpdateUser("admin");
-    LogRep->LoadEvents();
+    //LogRep= new LogReporter ();
+    //LogRep->UpdateUser("admin");
+    //LogRep->LoadEvents();
     //LogRep->UpdateUser(UserID);
 
-    LogRep->show();*/
+    //LogRep->show();
 }
 
 //Esto se activara al abrir sesion correctamente

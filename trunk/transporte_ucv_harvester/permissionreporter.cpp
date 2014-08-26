@@ -3,32 +3,79 @@
 PermissionReporter::PermissionReporter(QObject *parent) : QObject(parent)
 {
     // Por default, usuario X no puede hacer nada
+    // Permisos del Log
     READALLLOGREP= false;
     WRITELOGREP= false;
+    READONLYLOG= false;
+
+    // Permisos del Administrador de Transportistas
+    READDRIVERSMANAGER= false;
+    CREATEDRIVERS= false;
+    EDITDRIVERS= false;
+    SUSPENDDRIVERS= false;
+    DELETEDRIVERS= false;
+    READONLYDRIVERSMANAGER= false;
+
 }
 
 
 // Esta es la funcion principal donde los permisos son decodificados
 void PermissionReporter::CalculatePermissions(QString input)
 {
+    // Por default, usuario X no puede hacer nada
+    // Permisos del Log
+    READALLLOGREP= false;
+    WRITELOGREP= false;
+    READONLYLOG= false;
+
+    // Permisos del Administrador de Transportistas
+    READDRIVERSMANAGER= false;
+    CREATEDRIVERS= false;
+    EDITDRIVERS= false;
+    SUSPENDDRIVERS= false;
+    DELETEDRIVERS= false;
+    READONLYDRIVERSMANAGER= false;
+
+    // Hora de Calcular!
     QStringList Permisos= input.split("/");
 
-    // Si quiera tenemos algo que hacer?
+    // Siquiera tenemos algo que hacer?
     if (Permisos.count()>0)
     {
         //Aca empezamos a determinar lo que usuario X puede hacer
 
-        // Puede leer y escribir todo el log de eventos?
-        if (Permisos.at(0)=="RW")
-        {
-            READALLLOGREP= true;
-            WRITELOGREP= true;
-        }
+        /** Permisos del Log **/
+        QStringList LogP=  Permisos.at(0).split(".");
         // Puede leer todo el log de eventos?
-        else if (Permisos.at(0)=="R")
+        if (LogP.contains("R"))
             READALLLOGREP= true;
+        // Puede escribir el log de eventos?
+        if (LogP.contains("W"))
+            WRITELOGREP= true;
+        // Solo puede leer?
+        if (!READALLLOGREP & !WRITELOGREP)
+            READONLYLOG= true;
 
-
+        /** Permisos del Administrador de Transportistas **/
+        QStringList DriversMP= Permisos.at(1).split(".");
+        // Puede ver el administrador?
+        if (DriversMP.contains("R"))
+            READDRIVERSMANAGER= true;
+        // Puede agregar nuevos transportistas?
+        if (DriversMP.contains("C"))
+            CREATEDRIVERS= true;
+        // Puede modificar los transportistas?
+        if (DriversMP.contains("M"))
+            EDITDRIVERS= true;
+        // Puede suspender transportistas?
+        if (DriversMP.contains("S"))
+            SUSPENDDRIVERS= true;
+        // Puede eliminar transportistas?
+        if (DriversMP.contains("D"))
+            DELETEDRIVERS= true;
+        // Solo puede ver el log?
+        if (!CREATEDRIVERS & !EDITDRIVERS & !SUSPENDDRIVERS & !DELETEDRIVERS)
+            READONLYDRIVERSMANAGER= true;
     }
 }
 
@@ -44,8 +91,61 @@ bool PermissionReporter::CanWriteLog()
     return WRITELOGREP;
 }
 
+// Usuario X solo puede ver el log?
+bool PermissionReporter::CanOnlyReadLog()
+{
+    return READONLYLOG;
+}
+
+// Usuario X puede ver el Administrador de Transportistas?
+bool PermissionReporter::CanReadDriversManager()
+{
+    return READDRIVERSMANAGER;
+}
+
+// Usuario X puede crear nuevos transportistas?
+bool PermissionReporter::CanCreateDrivers()
+{
+    return CREATEDRIVERS;
+}
+
+// Usuario X puede modificar los transportistas?
+bool PermissionReporter::CanEditDrivers()
+{
+    return EDITDRIVERS;
+}
+
+// Usuario X puede suspender transportistas?
+bool PermissionReporter::CanSuspendDrivers()
+{
+    return SUSPENDDRIVERS;
+}
+
+// Usuario X puede eliminar transportistas?
+bool PermissionReporter::CanDeleteDrivers()
+{
+    return DELETEDRIVERS;
+}
+
+// Usuario X solo puede ver el administrador?
+bool PermissionReporter::CanOnlyReadDriversManager()
+{
+    return READONLYDRIVERSMANAGER;
+}
+
 /* Esta clase tiene como unico fin el hacer debug sobre la misma*/
 void PermissionReporter::DumpPermissions()
 {
+    qDebug("Permisos del Log:");
+    qDebug("\tLeer Todo: %d", READALLLOGREP);
+    qDebug("\tModificar: %d", WRITELOGREP);
+    qDebug("\tSolo Lectura: %d", READONLYLOG);
 
+    qDebug("Permisos del Administrador de Transportistas:");
+    qDebug("\tLeer: %d", READDRIVERSMANAGER);
+    qDebug("\tCrear: %d", CREATEDRIVERS);
+    qDebug("\tModificar: %d", EDITDRIVERS);
+    qDebug("\tSuspender: %d", SUSPENDDRIVERS);
+    qDebug("\tEliminar: %d", DELETEDRIVERS);
+    qDebug("\tSolo Lectura: %d", READONLYDRIVERSMANAGER);
 }

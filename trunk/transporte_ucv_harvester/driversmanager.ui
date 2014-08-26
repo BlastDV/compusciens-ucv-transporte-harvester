@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>DriversManager</class>
  <widget class="QWidget" name="DriversManager">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -329,9 +332,6 @@
        </widget>
       </item>
      </layout>
-     <zorder>DataFrame</zorder>
-     <zorder>DataFrame</zorder>
-     <zorder>BrowsingFrame</zorder>
     </widget>
    </item>
    <item>
@@ -451,7 +451,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="DelButton">
+       <widget class="QPushButton" name="AlternSuspendButton">
         <property name="minimumSize">
          <size>
           <width>32</width>
@@ -459,7 +459,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Eliminar</string>
+         <string>Suspender</string>
         </property>
         <property name="icon">
          <iconset resource="icons.qrc">
@@ -474,7 +474,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="AlternSuspendButton">
+       <widget class="QPushButton" name="DelButton">
         <property name="minimumSize">
          <size>
           <width>32</width>
@@ -482,7 +482,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Suspender</string>
+         <string>Eliminar</string>
         </property>
         <property name="icon">
          <iconset resource="icons.qrc">
@@ -514,6 +514,27 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>Nombre1Input</tabstop>
+  <tabstop>Nombre2Input</tabstop>
+  <tabstop>Apellido1Input</tabstop>
+  <tabstop>Apellido2Input</tabstop>
+  <tabstop>CedulaInput</tabstop>
+  <tabstop>FechaNacInput</tabstop>
+  <tabstop>ActiveInput</tabstop>
+  <tabstop>SaveRegButton</tabstop>
+  <tabstop>CancelModButton</tabstop>
+  <tabstop>NewButton</tabstop>
+  <tabstop>ModButton</tabstop>
+  <tabstop>AlternSuspendButton</tabstop>
+  <tabstop>DelButton</tabstop>
+  <tabstop>FirstRegButton</tabstop>
+  <tabstop>PrevRegButton</tabstop>
+  <tabstop>NextRegButton</tabstop>
+  <tabstop>LastRegButton</tabstop>
+  <tabstop>CedulaSearchInput</tabstop>
+  <tabstop>ApellidoSearchList</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>

@@ -28,11 +28,11 @@ CREATE TABLE `actividad` (
   PRIMARY KEY (`id`),
   KEY `fk_actividad_usuario_idx` (`usuario`),
   CONSTRAINT `fk_actividad_usuario` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8;
 
 /*Data for the table `actividad` */
 
-insert  into `actividad`(`id`,`usuario`,`tiempo`,`actividad`) values (88,'admin','2014-07-07 12:10:20','INICIO SESION'),(89,'admin','2014-07-07 12:10:36','INICIO SESION'),(90,'admin','2014-07-07 12:11:45','INICIO SESION'),(91,'admin','2014-07-07 12:11:56','ABRIO PUERTO 1'),(92,'admin','2014-07-07 12:11:57','LIBERO PUERTO 1'),(93,'admin','2014-07-07 12:11:58','ABRIO PUERTO 1'),(94,'admin','2014-07-07 12:13:40','INICIO SESION'),(95,'admin','2014-07-07 12:15:51','INICIO SESION'),(96,'admin','2014-07-07 12:17:19','INICIO SESION'),(97,'admin','2014-07-07 12:17:45','INICIO SESION'),(98,'admin','2014-07-07 12:18:57','INICIO SESION'),(99,'admin','2014-07-07 12:20:22','INICIO SESION'),(100,'admin','2014-07-07 12:21:05','INICIO SESION'),(101,'admin','2014-07-07 12:21:17','CERRO SESION'),(102,'krys','2014-07-07 12:21:56','INICIO SESION'),(103,'krys','2014-07-07 12:22:28','CERRO SESION'),(104,'admin','2014-07-07 12:22:34','INICIO SESION'),(105,'admin','2014-07-07 12:23:37','CERRO SESION'),(106,'krys','2014-07-07 12:26:39','INICIO SESION'),(107,'krys','2014-07-07 12:26:59','INICIO SESION'),(108,'admin','2014-07-07 12:42:48','INICIO SESION'),(109,'admin','2014-07-07 12:44:59','INICIO SESION'),(110,'admin','2014-07-07 12:46:48','INICIO SESION'),(111,'admin','2014-07-07 12:53:15','INICIO SESION');
+insert  into `actividad`(`id`,`usuario`,`tiempo`,`actividad`) values (88,'admin','2014-07-07 12:10:20','INICIO SESION'),(89,'admin','2014-07-07 12:10:36','INICIO SESION'),(90,'admin','2014-07-07 12:11:45','INICIO SESION'),(91,'admin','2014-07-07 12:11:56','ABRIO PUERTO 1'),(92,'admin','2014-07-07 12:11:57','LIBERO PUERTO 1'),(93,'admin','2014-07-07 12:11:58','ABRIO PUERTO 1'),(94,'admin','2014-07-07 12:13:40','INICIO SESION'),(95,'admin','2014-07-07 12:15:51','INICIO SESION'),(96,'admin','2014-07-07 12:17:19','INICIO SESION'),(97,'admin','2014-07-07 12:17:45','INICIO SESION'),(98,'admin','2014-07-07 12:18:57','INICIO SESION'),(99,'admin','2014-07-07 12:20:22','INICIO SESION'),(100,'admin','2014-07-07 12:21:05','INICIO SESION'),(101,'admin','2014-07-07 12:21:17','CERRO SESION'),(102,'krys','2014-07-07 12:21:56','INICIO SESION'),(103,'krys','2014-07-07 12:22:28','CERRO SESION'),(104,'admin','2014-07-07 12:22:34','INICIO SESION'),(105,'admin','2014-07-07 12:23:37','CERRO SESION'),(106,'krys','2014-07-07 12:26:39','INICIO SESION'),(107,'krys','2014-07-07 12:26:59','INICIO SESION'),(108,'admin','2014-07-07 12:42:48','INICIO SESION'),(109,'admin','2014-07-07 12:44:59','INICIO SESION'),(110,'admin','2014-07-07 12:46:48','INICIO SESION'),(111,'admin','2014-07-07 12:53:15','INICIO SESION'),(112,'admin','2014-08-26 17:33:21','INICIO SESION'),(113,'admin','2014-08-26 17:33:54','CERRO SESION'),(114,'andre','2014-08-26 17:34:12','INICIO SESION'),(115,'andre','2014-08-26 17:35:01','CERRO SESION');
 
 /*Table structure for table `parada` */
 
@@ -113,7 +113,7 @@ CREATE TABLE `transportista` (
 
 /*Data for the table `transportista` */
 
-insert  into `transportista`(`primer_nombre`,`segundo_nombre`,`primer_apellido`,`segundo_apellido`,`fecha_nac`,`cedula`,`activo`) values ('Raul','Ernesto','Pereira','Figueroa','1970-10-03',12394033,1),('Ernest','Saul','Camacho','Montilla','1971-07-07',13286741,1),('Ricardo','Antonio','Pereira','Mora','1976-12-07',14396554,1),('Alberto','José','Maneiro','Fuentes','1980-04-30',16475014,1),('Antonio','José','Rivas','Beltrand','1989-09-09',16589741,1),('Ruben','Yaimeru','Maza','Marquez','1993-02-10',20875996,0),('Pedro','Alejandro','Fernandes','Olarte','1993-06-29',21536559,1);
+insert  into `transportista`(`primer_nombre`,`segundo_nombre`,`primer_apellido`,`segundo_apellido`,`fecha_nac`,`cedula`,`activo`) values ('Raul','Ernesto','Pereira','Figueroa','1970-10-03',12394033,1),('Ernesto','Saul','Camacho','Montilla','1971-07-07',13286741,0),('Ricardo','Antonio','Pereira','Mora','1976-12-07',14396554,1),('Alberto','José','Maneiro','Fuentes','1980-04-30',16475014,0),('Antonio','José','Rivas','Beltrand','1989-09-09',16589741,1),('Ruben','Yaimeru','Maza','Marquez','1993-02-10',20875996,1),('Pedro','Alejandro','Fernandes','Olarte','1993-06-29',21536559,0),('Tali','','Zora','VasNormandia','2159-07-16',68749312,1);
 
 /*Table structure for table `usuario` */
 
@@ -128,7 +128,7 @@ CREATE TABLE `usuario` (
 
 /*Data for the table `usuario` */
 
-insert  into `usuario`(`id`,`password`,`permisos`) values ('admin','d033e22ae348aeb5660fc2140aec35850c4da997','RW'),('josue','8cb2237d0679ca88db6464eac60da96345513964','NN'),('krys','8cb2237d0679ca88db6464eac60da96345513964','R');
+insert  into `usuario`(`id`,`password`,`permisos`) values ('admin','d033e22ae348aeb5660fc2140aec35850c4da997','R.W/R.C.M.S.D'),('andre','40bd001563085fc35165329ea1ff5c5ecbdbbeef','R/R.M.D'),('josue','8cb2237d0679ca88db6464eac60da96345513964','-/R'),('krys','8cb2237d0679ca88db6464eac60da96345513964','R/R.S'),('rubenyai','0d552caec67cd2ccfbd4344c2b72e6a35ee982b8','-/R.C.M');
 
 /*Table structure for table `viaje` */
 

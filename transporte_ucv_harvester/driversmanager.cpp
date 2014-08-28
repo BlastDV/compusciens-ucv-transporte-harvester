@@ -232,7 +232,7 @@ void DriversManager::LoadData()
 void DriversManager::ActivateValidators()
 {
     // Creemos las validaciones de texto
-    QRegExp TextReg("[a-zA-z]([a-zA-z]|[ ])*");
+    QRegExp TextReg("[a-zA-Z]([a-zA-Z]|[ ])*");
     QValidator *TextValidator= new QRegExpValidator(TextReg, this);
 
     ui->Nombre1Input->setValidator(TextValidator);
@@ -547,7 +547,6 @@ void DriversManager::on_SaveRegButton_clicked()
         }
         else
         {
-
             // Connector->Connector le dice al query con cual BD y conexion funcionar
             QSqlQuery* SaveQuery= new QSqlQuery (Connector->Connector);
 

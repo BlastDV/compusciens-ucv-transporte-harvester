@@ -128,7 +128,7 @@ CREATE TABLE `usuario` (
 
 /*Data for the table `usuario` */
 
-insert  into `usuario`(`id`,`password`,`permisos`) values ('admin','d033e22ae348aeb5660fc2140aec35850c4da997','R.C.M.D/R.W/R.C.M.S.D'),('andre','40bd001563085fc35165329ea1ff5c5ecbdbbeef','R.C/R/R.M.D'),('josue','8cb2237d0679ca88db6464eac60da96345513964','R/-/R'),('krys','8cb2237d0679ca88db6464eac60da96345513964','R.D/R/R.S'),('rubenyai','0d552caec67cd2ccfbd4344c2b72e6a35ee982b8','-/-/R.C.M');
+insert  into `usuario`(`id`,`password`,`permisos`) values ('admin','d033e22ae348aeb5660fc2140aec35850c4da997','R.W/R.C.M.D/R.C.M.S.D'),('andre','eebf0871c30b9dbb4560b2ed9c5987bc2c8a8ef6','R/R.C/R.M.D/'),('josue','8cb2237d0679ca88db6464eac60da96345513964','R/R.D/R/'),('krys','8cb2237d0679ca88db6464eac60da96345513964','R/R.D/R.S'),('rubenyai','0d552caec67cd2ccfbd4344c2b72e6a35ee982b8','-/R/.S/');
 
 /*Table structure for table `viaje` */
 

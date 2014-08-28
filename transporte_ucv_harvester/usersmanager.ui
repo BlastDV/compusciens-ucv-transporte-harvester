@@ -72,6 +72,12 @@
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QFormLayout" name="formLayout">
+             <property name="fieldGrowthPolicy">
+              <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+             </property>
+             <property name="verticalSpacing">
+              <number>6</number>
+             </property>
              <item row="0" column="0">
               <widget class="QLabel" name="IDLabel">
                <property name="text">
@@ -100,7 +106,49 @@
                </property>
               </widget>
              </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="NewPassLabel">
+               <property name="text">
+                <string>Nueva Contraseña:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="NewPassInput">
+               <property name="echoMode">
+                <enum>QLineEdit::Password</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="RepeatPassLabel">
+               <property name="text">
+                <string>Repetir Contraseña:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="RepeatPassInput">
+               <property name="echoMode">
+                <enum>QLineEdit::Password</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QCheckBox" name="ShowPassInput">
+               <property name="text">
+                <string>Mostrar contraseña</string>
+               </property>
+              </widget>
+             </item>
             </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="CancelPassChangeButton">
+            <property name="text">
+             <string>Cancelar Cambio de Contraseña</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -138,6 +186,46 @@
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
+              <item>
+               <widget class="QGroupBox" name="LogReportFrame">
+                <property name="title">
+                 <string>Log de eventos</string>
+                </property>
+                <layout class="QFormLayout" name="formLayout_4">
+                 <property name="fieldGrowthPolicy">
+                  <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="CanReadAllLogLabel">
+                   <property name="text">
+                    <string>¿Puede ver todo?</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="CanDeleteLogLabel">
+                   <property name="text">
+                    <string>¿Puede eliminar?</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QCheckBox" name="CanReadAllLogInput">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QCheckBox" name="CanDeleteLogInput">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
               <item>
                <widget class="QGroupBox" name="UsersManagerFrame">
                 <property name="title">
@@ -282,46 +370,6 @@
                 </layout>
                </widget>
               </item>
-              <item>
-               <widget class="QGroupBox" name="LogReportFrame">
-                <property name="title">
-                 <string>Log de eventos</string>
-                </property>
-                <layout class="QFormLayout" name="formLayout_4">
-                 <property name="fieldGrowthPolicy">
-                  <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-                 </property>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="CanReadAllLogLabel">
-                   <property name="text">
-                    <string>¿Puede ver todo?</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="CanDeleteLogLabel">
-                   <property name="text">
-                    <string>¿Puede eliminar?</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QCheckBox" name="CanReadAllLogInput">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QCheckBox" name="CanDeleteLogInput">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
              </layout>
             </widget>
            </widget>
@@ -408,7 +456,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="CancelButton">
+        <widget class="QPushButton" name="CancelModButton">
          <property name="minimumSize">
           <size>
            <width>32</width>

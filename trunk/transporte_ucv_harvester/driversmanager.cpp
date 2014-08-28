@@ -299,6 +299,7 @@ void DriversManager::SetView(QString Modalidad)
         ui->TopFrame->hide();
         ui->ActionsFrame->hide();
     }
+    else
     if (Modalidad=="Inicio")
     {
         // Se muestran los bloques de la interfaz ahora que la clase ha

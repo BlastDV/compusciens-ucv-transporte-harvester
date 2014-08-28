@@ -11,8 +11,12 @@ UsersManager::UsersManager(QWidget *parent) : QMainWindow(parent), ui(new Ui::Us
     // Este sera nuestro informante de permisos
     PermissionRep= new PermissionReporter(this);
 
+    // No hay ningun registro seleccionado
+    RegIndex= -1;
+
     // No estamos editando
     EDITING= false;
+    EDITINGPASS= false;
 
     // Iniciamos el conector de la BD
     ConnectionName= "UsersManager";
@@ -21,6 +25,10 @@ UsersManager::UsersManager(QWidget *parent) : QMainWindow(parent), ui(new Ui::Us
 
     // Unimos las conexiones entre widgets
     connect(ui->UsersList, SIGNAL(cellClicked(int,int)), this, SLOT(UpdateView(int,int)));
+    connect(ui->ShowPassInput, SIGNAL(toggled(bool)), this, SLOT(AlternPasswordShow(bool)));
+
+    // Activemos las validaciones
+    ActivateValidators();
 
     // Llenamos la interfaz
     LoadData();
@@ -98,6 +106,8 @@ void UsersManager::LoadData()
                 // Arreglemos un aspecto visual de la lista
                 ui->UsersList->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 
+                // Y ponemos RegIndex a apuntar al primer registro
+                RegIndex= 0;
             }
         }
 
@@ -153,6 +163,164 @@ void UsersManager::EraseInputs()
     ui->CanDeleteDriversInput->setChecked(false);
 }
 
+// Este metodo se encargara de esconder los inputs relacionados a la contraseña
+void UsersManager::HidePassInputs()
+{
+    // Escondemos el apartado de "nueva contraseña"
+    ui->NewPassLabel->hide();
+    ui->NewPassInput->hide();
+    ui->RepeatPassLabel->hide();
+    ui->RepeatPassInput->hide();
+    ui->ShowPassInput->hide();
+    ui->CancelPassChangeButton->hide();
+
+    // Mostramos las opciones de la contraseña actual
+    ui->PasswordLabel->show();
+    ui->ChangePassButton->show();
+}
+
+// Este metodo se encargara de mostrar los inputs relacionados a la contraseña
+void UsersManager::ShowPassInputs()
+{
+    // Mostramos el apartado de "nueva contraseña"
+    ui->NewPassLabel->show();
+    ui->NewPassInput->show();
+    ui->RepeatPassLabel->show();
+    ui->RepeatPassInput->show();
+    ui->ShowPassInput->show();
+    if (EDITING)
+        ui->CancelPassChangeButton->show();
+
+    // Escondemos las opciones de la contraseña actual
+    ui->PasswordLabel->hide();
+    ui->ChangePassButton->hide();
+}
+
+// Este metodo alternata entre mostrar o no la contraseña
+void UsersManager::AlternPasswordShow(bool checked)
+{
+    if (!checked)
+    {
+        ui->NewPassInput->setEchoMode(QLineEdit::Password);
+        ui->RepeatPassInput->setEchoMode(QLineEdit::Password);
+    }
+    else
+    {
+        ui->NewPassInput->setEchoMode(QLineEdit::Normal);
+        ui->RepeatPassInput->setEchoMode(QLineEdit::Normal);
+    }
+}
+
+// Esta funcion evita que el usuario ingrese simbolos o espacios en el campo de id de usuario
+// o espacios en el campo de contraseña
+void UsersManager::ActivateValidators()
+{
+    // Creemos las validaciones del id de usuario
+    QRegExp IDReg("([a-zA-Z]|[0-9])*");
+    QValidator *IDValidator= new QRegExpValidator(IDReg, this);
+
+    ui->IDInput->setValidator(IDValidator);
+
+    // Creemos las validaciones del campo de contraseña
+    QRegExp PassReg("([0-9]|[a-zA-Z]|[!#@\"_*-+])*");
+    QValidator *PassValidator= new QRegExpValidator(PassReg, this);
+
+    ui->NewPassInput->setValidator(PassValidator);
+    ui->RepeatPassInput->setValidator(PassValidator);
+}
+
+// Esta funcion tomara los permisos marcados y los convertira en un QString
+// como el que almancena la BD para los permisos
+QString UsersManager::GetPermissions()
+{
+    QString Output="";
+    int PermissionCounter;
+
+    /** Revisemos los permisos del log **/
+    PermissionCounter= 0;
+    if (ui->CanReadAllLogInput->isChecked())
+    {
+        Output+="R.";
+        PermissionCounter++;
+    }
+    if (ui->CanDeleteLogInput->isChecked())
+    {
+        Output+="W.";
+        PermissionCounter++;
+    }
+
+    if (PermissionCounter==0)
+        Output+="-/";
+    else
+        Output+="/";
+
+    /** Revisemos los permisos del Administrador de Usuarios **/
+    PermissionCounter= 0;
+    if (ui->CanReadUsersInput->isChecked())
+    {
+        Output+="R.";
+        PermissionCounter++;
+    }
+    if (ui->CanCreateUsersInput->isChecked())
+    {
+        Output+="C.";
+        PermissionCounter++;
+    }
+    if (ui->CanEditUsersInput->isChecked())
+    {
+        Output+="M.";
+        PermissionCounter++;
+    }
+    if (ui->CanDeleteUsersInput->isChecked())
+    {
+        Output+="D.";
+        PermissionCounter++;
+    }
+
+    if (PermissionCounter==0)
+        Output+="-/";
+    else
+        Output+="/";
+
+    /** Revisemos los permisos del Administrador de Transportistas **/
+    PermissionCounter= 0;
+    if (ui->CanReadDriversInput->isChecked())
+    {
+        Output+="R.";
+        PermissionCounter++;
+    }
+    if (ui->CanCreateDriversInput->isChecked())
+    {
+        Output+="C.";
+        PermissionCounter++;
+    }
+    if (ui->CanEditDriversInput->isChecked())
+    {
+        Output+="M.";
+        PermissionCounter++;
+    }
+    if (ui->CanSuspendDriversInput->isChecked())
+    {
+        Output+="S.";
+        PermissionCounter++;
+    }
+    if (ui->CanDeleteDriversInput->isChecked())
+    {
+        Output+="D.";
+        PermissionCounter++;
+    }
+
+    if (PermissionCounter==0)
+        Output+="-/";
+    else
+        Output+="/";
+
+    // Finalmente, retornemos el QString de permisos
+    qDebug("Permisos: %s", Output.toStdString().c_str());
+    return Output;
+
+}
+
 // Este metodo manipulara la interfaz de acuerdo a ciertos criterios como
 // el usuario actual y sus respectivos permisos
 void UsersManager::SetView(QString Modalidad)
@@ -171,6 +339,8 @@ void UsersManager::SetView(QString Modalidad)
         ui->ActionsFrame->show();
 
         // Bloqueo de Inputs
+        ui->ChangePassButton->setEnabled(false);
+        HidePassInputs();
         ui->CanReadUsersInput->setEnabled(false);
         ui->CanCreateUsersInput->setEnabled(false);
         ui->CanEditUsersInput->setEnabled(false);
@@ -185,7 +355,96 @@ void UsersManager::SetView(QString Modalidad)
 
         // Bloqueo de Acciones
         ui->SaveRegButton->hide();
-        ui->CancelButton->hide();
+        ui->CancelModButton->hide();
+    }
+    else
+    if (Modalidad=="Nuevo")
+    {
+        // Limpieza de Inputs
+        EraseInputs();
+
+        // Desbloqueo de Inputs
+        ui->IDInput->setReadOnly(false);
+        ShowPassInputs();
+        ui->CanReadUsersInput->setEnabled(true);
+        ui->CanCreateUsersInput->setEnabled(true);
+        ui->CanEditUsersInput->setEnabled(true);
+        ui->CanDeleteUsersInput->setEnabled(true);
+        ui->CanReadAllLogInput->setEnabled(true);
+        ui->CanDeleteLogInput->setEnabled(true);
+        ui->CanReadDriversInput->setEnabled(true);
+        ui->CanCreateDriversInput->setEnabled(true);
+        ui->CanEditDriversInput->setEnabled(true);
+        ui->CanSuspendDriversInput->setEnabled(true);
+        ui->CanDeleteDriversInput->setEnabled(true);
+
+        // Bloqueo de Acciones
+        ui->UsersList->setEnabled(false);
+        ui->NewButton->hide();
+        ui->DelButton->hide();
+        ui->ModButton->hide();
+
+        // Desbloqueo de Acciones
+        ui->SaveRegButton->show();
+        ui->CancelModButton->show();
+    }
+    else
+    if (Modalidad=="Editar")
+    {
+        // Desbloqueo de Inputs
+        ui->ChangePassButton->setEnabled(true);
+        ui->CanReadUsersInput->setEnabled(true);
+        ui->CanCreateUsersInput->setEnabled(true);
+        ui->CanEditUsersInput->setEnabled(true);
+        ui->CanDeleteUsersInput->setEnabled(true);
+        ui->CanReadAllLogInput->setEnabled(true);
+        ui->CanDeleteLogInput->setEnabled(true);
+        ui->CanReadDriversInput->setEnabled(true);
+        ui->CanCreateDriversInput->setEnabled(true);
+        ui->CanEditDriversInput->setEnabled(true);
+        ui->CanSuspendDriversInput->setEnabled(true);
+        ui->CanDeleteDriversInput->setEnabled(true);
+
+        // Bloqueo de Acciones
+        ui->UsersList->setEnabled(false);
+        ui->NewButton->hide();
+        ui->DelButton->hide();
+        ui->ModButton->hide();
+
+        // Desbloqueo de Acciones
+        ui->SaveRegButton->show();
+        ui->CancelModButton->show();
+    }
+    if (Modalidad=="Restaurar")
+    {
+        // Llenado de Inputs
+        UpdateView(RegIndex, 3);
+
+        // Bloqueo de Inputs
+        ui->IDInput->setReadOnly(true);
+        ui->ChangePassButton->setEnabled(false);
+        HidePassInputs();
+        ui->CanReadUsersInput->setEnabled(false);
+        ui->CanCreateUsersInput->setEnabled(false);
+        ui->CanEditUsersInput->setEnabled(false);
+        ui->CanDeleteUsersInput->setEnabled(false);
+        ui->CanReadAllLogInput->setEnabled(false);
+        ui->CanDeleteLogInput->setEnabled(false);
+        ui->CanReadDriversInput->setEnabled(false);
+        ui->CanCreateDriversInput->setEnabled(false);
+        ui->CanEditDriversInput->setEnabled(false);
+        ui->CanSuspendDriversInput->setEnabled(false);
+        ui->CanDeleteDriversInput->setEnabled(false);
+
+        // Desbloqueo de Acciones
+        ui->UsersList->setEnabled(true);
+        ui->NewButton->show();
+        ui->DelButton->show();
+        ui->ModButton->show();
+
+        // Bloqueo de Acciones
+        ui->SaveRegButton->hide();
+        ui->CancelModButton->hide();
     }
 }
 
@@ -196,6 +455,8 @@ void UsersManager::UpdateView(int UserIndex, int Trash)
     // Ignoramos "Trash", es solo algo necesario por la arquitectura de Qt
 
     // En UserIndex tenemos el indice del usuario en el QMap que el <usuario> quiere consultar
+    // Por eso actualizamos RegIndex
+    RegIndex= UserIndex;
 
     // Vamos a crear una conexion para poder traer ciertos datos
     if (!Connector->RequestConnection())
@@ -225,4 +486,139 @@ void UsersManager::UpdateView(int UserIndex, int Trash)
 
         Connector->EndConnection();
     }
+}
+
+// Esto se ejecutara cuando se presione el boton "Nuevo"
+void UsersManager::on_NewButton_clicked()
+{
+    SetView("Nuevo");
+}
+
+// Esto se ejecutara cuando se presione el boton "Modificar"
+void UsersManager::on_ModButton_clicked()
+{
+    EDITING= true;
+    SetView("Editar");
+}
+
+// Esto se ejecutara cuando se presione el boton "Guardar"
+void UsersManager::on_SaveRegButton_clicked()
+{
+    // Vamos a crear una conexion para poder traer ciertos datos
+    if (!Connector->RequestConnection())
+    {
+        QMessageBox::critical(0, "Error",
+        "No se ha podido acceder a la Base de Datos."
+        "Revise el estado de la misma.\n\nMensaje: Error DBA1\n"+
+        Connector->getLastError().text());
+    }
+    else
+    {
+        QString ErrMess="";
+        // Los campos obligatorios estan llenos?
+        if (ui->IDInput->text()=="")
+            ErrMess+= QString("-ID de usuario<br>");
+        if (EDITINGPASS)
+        {
+            if (ui->NewPassInput->text()=="")
+                ErrMess+= QString("-Nueva contraseña<br>");
+            if (ui->RepeatPassInput->text()=="")
+                ErrMess+= QString("-Repetir contraseña<br>");
+        }
+
+        if (ErrMess!="")
+        {
+            QMessageBox::information(0, "Error",
+            "Los siguientes campos no pueden estar <b>vacios</b>:<br><br>"+
+            ErrMess);
+        }
+        else
+        {
+            // Connector->Connector le dice al query con cual BD y conexion funcionar
+            QSqlQuery* SaveQuery= new QSqlQuery (Connector->Connector);
+
+            if (EDITING)
+            {
+                // Estamos editando un usuario
+                QString Query= "UPDATE usuario SET ";
+
+                if (EDITINGPASS)
+                {
+                    // Si la contraseña se modifico, hay que comprobar que los campos
+                    // "Nueva contraseña" y "Repetir contraseña" sean iguales
+                    if (ui->NewPassInput->text()!=ui->RepeatPassInput->text())
+                    {
+                        QMessageBox::information(0, "Error",
+                        "Las contraseñas no coinciden, revise los campos <b>Nueva contraseña<b> y "
+                        "<b>Repetir contraseña<b>.");
+                    }
+                    else
+                    {
+                        // Si son iguales, hay que incluir la contraseña cifrada en el UPDATE
+                        // Hay que encriptar la clave con SHA1 para compararla con la de la BD
+                        QCryptographicHash* Encrypter;
+                        QString Encryptedpassword= (Encrypter->hash(QByteArray(ui->NewPassInput->text().toStdString().c_str()), QCryptographicHash::Sha1)).toHex();
+
+                        Query+=QString("password='")+Encryptedpassword+QString("', ");
+                    }
+                }
+
+                // Actualicemos los permisos
+                Query+=QString("permisos='")+GetPermissions()+QString("' ");
+                Query+=QString("WHERE id='")+ui->IDInput->text()+QString("'");
+
+                qDebug("Query: %s", Query.toStdString().c_str());
+                if (!SaveQuery->exec(Query))
+                    QMessageBox::critical(0, QObject::tr("Error"),
+                    "No se han podido guardar los cambios. "
+                    "Revise el estado de la Base de Datos.<br><br>nMensaje: Error DBQ1<br>");
+                else
+                {
+                    // LoadData se encarga de poner EDITING en falso
+                    qDebug("Fuck Yeah!");
+                    //LoadData();
+                    //SetView("Restaurar");
+                }
+            }
+            else
+            {
+                // Estamos registrando un nuevo usuario
+            }
+        }
+
+
+        Connector->EndConnection();
+    }
+}
+
+// Esto se ejecutara cuando se presione el boton "Cancelar"
+void UsersManager::on_CancelModButton_clicked()
+{
+    EDITING= false;
+    EDITINGPASS= false;
+    ui->NewPassInput->setText("");
+    ui->RepeatPassInput->setText("");
+    SetView("Restaurar");
+}
+
+// Esto se ejecutara cuando se presione el boton "Eliminar"
+void UsersManager::on_DelButton_clicked()
+{
+
+}
+
+// Esto se ejecutara cuando se presione el boton "Cambiar" (contraseña)
+void UsersManager::on_ChangePassButton_clicked()
+{
+    EDITINGPASS= true;
+    ShowPassInputs();
+}
+
+// Esto se ejecutara cuando se presione el boton "Cancelar Cambio de Contraseña"
+void UsersManager::on_CancelPassChangeButton_clicked()
+{
+    EDITINGPASS= false;
+    ui->NewPassInput->setText("");
+    ui->RepeatPassInput->setText("");
+    HidePassInputs();
 }

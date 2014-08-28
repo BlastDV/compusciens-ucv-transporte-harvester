@@ -3,6 +3,13 @@
 PermissionReporter::PermissionReporter(QObject *parent) : QObject(parent)
 {
     // Por default, usuario X no puede hacer nada
+    // Permisos del Administrador de Usuarios
+    READUSERSMANAGER= false;
+    CREATEUSERS= false;
+    EDITUSERS= false;
+    DELETEUSERS= false;
+    READONLYUSERSMANAGER= false;
+
     // Permisos del Log
     READALLLOGREP= false;
     WRITELOGREP= false;
@@ -23,6 +30,13 @@ PermissionReporter::PermissionReporter(QObject *parent) : QObject(parent)
 void PermissionReporter::CalculatePermissions(QString input)
 {
     // Por default, usuario X no puede hacer nada
+    // Permisos del Administrador de Usuarios
+    READUSERSMANAGER= false;
+    CREATEUSERS= false;
+    EDITUSERS= false;
+    DELETEUSERS= false;
+    READONLYUSERSMANAGER= false;
+
     // Permisos del Log
     READALLLOGREP= false;
     WRITELOGREP= false;
@@ -43,9 +57,26 @@ void PermissionReporter::CalculatePermissions(QString input)
     if (Permisos.count()>0)
     {
         //Aca empezamos a determinar lo que usuario X puede hacer
+        /** Permisos del Administrador de Usuarios **/
+        QStringList UsersMP= Permisos.at(0).split(".");
+        // Puede ver el administrador?
+        if (UsersMP.contains("R"))
+            READUSERSMANAGER= true;
+        // Puede agregar nuevos usuarios?
+        if (UsersMP.contains("C"))
+            CREATEUSERS= true;
+        // Puede modificar los usuarios?
+        if (UsersMP.contains("M"))
+            EDITUSERS= true;
+        // Puede eliminar usuarios?
+        if (UsersMP.contains("D"))
+            DELETEUSERS= true;
+        // Solo puede ver el administrador?
+        if (!CREATEUSERS & !EDITUSERS & !DELETEUSERS)
+            READONLYUSERSMANAGER= true;
 
         /** Permisos del Log **/
-        QStringList LogP=  Permisos.at(0).split(".");
+        QStringList LogP=  Permisos.at(1).split(".");
         // Puede leer todo el log de eventos?
         if (LogP.contains("R"))
             READALLLOGREP= true;
@@ -57,7 +88,7 @@ void PermissionReporter::CalculatePermissions(QString input)
             READONLYLOG= true;
 
         /** Permisos del Administrador de Transportistas **/
-        QStringList DriversMP= Permisos.at(1).split(".");
+        QStringList DriversMP= Permisos.at(2).split(".");
         // Puede ver el administrador?
         if (DriversMP.contains("R"))
             READDRIVERSMANAGER= true;
@@ -73,10 +104,40 @@ void PermissionReporter::CalculatePermissions(QString input)
         // Puede eliminar transportistas?
         if (DriversMP.contains("D"))
             DELETEDRIVERS= true;
-        // Solo puede ver el log?
+        // Solo puede ver el administrador?
         if (!CREATEDRIVERS & !EDITDRIVERS & !SUSPENDDRIVERS & !DELETEDRIVERS)
             READONLYDRIVERSMANAGER= true;
     }
+}
+
+// Usuario X puede ver el administrador de usuarios?
+bool PermissionReporter::CanReadUsersManager()
+{
+    return READUSERSMANAGER;
+}
+
+// Usuario X puede crear usuarios?
+bool PermissionReporter::CanCreateUsers()
+{
+    return CREATEUSERS;
+}
+
+// Usuario X puede modificar usuarios?
+bool PermissionReporter::CanEditUsers()
+{
+    return EDITUSERS;
+}
+
+// Usuario X puede eliminar usuarios?
+bool PermissionReporter::CanDeleteUsers()
+{
+    return DELETEUSERS;
+}
+
+// Usuario X solo puede ver el administrador de usuarios?
+bool PermissionReporter::CanOnlyReadUsers()
+{
+    return READONLYUSERSMANAGER;
 }
 
 // Usuario X puede leer todo el log?
@@ -136,6 +197,13 @@ bool PermissionReporter::CanOnlyReadDriversManager()
 /* Esta clase tiene como unico fin el hacer debug sobre la misma*/
 void PermissionReporter::DumpPermissions()
 {
+    qDebug("Permisos del Administrador de Usuarios:");
+    qDebug("\tLeer: %d", READUSERSMANAGER);
+    qDebug("\tCrear: %d", CREATEUSERS);
+    qDebug("\tModificar: %d", EDITUSERS);
+    qDebug("\tEliminar: %d", DELETEUSERS);
+    qDebug("\tSolo Lectura: %d", READONLYUSERSMANAGER);
+
     qDebug("Permisos del Log:");
     qDebug("\tLeer Todo: %d", READALLLOGREP);
     qDebug("\tModificar: %d", WRITELOGREP);

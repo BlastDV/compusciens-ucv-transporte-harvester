@@ -24,6 +24,13 @@ public:
 
     void CalculatePermissions(QString input);
 
+    // Permisos del Administrador de Usuarios
+    bool CanReadUsersManager();
+    bool CanCreateUsers();
+    bool CanEditUsers();
+    bool CanDeleteUsers();
+    bool CanOnlyReadUsers();
+
     // Permisos del Log
     bool CanReadAllLog ();
     bool CanWriteLog ();
@@ -42,6 +49,13 @@ public:
 signals:
 
 private:
+    // Permisos del Administrador de Usuarios
+    bool READUSERSMANAGER;
+    bool CREATEUSERS;
+    bool EDITUSERS;
+    bool DELETEUSERS;
+    bool READONLYUSERSMANAGER;
+
     // Permisos del Log
     bool READALLLOGREP;
     bool WRITELOGREP;

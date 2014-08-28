@@ -17,7 +17,6 @@ class DriversManager : public QWidget
     
 public:
     explicit DriversManager(QWidget *parent = 0);
-    explicit DriversManager(QWidget *parent, QString user);
     ~DriversManager();
 
     QString ConnectionName;

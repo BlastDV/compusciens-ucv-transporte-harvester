@@ -6,12 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>503</width>
-    <height>740</height>
+    <width>485</width>
+    <height>550</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>485</width>
+    <height>550</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>485</width>
+    <height>550</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Administrador de Usuarios</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -26,6 +38,18 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QTableWidget" name="UsersList">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <column>
           <property name="text">
            <string>Lista de usuarios</string>
@@ -56,7 +80,11 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="IDInput"/>
+              <widget class="QLineEdit" name="IDInput">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="PasswordLabel">
@@ -91,6 +119,12 @@
           </item>
           <item>
            <widget class="QScrollArea" name="PermissionsArea">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="widgetResizable">
              <bool>true</bool>
             </property>
@@ -99,8 +133,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>188</width>
-               <height>301</height>
+               <width>202</width>
+               <height>320</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -124,29 +158,43 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0">
+                 <item row="2" column="0">
                   <widget class="QLabel" name="CanEditUsersLabel">
                    <property name="text">
                     <string>¿Puede modificar?</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="0">
+                 <item row="3" column="0">
                   <widget class="QLabel" name="CanDeleteUsersLabel">
                    <property name="text">
                     <string>¿Puede eliminar?</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="1">
+                 <item row="2" column="1">
                   <widget class="QCheckBox" name="CanEditUsersInput">
                    <property name="text">
                     <string/>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="1">
+                 <item row="3" column="1">
                   <widget class="QCheckBox" name="CanDeleteUsersInput">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="CanCreateUsersLabel">
+                   <property name="text">
+                    <string>¿Puede crear?</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QCheckBox" name="CanCreateUsersInput">
                    <property name="text">
                     <string/>
                    </property>
@@ -278,19 +326,6 @@
             </widget>
            </widget>
           </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
          </layout>
         </widget>
        </item>
@@ -417,6 +452,19 @@
           </size>
          </property>
         </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>

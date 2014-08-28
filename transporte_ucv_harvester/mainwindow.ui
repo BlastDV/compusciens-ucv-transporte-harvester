@@ -594,7 +594,7 @@
     <property name="title">
      <string>Usuarios</string>
     </property>
-    <addaction name="actionAdministrar_usuarios"/>
+    <addaction name="actionAdminUsuarios"/>
     <addaction name="separator"/>
     <addaction name="actionCerrarSesion"/>
    </widget>
@@ -673,7 +673,7 @@
     <string>Configurar</string>
    </property>
   </action>
-  <action name="actionAdministrar_usuarios">
+  <action name="actionAdminUsuarios">
    <property name="text">
     <string>Administrar</string>
    </property>

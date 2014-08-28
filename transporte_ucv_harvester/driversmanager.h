@@ -18,14 +18,13 @@ class DriversManager : public QWidget
 public:
     explicit DriversManager(QWidget *parent = 0);
     ~DriversManager();
-
-    QString ConnectionName;
     bool UpdateUser (QString user);
     
 private:
     Ui::DriversManager *ui;
     DBConnector* Connector;
     PermissionReporter* PermissionRep;
+    QString ConnectionName;
     QString UserID;
 
     bool EDITING;

@@ -627,6 +627,7 @@ void DriversManager::on_SaveRegButton_clicked()
 // Esto se ejecutara cuando se presione el boton "Eliminar"
 void DriversManager::on_DelButton_clicked()
 {
+    // Primero solicitamos una confirmacion
     QString Mensaje= "Esta a punto de eliminar al transportista <b>"+ui->Nombre1Input->text()+" "+ui->Apellido1Input->text()+"</b> de la base de datos.";
     QMessageBox* Confirmation= new QMessageBox(QMessageBox::Warning, "Confirmación requerida", Mensaje);
     Confirmation->setInformativeText("¿Está seguro?");

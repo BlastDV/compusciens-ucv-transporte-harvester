@@ -19,6 +19,8 @@ class UsersManager : public QMainWindow
 public:
     explicit UsersManager(QWidget *parent = 0);
     ~UsersManager();
+    bool UpdateUser (QString user);
+
     
 private:
     Ui::UsersManager *ui;

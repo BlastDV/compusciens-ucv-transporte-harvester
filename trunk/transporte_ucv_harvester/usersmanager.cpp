@@ -35,15 +35,54 @@ UsersManager::UsersManager(QWidget *parent) : QMainWindow(parent), ui(new Ui::Us
 
     // Y la mostramos de forma preliminar, esto es: vacia. Por razones de seguridad
     // en posibles usos incorrectos de esta clase. Debe llamarse UpdateUser() antes de mostrarla!!!
-    //SetView("default");
-
-    //bypass temporal
-    SetView("Inicio");
+    SetView("default");
 }
 
 UsersManager::~UsersManager()
 {
     delete ui;
+}
+
+// Esta funcion se encargara de leer los permisos del usuario actual y tomar decisiones en base a eso
+bool UsersManager::UpdateUser (QString user)
+{
+    UserID= user;
+
+    // Abramos una conexion a la BD
+    if (!Connector->RequestConnection())
+    {
+        QMessageBox::critical(0, QObject::tr("Error"),
+                              "No se ha podido podido acceder a la base de datos, revise el estado "
+                              "de la misma.<br><br>Mensaje: Error DBA1<br>"+ Connector->getLastError().text());
+
+        return false;
+    }
+    else
+    {
+        // No importa el nombre de usuario sino sus permisos
+        QSqlQuery* Rightsquery= new QSqlQuery (Connector->Connector);
+        if (!Rightsquery->exec(QString("SELECT permisos FROM usuario WHERE id=")+QString("'")+UserID+QString("'")))
+        {
+            QMessageBox::critical(0, QObject::tr("Error"),
+                                  "No se han podido determinar sus permisos. Revise el estado "
+                                  "de la Base de Datos<br><br>Mensaje: Error DBQ1<br>"+ Connector->getLastError().text());
+
+            return false;
+        }
+        else
+        {
+            Rightsquery->first();
+
+            // Obtenidos los permisos, vamos a decodificarlos
+            PermissionRep->CalculatePermissions(Rightsquery->value(0).toString());
+            SetView("Inicio");
+
+            // Listos para usar!
+        }
+
+        Connector->EndConnection();
+        return true;
+    }
 }
 
 // Este metodo recupera la informacion de la BD y los guarda en estructuras
@@ -118,7 +157,12 @@ void UsersManager::LoadData()
 // Este metodo limpia las estructuras locales
 void UsersManager::EraseData()
 {
+    // Limpiemos la tabla
+    while(ui->UsersList->rowCount()>0)
+        ui->UsersList->removeRow(0);
 
+    // Limpiemos el QMap de indices e IDs
+    UsersLocalList.clear();
 }
 
 // Este metodo llenara los distintos inputs con la informacion contenida en input
@@ -222,7 +266,7 @@ void UsersManager::ActivateValidators()
     ui->IDInput->setValidator(IDValidator);
 
     // Creemos las validaciones del campo de contraseña
-    QRegExp PassReg("([0-9]|[a-zA-Z]|[!#@\"_*-+])*");
+    QRegExp PassReg("([0-9]|[a-zA-Z]|[!#@\"_*-+]){4,25}");
     QValidator *PassValidator= new QRegExpValidator(PassReg, this);
 
     ui->NewPassInput->setValidator(PassValidator);
@@ -316,7 +360,6 @@ QString UsersManager::GetPermissions()
         Output+="/";
 
     // Finalmente, retornemos el QString de permisos
-    qDebug("Permisos: %s", Output.toStdString().c_str());
     return Output;
 
 }
@@ -356,6 +399,17 @@ void UsersManager::SetView(QString Modalidad)
         // Bloqueo de Acciones
         ui->SaveRegButton->hide();
         ui->CancelModButton->hide();
+        if (PermissionRep->CanOnlyReadUsers())
+            ui->ActionsFrame->hide();
+        else
+        {
+            if (!PermissionRep->CanCreateUsers())
+                ui->NewButton->hide();
+            if (!PermissionRep->CanEditUsers())
+                ui->ModButton->hide();
+            if (!PermissionRep->CanDeleteUsers())
+                ui->DelButton->hide();
+        }
     }
     else
     if (Modalidad=="Nuevo")
@@ -420,6 +474,10 @@ void UsersManager::SetView(QString Modalidad)
         // Llenado de Inputs
         UpdateView(RegIndex, 3);
 
+        // Borrado de los Inputs de contraseña
+        ui->NewPassInput->setText("");
+        ui->RepeatPassInput->setText("");
+
         // Bloqueo de Inputs
         ui->IDInput->setReadOnly(true);
         ui->ChangePassButton->setEnabled(false);
@@ -438,9 +496,15 @@ void UsersManager::SetView(QString Modalidad)
 
         // Desbloqueo de Acciones
         ui->UsersList->setEnabled(true);
-        ui->NewButton->show();
-        ui->DelButton->show();
-        ui->ModButton->show();
+        if (!PermissionRep->CanOnlyReadUsers())
+        {
+            if (PermissionRep->CanCreateUsers())
+                ui->NewButton->show();
+            if (PermissionRep->CanEditUsers())
+                ui->ModButton->show();
+            if (PermissionRep->CanDeleteUsers())
+                ui->DelButton->show();
+        }
 
         // Bloqueo de Acciones
         ui->SaveRegButton->hide();
@@ -518,7 +582,7 @@ void UsersManager::on_SaveRegButton_clicked()
         // Los campos obligatorios estan llenos?
         if (ui->IDInput->text()=="")
             ErrMess+= QString("-ID de usuario<br>");
-        if (EDITINGPASS)
+        if (EDITINGPASS || !EDITING)
         {
             if (ui->NewPassInput->text()=="")
                 ErrMess+= QString("-Nueva contraseña<br>");
@@ -539,6 +603,9 @@ void UsersManager::on_SaveRegButton_clicked()
 
             if (EDITING)
             {
+                // Esto evitara que se guarde la contaseña con errores de longitud
+                bool PASSWORDOK= true;
+
                 // Estamos editando un usuario
                 QString Query= "UPDATE usuario SET ";
 
@@ -549,40 +616,124 @@ void UsersManager::on_SaveRegButton_clicked()
                     if (ui->NewPassInput->text()!=ui->RepeatPassInput->text())
                     {
                         QMessageBox::information(0, "Error",
-                        "Las contraseñas no coinciden, revise los campos <b>Nueva contraseña<b> y "
-                        "<b>Repetir contraseña<b>.");
+                        "Las contraseñas no coinciden, revise los campos <b>Nueva contraseña</b> y "
+                        "<b>Repetir contraseña</b>.");
                     }
                     else
                     {
-                        // Si son iguales, hay que incluir la contraseña cifrada en el UPDATE
-                        // Hay que encriptar la clave con SHA1 para compararla con la de la BD
-                        QCryptographicHash* Encrypter;
-                        QString Encryptedpassword= (Encrypter->hash(QByteArray(ui->NewPassInput->text().toStdString().c_str()), QCryptographicHash::Sha1)).toHex();
+                        // Los campos tienen la longitud adecuada?
+                        QString LenErr="";
 
-                        Query+=QString("password='")+Encryptedpassword+QString("', ");
+                        if (ui->NewPassInput->text().length()<4)
+                            LenErr+="-La contraseña debe tener mínimo 4 caracteres y un maximo de 25<br>";
+
+                        if (LenErr!="")
+                        {
+                            PASSWORDOK= false;
+
+                            QMessageBox::information(0, "Error",
+                            "Se encontraron los siguientes errores:<br>"+
+                            LenErr);
+                        }
+                        else
+                        {
+                            // Si son iguales, hay que incluir la contraseña cifrada en el UPDATE
+                            // Hay que encriptar la clave con SHA1 para compararla con la de la BD
+                            QCryptographicHash* Encrypter;
+                            QString Encryptedpassword= (Encrypter->hash(QByteArray(ui->NewPassInput->text().toStdString().c_str()), QCryptographicHash::Sha1)).toHex();
+
+                            Query+=QString("password='")+Encryptedpassword+QString("', ");
+                            EDITINGPASS= false;
+                        }
                     }
                 }
 
-                // Actualicemos los permisos
-                Query+=QString("permisos='")+GetPermissions()+QString("' ");
-                Query+=QString("WHERE id='")+ui->IDInput->text()+QString("'");
-
-                qDebug("Query: %s", Query.toStdString().c_str());
-                if (!SaveQuery->exec(Query))
-                    QMessageBox::critical(0, QObject::tr("Error"),
-                    "No se han podido guardar los cambios. "
-                    "Revise el estado de la Base de Datos.<br><br>nMensaje: Error DBQ1<br>");
-                else
+                if (PASSWORDOK)
                 {
-                    // LoadData se encarga de poner EDITING en falso
-                    qDebug("Fuck Yeah!");
-                    //LoadData();
-                    //SetView("Restaurar");
+                    // Actualicemos los permisos
+                    Query+=QString("permisos='")+GetPermissions()+QString("' ");
+                    Query+=QString("WHERE id='")+ui->IDInput->text()+QString("'");
+
+                    if (!SaveQuery->exec(Query))
+                        QMessageBox::critical(0, QObject::tr("Error"),
+                                              "No se han podido guardar los cambios. "
+                                              "Revise el estado de la Base de Datos.<br><br>nMensaje: Error DBQ1<br>");
+                    else
+                    {
+                        EDITING= false;
+                        SetView("Restaurar");
+                    }
                 }
             }
             else
             {
                 // Estamos registrando un nuevo usuario
+
+                // Existe?
+                QSqlQuery* CheckQuery= new QSqlQuery (Connector->Connector);
+
+                if (!CheckQuery->exec(QString("SELECT permisos FROM usuario WHERE id='")+
+                                      ui->IDInput->text()+QString("'")))
+                    QMessageBox::critical(0, QObject::tr("Error"),
+                    "No se ha podido verificar la existencia del usuario. "
+                    "Revise el estado de la Base de Datos.<br><br>Mensaje: Error DBQ1");
+                else
+                {
+                    if (CheckQuery->first())
+                    {
+                        QMessageBox::information(0, "Error",
+                        "Ya existe un usuario con ese ID y no puede ser duplicado.<br><br>"
+                        "Si desea editar sus datos, intente buscarlo en la lista de usuarios, "
+                        "haga clic en \"<b>"+
+                        ui->IDInput->text()+
+                        "</b>\" y luego haga clic en \"Modificar\"");
+                    }
+                    else
+                    {
+                        // Ahora veamos si las contraseñas son iguales
+                        if (ui->NewPassInput->text()!=ui->RepeatPassInput->text())
+                        {
+                            QMessageBox::information(0, "Error",
+                            "Las contraseñas no coinciden, revise los campos <b>Nueva contraseña</b> y "
+                            "<b>Repetir contraseña</b>.");
+                        }
+                        else
+                        {
+                            // Veamos si las contraseñas tienen la longitud adecuada
+                            if (ui->NewPassInput->text().length()<4)
+                            {
+                                    QMessageBox::information(0, "Error",
+                                    "Se encontraron los siguientes errores:<br><br>"
+                                    "-La contraseña debe tener mínimo 4 caracteres y un maximo de 25<br>");
+                            }
+                            else
+                            {
+                                // Todas las condiciones han sido cumplidas, toca insertar
+                                // Hay que encriptar la clave con SHA1 para compararla con la de la BD
+                                QCryptographicHash* Encrypter;
+                                QString Encryptedpassword= (Encrypter->hash(QByteArray(ui->NewPassInput->text().toStdString().c_str()), QCryptographicHash::Sha1)).toHex();
+
+                                QSqlQuery* InsertQuery= new QSqlQuery (Connector->Connector);
+
+                                if (!InsertQuery->exec(QString("INSERT INTO usuario (id, password, permisos) VALUES(")+
+                                                       QString("'")+ui->IDInput->text()+QString("', ")+
+                                                       QString("'")+Encryptedpassword+QString("', ")+
+                                                       QString("'")+GetPermissions()+QString("')")))
+                                    QMessageBox::information(0, "Error",
+                                    "No se ha podido guardar el registro. Revise el estado de la base<br>"
+                                    "de datos.<br><br>"
+                                    "Mensaje: Error DBQ1<br>"+
+                                    Connector->getLastError().text());
+                                else
+                                {
+                                    LoadData();
+                                    SetView("Restaurar");
+                                }
+                            }
+                        }
+
+                    }
+                }
             }
         }
 
@@ -604,7 +755,54 @@ void UsersManager::on_CancelModButton_clicked()
 // Esto se ejecutara cuando se presione el boton "Eliminar"
 void UsersManager::on_DelButton_clicked()
 {
+    // Primero solicitamos una confirmacion
+    QString Mensaje= "Esta a punto de eliminar al usuario <b>"+ui->IDInput->text()+"</b> de la base de datos.";
+    QMessageBox* Confirmation= new QMessageBox(QMessageBox::Warning, "Confirmación requerida", Mensaje);
+    Confirmation->setInformativeText("¿Está seguro?");
 
+    QPushButton* Yes= new QPushButton("Si", this);
+    QPushButton* Cancelar= new QPushButton("Cancelar", this);
+
+    Confirmation->addButton(Yes, QMessageBox::YesRole);
+    Confirmation->addButton(Cancelar, QMessageBox::RejectRole);
+    Confirmation->setDefaultButton(Cancelar);
+
+    int Answer = Confirmation->exec();
+
+    if (Answer==0) //Si
+    {
+        // Vamos a crear una conexion para poder traer ciertos datos
+        if (!Connector->RequestConnection())
+        {
+            QMessageBox::critical(0, "Error",
+            "No se ha podido acceder a la Base de Datos."
+            "Revise el estado de la misma.\n\nMensaje: Error DBA1\n"+
+            Connector->getLastError().text());
+        }
+        else
+        {
+            // Connector->Connector le dice al query con cual BD y conexion funcionar
+            QSqlQuery* DelQuery= new QSqlQuery (Connector->Connector);
+
+            // Ejecutemos la eliminacion
+            if (!DelQuery->exec(QString("DELETE FROM usuario WHERE id='")+
+                                ui->IDInput->text()+QString("'")))
+            {
+                QMessageBox::critical(0, "Error",
+                "No se ha podido eliminar el registro."
+                "<br><br>Mensaje: Error DBA1<br>"+
+                Connector->getLastError().text());
+            }
+            else
+            {
+                // Exito en el borrado, actualizamos las estructuras y seguimos
+                LoadData();
+                SetView("Inicio");
+            }
+
+            Connector->EndConnection();
+        }
+    }
 }
 
 // Esto se ejecutara cuando se presione el boton "Cambiar" (contraseña)

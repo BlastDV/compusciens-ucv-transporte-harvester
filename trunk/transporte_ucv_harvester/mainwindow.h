@@ -9,6 +9,7 @@
 #include "dbconnector.h"
 #include "csp32bridge.h"
 #include "driversmanager.h"
+#include "usersmanager.h"
 
 namespace Ui
 {
@@ -73,8 +74,8 @@ private slots:
     void on_DriverReadyButton_clicked();
     void on_BackToDriverButton_clicked();
     void on_FindTransportistButton_clicked();
-
     void on_actionAdminTransportistas_triggered();
+    void on_actionAdminUsuarios_triggered();
 
 signals:
     void CerrarSesion ();

@@ -601,3 +601,12 @@ void MainWindow::on_actionVerLog_triggered()
     LogRep->UpdateUser(UserID);
     LogRep->show();
 }
+
+void MainWindow::on_actionAdminUsuarios_triggered()
+{
+    // Creamos el objeto
+    UsersManager* UsersM= new UsersManager();
+
+    UsersM->UpdateUser(UserID);
+    UsersM->show();
+}

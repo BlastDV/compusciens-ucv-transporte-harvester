@@ -23,6 +23,10 @@ UsersManager::UsersManager(QWidget *parent) : QMainWindow(parent), ui(new Ui::Us
     Connector= new DBConnector(this);
     Connector->ConnectionName= ConnectionName;
 
+    // Este sera nuestro link con el log
+    Logger= new LogMaster(this);
+    Logger->SetConnectionName(ConnectionName + "-Logger");
+
     // Unimos las conexiones entre widgets
     connect(ui->UsersList, SIGNAL(cellClicked(int,int)), this, SLOT(UpdateView(int,int)));
     connect(ui->ShowPassInput, SIGNAL(toggled(bool)), this, SLOT(AlternPasswordShow(bool)));
@@ -76,6 +80,9 @@ bool UsersManager::UpdateUser (QString user)
             // Obtenidos los permisos, vamos a decodificarlos
             PermissionRep->CalculatePermissions(Rightsquery->value(0).toString());
             SetView("Inicio");
+
+            // Cambiamos el User del Logger
+            Logger->UpdateUser(UserID);
 
             // Listos para usar!
         }
@@ -660,6 +667,9 @@ void UsersManager::on_SaveRegButton_clicked()
                                               "Revise el estado de la Base de Datos.<br><br>nMensaje: Error DBQ1<br>");
                     else
                     {
+                        // Reportamos
+                        Logger->RegistrarEvento("MODIFICO AL USUARIO "+ui->IDInput->text());
+
                         EDITING= false;
                         SetView("Restaurar");
                     }
@@ -726,6 +736,9 @@ void UsersManager::on_SaveRegButton_clicked()
                                     Connector->getLastError().text());
                                 else
                                 {
+                                    // Reportamos
+                                    Logger->RegistrarEvento("AGREGO AL USUARIO "+ui->IDInput->text());
+
                                     LoadData();
                                     SetView("Restaurar");
                                 }
@@ -795,6 +808,9 @@ void UsersManager::on_DelButton_clicked()
             }
             else
             {
+                // Reportamos
+                Logger->RegistrarEvento("ELIMINO AL USUARIO "+ui->IDInput->text());
+
                 // Exito en el borrado, actualizamos las estructuras y seguimos
                 LoadData();
                 SetView("Inicio");

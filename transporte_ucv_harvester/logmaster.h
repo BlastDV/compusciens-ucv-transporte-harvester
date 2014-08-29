@@ -12,6 +12,7 @@ public:
     explicit LogMaster(QObject *parent = 0);
 
     QString ConnectionName;
+    void SetConnectionName(QString CName);
     
 public slots:
     bool RegistrarEvento (QString evento);

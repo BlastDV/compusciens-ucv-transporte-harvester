@@ -5,7 +5,13 @@ LogMaster::LogMaster(QObject *parent) : QObject(parent)
 {
     ConnectionName= "LogMaster";
     Connector= new DBConnector(this);
-    Connector->ConnectionName= ConnectionName;
+
+    // No reportamos de nadie!
+    UserID= "default-user";
+
+    // Este valor por default amerita que el objeto padre llame al metodo SetConnectionName de esta
+    // clase antes de empezar a reportar sus eventos
+    Connector->ConnectionName= "default-logger";
 }
 
 // Este procedimiento permitira registrar los eventos en la tabla correspondiente
@@ -42,6 +48,14 @@ bool LogMaster::UpdateUser(QString user)
     UserID= user;
 
     return true;
+}
+
+// Esta funcion se encargara de actualizar el nombre de conexion de
+// la clase
+void LogMaster::SetConnectionName(QString CName)
+{
+    ConnectionName= CName;
+    Connector->ConnectionName= ConnectionName;
 }
 
 QString LogMaster::getUserID()

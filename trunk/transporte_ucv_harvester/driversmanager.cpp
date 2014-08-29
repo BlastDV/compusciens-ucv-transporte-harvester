@@ -22,6 +22,10 @@ DriversManager::DriversManager(QWidget *parent) : QWidget(parent), ui(new Ui::Dr
     Connector= new DBConnector(this);
     Connector->ConnectionName= ConnectionName;
 
+    // Este sera nuestro link con el log
+    Logger= new LogMaster(this);
+    Logger->SetConnectionName(ConnectionName + "-Logger");
+
     // Hagamos las conexiones entre signals y slots
     connect(ui->ApellidoSearchList, SIGNAL(currentIndexChanged(int)), this, SLOT(UpdateInputsA(int)));
     connect(ui->CedulaSearchInput, SIGNAL(textEdited(QString)), this, SLOT(UpdateInputsC(QString)));
@@ -281,6 +285,9 @@ bool DriversManager::UpdateUser (QString user)
             // Obtenidos los permisos, vamos a decodificarlos
             PermissionRep->CalculatePermissions(Rightsquery->value(0).toString());
             SetView("Inicio");
+
+            // Y cambiamos el UserID del logger
+            Logger->UpdateUser(UserID);
 
             // Listos para usar!
         }
@@ -566,6 +573,9 @@ void DriversManager::on_SaveRegButton_clicked()
                     "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ1<br>");
                 else
                 {
+                    // Reportamos
+                    Logger->RegistrarEvento("MODIFICO AL TRANSPORTISTA "+ ui->Nombre1Input->text()+" "+ ui->Apellido1Input->text());
+
                     // LoadData se encarga de poner EDITING en falso
                     LoadData();
                     SetView("Restaurar");
@@ -612,6 +622,9 @@ void DriversManager::on_SaveRegButton_clicked()
                             Connector->getLastError().text());
                         else
                         {
+                            // Reportamos
+                            Logger->RegistrarEvento("AGREGO AL TRANSPORTISTA "+ ui->Nombre1Input->text()+" "+ ui->Apellido1Input->text());
+
                             LoadData();
                             SetView("Restaurar");
                         }
@@ -666,6 +679,9 @@ void DriversManager::on_DelButton_clicked()
             }
             else
             {
+                // Reportamos
+                Logger->RegistrarEvento("ELIMINO AL TRANSPORTISTA "+ ui->Nombre1Input->text()+" "+ ui->Apellido1Input->text());
+
                 // Exito en el borrado, actualizamos las estructuras y seguimos
                 LoadData();
                 SetView("Inicio");
@@ -708,6 +724,12 @@ void DriversManager::on_AlternSuspendButton_clicked()
         }
         else
         {
+            // Reportamos
+            if (ui->ActiveInput->isChecked())
+                Logger->RegistrarEvento("HABILITO AL TRANSPORTISTA "+ ui->Nombre1Input->text()+" "+ ui->Apellido1Input->text());
+            else
+                Logger->RegistrarEvento("SUSPENDIO AL TRANSPORTISTA "+ ui->Nombre1Input->text()+" "+ ui->Apellido1Input->text());
+
             // Exito en la modificacion, actualizamos las estructuras y seguimos
             SetView("Restaurar");
         }

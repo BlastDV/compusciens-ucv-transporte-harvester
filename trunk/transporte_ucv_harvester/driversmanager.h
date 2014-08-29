@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include "dbconnector.h"
 #include "permissionreporter.h"
+#include "logmaster.h"
 
 namespace Ui
 {
@@ -23,6 +24,7 @@ public:
 private:
     Ui::DriversManager *ui;
     DBConnector* Connector;
+    LogMaster* Logger;
     PermissionReporter* PermissionRep;
     QString ConnectionName;
     QString UserID;

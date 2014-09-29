@@ -125,15 +125,20 @@ bool LogReporter::LoadEvents()
                         Usuario= new QTableWidgetItem (Eventsquery->value(1).toString()); // Texto
                         Usuario->setFlags(Usuario->flags() ^ Qt::ItemIsEditable); // No editable
 
-                        Tiempo= new QTableWidgetItem (Eventsquery->value(2).toString()); // Texto
+                        QStringList TimeOutput= Eventsquery->value(2).toString().split("T");
+                        Tiempo= new QTableWidgetItem (TimeOutput.at(0)+"\t"+TimeOutput.at(1)); // Texto
                         Tiempo->setFlags(Tiempo->flags() ^ Qt::ItemIsEditable); // No editable
 
                         Evento= new QTableWidgetItem (Eventsquery->value(3).toString()); // Texto
                         Evento->setFlags(Evento->flags() ^ Qt::ItemIsEditable); // No editable
 
+                        // Insertamos el evento en la tabla
                         ui->EventsList->setItem(ui->EventsList->rowCount()-1, 0, Usuario);
                         ui->EventsList->setItem(ui->EventsList->rowCount()-1, 1, Tiempo);
                         ui->EventsList->setItem(ui->EventsList->rowCount()-1, 2, Evento);
+
+                        // Y en la lista de eventos local
+                        EventsLocalList.append(Eventsquery->value(0).toInt());
 
                         // El usuario puede ver todo el log?
                         if (PermissionRep->CanReadAllLog())
@@ -162,7 +167,8 @@ bool LogReporter::LoadEvents()
                 else
                     ui->CounterLabel->setText(QString("%1 eventos").arg(ui->EventsList->rowCount()));
 
-                ui->EventsList->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+                //ui->EventsList->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+                ui->EventsList->horizontalHeader()->setStretchLastSection(true); //e(->setSectionResizeMode(1, QHeaderView::Stretch);
 
             }
         }
@@ -256,10 +262,25 @@ void LogReporter::on_DeleteButton_clicked()
             else
             {
                 // Vamos a crear el query para eliminar la entrada(s)
-                QSqlQuery* Deletequery= new QSqlQuery (Connector->Connector);
+                QSqlQuery* DelQuery= new QSqlQuery (Connector->Connector);
 
+                // Ejecutemos la eliminacion
+             /*   if (!DelQuery->exec(QString("DELETE FROM actividad WHERE id='")+
+                                    ui->IDInput->text()+QString("'")))
+                {
+                    QMessageBox::critical(0, "Error",
+                    "No se ha podido eliminar el registro."
+                    "<br><br>Mensaje: Error DBA1<br>"+
+                    Connector->getLastError().text());
+                }
+                else
+                {
+                    // Reportamos
+                    qDebug("It worked!");
+                }
 
-                //if ()
+*/
+                Connector->EndConnection();
             }
         }
     }

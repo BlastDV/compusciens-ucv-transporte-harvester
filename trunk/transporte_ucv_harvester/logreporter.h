@@ -32,6 +32,7 @@ private:
     QString UserID;
     DBConnector* Connector;
     PermissionReporter* PermissionRep;
+    QVector <int> EventsLocalList;
 
 private slots:
     void FilterUsers (QString userid);

@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     DevConnector= new DeviceConnector();
     connect(DevConnector, SIGNAL(RegistrarEvento(QString)), this, SLOT(ReportarMensaje(QString)));
     connect(DevConnector, SIGNAL(ReadingCodes(int)), this, SLOT(GetReadingUpdate(int)));
+    //DevConnector->InitObject();
 
     ConnectionName= "MainWindow";
     Connector= new DBConnector(this);
@@ -53,8 +54,6 @@ void MainWindow::DeviceConnectionAccepted()
 {
     disconnect(DevConnector, SIGNAL(AcceptPressed()), this, SLOT(DeviceConnectionAccepted()));
     DevConnector->hide();
-
-
 }
 
 // Esta funcion se ejecuta si el usuario cancela la conexion al lector
@@ -379,26 +378,47 @@ void MainWindow::ReadCodes()
         // Insertamos el widget como nueva pestaña
         ui->TripWindow->insertTab(0, AllCodesTab, "Todos los Códigos");
 
+        QString LastCode="";
+        int IgnoredCount=0;
         for (int i=0; i<OpResult; i++)
         {
-            AllCodesTable->insertRow(AllCodesTable->rowCount());
-            AllCodesTable->setRowHeight(AllCodesTable->rowCount()-1, 20);
-
+            // Primero obtenemos el codigo
             QTableWidgetItem *Codigo;
             char Code[80];
 
             // Recuperamos el codigo en "Code"
             DevConnector->Reader->cspGetBarcode(Code, i, sizeof(Code));
 
-            Codigo= new QTableWidgetItem (QString(Code));
-            Codigo->setFlags(Codigo->flags() ^ Qt::ItemIsEditable); // No editable
+            // Luego lo limpiamos
+            QString AuxCode= QString(Code);
+            if (AuxCode.at(0)=='B')
+                AuxCode= AuxCode.remove('B');
 
-            // Y lo insertamos en la tabla de todos los codigos
-            AllCodesTable->setItem(AllCodesTable->rowCount()-1, 0, Codigo);
+            // Y si no es igual al anterior (errores de usuario)
+            if (AuxCode!=LastCode)
+            {
+                // Lo insertamos
+                AllCodesTable->insertRow(AllCodesTable->rowCount());
+                AllCodesTable->setRowHeight(AllCodesTable->rowCount()-1, 20);
 
-            // Finalmente insertamos el codigo en la lista global
-            CodesList.append(QString(Code));
+                Codigo= new QTableWidgetItem (AuxCode);
+                Codigo->setFlags(Codigo->flags() ^ Qt::ItemIsEditable); // No editable
+
+                // Y lo insertamos en la tabla de todos los codigos
+                AllCodesTable->setItem(AllCodesTable->rowCount()-1, 0, Codigo);
+
+                // Finalmente insertamos el codigo en la lista global
+                CodesList.append(AuxCode);
+
+                LastCode= AuxCode;
+            }
+            else
+            {
+                IgnoredCount++;
+            }
         }
+        // Informamos
+        ui->InfoText->appendPlainText(QString("%1 códigos ignorados").arg(IgnoredCount));
 
         /* Llegados a este punto, toca crear la lista de pasajeros por viajes de acuerdo
          * al analisis de la lista de codigos. El algoritmo tendra dos versiones: aquella
@@ -407,11 +427,10 @@ void MainWindow::ReadCodes()
          * ultimo caso, si se detecta mas de un transportista en la lista, el sistema
          * preguntara al usuario cual de ellos es el actual.
          */
-        /*if (automatico)
+        //if (automatico)
             CalculateTrips();
-        else
-            CalculateTrips(ui->CedulaInput->text());
-*/
+        //else
+          //  CalculateTrips(ui->CedulaInput->text());
     }
     else
     {
@@ -432,15 +451,24 @@ void MainWindow::CalculateTrips()
     // la lista de codigos escaneados
     QList <QString> FoundDrivers;
 
+   // for (int i=0; i<CedulaList.count(); i++)
+     //   qDebug("Cedula: %s", CedulaList.at(i).toStdString().c_str());
+
     // Vamos a comparar cada codigo con cada cedula de los transportistas
-    for (int i=0; i<CodesList.count(); i++)
+    for (int i=0; i<CedulaList.count(); i++)
     {
-        for (int j=0; j<CedulaList.count(); j++)
+        int startj= 0;
+        for (int j=startj; j<CodesList.count(); j++)
         {
             // Hay coincidencia?
-            if (CodesList.at(i)==CedulaList.at(j))
+            if (CodesList.at(j)==CedulaList.at(i))
             {
-                FoundDrivers.append(CedulaList.at(j));
+                FoundDrivers.append(CedulaList.at(i));
+                // Seguiremos buscando desde aca, pero no tiene sentido
+                // seguir preguntando por el conductor actual asi que
+                // rompemos y pasamos al siguiente
+                startj= j;
+                break;
             }
         }
     }
@@ -449,8 +477,8 @@ void MainWindow::CalculateTrips()
     // al usuario
 
     /* DEBUG */
-    FoundDrivers.append("21536559");
-    FoundDrivers.append("14199311");
+    /*FoundDrivers.append("21536559");
+    FoundDrivers.append("14199311");*/
 
     if (!FoundDrivers.isEmpty())
     {
@@ -508,9 +536,152 @@ void MainWindow::CalculateTrips()
             if (OK)
             {
                 // Vamos a confirmar el resto del procedimiento
-
                 QString Cedula= PickedDriver.mid(0, PickedDriver.indexOf(",", 0, Qt::CaseInsensitive));
+
+                // Actualizamos el transportista actual
                 UpdateTransportistaC(Cedula);
+
+                /** Y empezamos a llenar los viajes, para que el usuario pueda asociarlos con las rutas **/
+
+                // En primer lugar, vamos a manejar las mismas rutas para todos los viajes, asi que las consultaremos una
+                // vez y haremos uso de ellas cada vez que sea necesario
+
+                // Un vector de lista de strings, cada posicion del vector tendra una ruta, cada ruta tendra como primer string
+                // el nombre de la ruta y el resto seran las paradas
+                QVector <QStringList> TripRutas;
+
+                // Vamos a crear una conexion para poder traer los datos
+                if (!Connector->RequestConnection())
+                {
+                    QMessageBox::critical(0, "Error",
+                    "No se ha podido recuperar la lista de transportistas. "
+                    "Revise el estado de la Base de Datos.\n\nMensaje: Error DBA1\n"+
+                    Connector->getLastError().text());
+                }
+                else
+                {
+                    // Si todo va bien en la conexion, recuperaremos los datos y mostraremos las pestañas
+                    QSqlQuery* Routequery= new QSqlQuery (Connector->Connector);
+
+                    if (!Routequery->exec(QString("SELECT * FROM ruta")))
+                    {
+                        QMessageBox::critical(0, QObject::tr("Error"),
+                        "No se ha podido recuperar la lista de rutas. "
+                        "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ2\n");
+                    }
+                    else
+                    {
+                        Routequery->first();
+                        // Llenamos la lista de rutas
+                        do
+                        {
+                            int CurrentRouteID= Routequery->value(2).toInt();
+
+                            QString NombreRuta= Routequery->value(0).toString() + "-"
+                                    +Routequery->value(1).toString()+"-"+Routequery->value(2).toString();
+                            ui->RouteList->addItem(NombreRuta);
+
+                            QStringList AuxRoute;
+                            AuxRoute.append(NombreRuta);
+
+                            // Ahora llenamos la lista de paradas segun la ruta actual
+                            QSqlQuery* Stopquery= new QSqlQuery (Connector->Connector);
+
+                            if (!Stopquery->exec(QString("SELECT * FROM parada WHERE ruta_id= %1").arg(CurrentRouteID)))
+                            {
+                                QMessageBox::critical(0, QObject::tr("Error"),
+                                "No se ha podido recuperar la lista de paradas. "
+                                "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ3\n");
+                            }
+                            else
+                            {
+                                Stopquery->first();
+                                // Llenamos la lista de paradas
+                                do
+                                {
+                                    AuxRoute.append(Stopquery->value(1).toString());
+                                }
+                                while (Stopquery->next());
+                            }
+
+                            // Ahora insertamos el QStringList en el vector de rutas
+                            TripRutas.append(AuxRoute);
+                        }
+                        while (Routequery->next());
+                    }
+
+                    Connector->EndConnection();
+                }
+
+                int ViajesCount= 0;
+                for (int i= 0; i<CodesList.count(); i++)
+                {
+                    // Si hemos encontrado la cedula del transportista, debemos crear una nueva pestaña para un nuevo viaje
+                    // Tambien aplica si es la primera iteracion del ciclo, para tener un viaje inicial
+                    if (CodesList.at(i)==Cedula || i==0)
+                    {
+                        ViajesCount++;
+                        // Creamos la pestaña "Viaje 1"
+                        /* Primero creemos la tabla*/
+                        QTableWidget* TripTable= new QTableWidget(0, 1, this);
+                        TripTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+
+                        // Luego añadimos la columna "Pasajeros"
+                        QTableWidgetItem *Header = new QTableWidgetItem();
+                        Header->setText("Pasajeros");
+                        TripTable->setHorizontalHeaderItem(0, Header);
+
+                        // Ahora, crearemos el widget derecho que tendra la asociacion de las rutas
+
+                        // Los <inputs>
+                        QComboBox* RouteList= new QComboBox;
+                        QComboBox* StopsList= new QComboBox;
+                        QTimeEdit* DepartTInput= new QTimeEdit;
+                        QTimeEdit* ArriveTInput= new QTimeEdit;
+                        QDateEdit* DateInput= new QDateEdit;
+                        ArriveTInput->setDate(QDate::currentDate());
+                        DateInput->setTime(QTime::currentTime());
+
+                        // Ahora llenemos estos inputs
+                        for (int u=0; u<TripRutas.count(); u++)
+                            RouteList->insertItem(0, TripRutas.at(u).at(0));
+                        for (int u=1; u<TripRutas.at(0).count(); u++)
+                            StopsList->insertItem(0, TripRutas.at(0).at(u));
+
+                        // El Layout
+                        QFormLayout* RoutesLayout= new QFormLayout;
+                        RoutesLayout->addRow("Ruta:", RouteList);
+                        RoutesLayout->addRow("Paradas:", StopsList);
+                        RoutesLayout->addRow("Hora de Salida:", DepartTInput);
+                        RoutesLayout->addRow("Hora de Llegada:", ArriveTInput);
+                        RoutesLayout->addRow("Fecha:", DateInput);
+
+                        // El groupBox
+                        QGroupBox* RoutesBox= new QGroupBox("Datos de la Ruta");
+
+                        // Insertamos el Layout al GroupBox
+                        RoutesBox->setLayout(RoutesLayout);
+
+                        // Ahora creamos un layout horizontal e insertamos la tabla y el groupbox ahi
+                        QHBoxLayout *HLayout = new QHBoxLayout;
+                        HLayout->addWidget(TripTable);
+                        HLayout->addWidget(RoutesBox);
+
+                        // Creamos un nuevo Widget que insertaremos como nueva pestaña
+                        // Y le ponemos como Layout al que hemos creado arriba
+                        QWidget* AllCodesTab= new QWidget;
+                        AllCodesTab->setLayout(HLayout);
+
+                        // Insertamos el widget como nueva pestaña
+                        ui->TripWindow->insertTab(ui->TripWindow->count()-2, AllCodesTab, QString("Viaje %1").arg(ViajesCount));
+                    }
+                    else
+                    {
+                        // Si no, seguimos insertando en la lista actual
+                        //ui->TripWindow->widget(ui->TripWindow->currentIndex());
+                    }
+
+                }
             }
             else
             {

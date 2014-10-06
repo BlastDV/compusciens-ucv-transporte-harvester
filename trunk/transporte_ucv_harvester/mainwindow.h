@@ -45,6 +45,22 @@ private:
     // Esta otra tendra las cedulas de todos los transportistas en la BD
     QList <QString> CedulaList;
 
+    // Esto que sigue es para poder tener un control de todas las pestañas de viajes de la interfaz
+    struct trip_tab
+    {
+        QComboBox* RouteName;
+        QComboBox* Stops;
+        QTimeEdit* DepartTime;
+        QTimeEdit* ArriveTime;
+        QDateEdit* Date;
+        QTableWidget* CodesTable;
+    };
+    QVector <trip_tab> TabsPointerList;
+
+    // Un vector de lista de strings, cada posicion del vector tendra una ruta, cada ruta tendra como primer string
+    // el nombre de la ruta y el resto seran las paradas
+    QVector <QStringList> TripRutas;
+
     void LoadInitialData(); // Para la ventana de subida de datos inicial
 
 private slots:
@@ -59,9 +75,10 @@ private slots:
     void UpdateTransportistaC(QString cedula); // Por razones internas de Qt usaremos QString
     void UpdateTransportistaA(QString apellido);
     void UpdateRoute(QString id);
+    void UpdateTabRoute(int RouteIndex);
 
     // Esta funcion es una de las primordiales
-    void ReadCodes();
+    void ReadCodes(bool automatico);
     // A su vez se apoyara en esta
     void CalculateTrips (QString cedula);
     void CalculateTrips ();

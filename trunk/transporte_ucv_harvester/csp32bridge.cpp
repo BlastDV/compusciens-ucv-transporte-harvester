@@ -44,10 +44,13 @@ $Log: C:/Symbol/Csp32Proj/Csp32/src/vcs/Csp32.cpv $
  *******************************************************************/
 /*******************************************************************
  * MODIFICACION HECHA POR PERSONAL DE COMPUSCIENS
+ * www.compusciens.org.ve
  *
  * TODO EL TRABAJO FUE DESARROLLADO ORIGINALMENTE POR EL O LOS PARTICIPANTES
- * ESPECIFICADOS EN LA NOTA SUPERIOR A ESTA.
- *
+ * ESPECIFICADOS EN LA NOTA SUPERIOR A ESTA. LA LICENCIA DE USO ESTA
+ * SUJETA A LOS TERMINOS ARRIBA MENCIONADOS, CUALQUIER MODIFICACION
+ * DEBE REALIZARSE SIN ELIMINAR LA PRESENTE NOTA
+ * 
  * PROYECTO TRANSPORTE UCV - 19/06/2014
  *
  ******************************************************************/

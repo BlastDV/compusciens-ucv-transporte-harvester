@@ -31,7 +31,16 @@
 </string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="margin">
+    <property name="leftMargin">
+     <number>1</number>
+    </property>
+    <property name="topMargin">
+     <number>1</number>
+    </property>
+    <property name="rightMargin">
+     <number>1</number>
+    </property>
+    <property name="bottomMargin">
      <number>1</number>
     </property>
     <item>
@@ -43,7 +52,16 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_9">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>1</number>
+       </property>
+       <property name="topMargin">
+        <number>1</number>
+       </property>
+       <property name="rightMargin">
+        <number>1</number>
+       </property>
+       <property name="bottomMargin">
         <number>1</number>
        </property>
        <item>
@@ -298,87 +316,69 @@
                    <property name="title">
                     <string>Datos de la Ruta</string>
                    </property>
-                   <layout class="QVBoxLayout" name="verticalLayout_5">
+                   <layout class="QFormLayout" name="formLayout_4">
                     <property name="leftMargin">
-                     <number>1</number>
+                     <number>9</number>
                     </property>
                     <property name="rightMargin">
-                     <number>1</number>
+                     <number>9</number>
                     </property>
-                    <item>
-                     <widget class="QFrame" name="RouteDataFrame">
-                      <property name="frameShape">
-                       <enum>QFrame::StyledPanel</enum>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="rutaLabel">
+                      <property name="text">
+                       <string>Ruta:</string>
                       </property>
-                      <property name="frameShadow">
-                       <enum>QFrame::Raised</enum>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QComboBox" name="RouteList"/>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QComboBox" name="RouteStopsList"/>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="paradasLabel">
+                      <property name="text">
+                       <string>Paradas:</string>
                       </property>
-                      <layout class="QFormLayout" name="formLayout_2">
-                       <property name="leftMargin">
-                        <number>9</number>
-                       </property>
-                       <property name="rightMargin">
-                        <number>9</number>
-                       </property>
-                       <item row="0" column="0">
-                        <widget class="QLabel" name="rutaLabel">
-                         <property name="text">
-                          <string>Ruta:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="0">
-                        <widget class="QLabel" name="paradasLabel">
-                         <property name="text">
-                          <string>Paradas:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="hsalidaLabel">
-                         <property name="text">
-                          <string>Hora de Salida:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="0">
-                        <widget class="QLabel" name="hllegadaLabel">
-                         <property name="text">
-                          <string>Hora de Llegada:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="4" column="0">
-                        <widget class="QLabel" name="fechaLabel">
-                         <property name="text">
-                          <string>Fecha:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="0" column="1">
-                        <widget class="QComboBox" name="RouteList"/>
-                       </item>
-                       <item row="1" column="1">
-                        <widget class="QComboBox" name="RouteStopsList"/>
-                       </item>
-                       <item row="2" column="1">
-                        <widget class="QTimeEdit" name="RouteHSalida">
-                         <property name="calendarPopup">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="1">
-                        <widget class="QTimeEdit" name="RouteHLlegada"/>
-                       </item>
-                       <item row="4" column="1">
-                        <widget class="QDateEdit" name="RouteDate">
-                         <property name="calendarPopup">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QTimeEdit" name="RouteHSalida">
+                      <property name="calendarPopup">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="hsalidaLabel">
+                      <property name="text">
+                       <string>Hora de Salida:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="hllegadaLabel">
+                      <property name="text">
+                       <string>Hora de Llegada:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
+                     <widget class="QTimeEdit" name="RouteHLlegada"/>
+                    </item>
+                    <item row="4" column="0">
+                     <widget class="QLabel" name="fechaLabel">
+                      <property name="text">
+                       <string>Fecha:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="1">
+                     <widget class="QDateEdit" name="RouteDate">
+                      <property name="calendarPopup">
+                       <bool>true</bool>
+                      </property>
                      </widget>
                     </item>
                    </layout>

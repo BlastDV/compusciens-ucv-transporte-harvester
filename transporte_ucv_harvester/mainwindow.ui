@@ -297,13 +297,6 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_2">
                 <item>
-                 <widget class="QPushButton" name="CalculateTripsButton">
-                  <property name="text">
-                   <string>Calcular Viajes</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
                  <widget class="QPushButton" name="BackToDriverButton">
                   <property name="text">
                    <string>Cambiar Transportista</string>
@@ -315,8 +308,11 @@
              </item>
              <item>
               <widget class="QProgressBar" name="ReadingProgressBar">
+               <property name="maximum">
+                <number>0</number>
+               </property>
                <property name="value">
-                <number>100</number>
+                <number>0</number>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
@@ -406,7 +402,10 @@
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
              <item>
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="UploadDataButton">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="minimumSize">
                 <size>
                  <width>32</width>
@@ -435,7 +434,10 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_2">
+              <widget class="QPushButton" name="NextDeviceButton">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="minimumSize">
                 <size>
                  <width>32</width>
@@ -443,7 +445,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>Leer Códigos</string>
+                <string>Usar otro Lector</string>
                </property>
                <property name="icon">
                 <iconset resource="icons.qrc">

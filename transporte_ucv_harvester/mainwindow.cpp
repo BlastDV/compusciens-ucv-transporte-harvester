@@ -10,18 +10,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
      * el programa. */
     DevConnector= new DeviceConnector();
     connect(DevConnector, SIGNAL(RegistrarEvento(QString)), this, SLOT(ReportarMensaje(QString)));
-    connect(DevConnector, SIGNAL(ReadingCodes(int)), this, SLOT(GetReadingUpdate(int)));
     //DevConnector->InitObject();
 
     ConnectionName= "MainWindow";
     Connector= new DBConnector(this);
     Connector->ConnectionName= ConnectionName;
 
+    // Cargamos todos los datos iniciales de la clase
     LoadInitialData();
+
+    /* Escondemos la barra de carga de codigos */
+    ui->ReadingProgressBar->hide();
+
+    // Activamos REGEX en los inputs
+    ActivateValidators();
 
     /* Ahora establecemos las conexiones con los distintos objetos de la interfaz */
     connect(ui->CedulaInput, SIGNAL(textEdited(QString)), this, SLOT(UpdateTransportistaC(QString)));
     connect(ui->LastNameList, SIGNAL(currentIndexChanged(QString)), this, SLOT(UpdateTransportistaA(QString)));
+
+    /* Finalmente ocultemos la interfaz hasta que el usuario no conecte un lector */
+    ui->MainFrame->hide();
 }
 
 MainWindow::~MainWindow()
@@ -53,6 +62,9 @@ void MainWindow::DeviceConnectionAccepted()
 {
     disconnect(DevConnector, SIGNAL(AcceptPressed()), this, SLOT(DeviceConnectionAccepted()));
     DevConnector->hide();
+
+    // Ahora mostremos la interfaz
+    ui->MainFrame->show();
 }
 
 // Esta funcion se ejecuta si el usuario cancela la conexion al lector
@@ -69,6 +81,16 @@ void MainWindow::ReportarMensaje(QString mensaje)
     emit ReportarAccion(mensaje);
 }
 
+// Esta funcion evita que el usuario ingrese simbolos o espacios en el campo de cedula de transportista
+void MainWindow::ActivateValidators()
+{
+    // Creemos las validaciones de la cedula
+    QRegExp IDReg("([0-9]){5,9}");
+    QValidator *IDValidator= new QRegExpValidator(IDReg, this);
+
+    ui->CedulaInput->setValidator(IDValidator);
+}
+
 /* Esta funcion preparara la interfaz de subida de datos con valores por defecto,
  * haciendo consultas en la BD y llenando ciertos campos necesarios para facilitar
  * esta tarea al usuario */
@@ -76,8 +98,6 @@ void MainWindow::LoadInitialData()
 {
     // Borramos las estructuras de la clase
     WipeTripsOut();
-
-    ui->ReadingProgressBar->hide();
 
     // Bloqueamos la seccion de codigos
     ui->CodesFrame->setEnabled(false);
@@ -178,23 +198,8 @@ void MainWindow::LoadInitialData()
  * transportistas */
 void MainWindow::WipeTripsOut()
 {
-    // Vamos a vaciar la tabla de todos los codigos
-    /*delete TabsPointerList[0].TabPointer;
-
-    // Vamos a limpiar las pestañas
-    for (int i=1; i<TabsPointerList.count(); i++)
-    {
-        delete TabsPointerList[i].ArriveTime;
-        delete TabsPointerList[i].CodesTable;
-        delete TabsPointerList[i].Date;
-        delete TabsPointerList[i].DepartTime;
-        //disconnect(TabsPointerList[i].RouteName, SIGNAL(currentIndexChanged(int)), this, SLOT(UpdateTabRoute(int)));
-        delete TabsPointerList[i].RouteName;
-        delete TabsPointerList[i].Stops;
-        delete TabsPointerList[i].TabPointer;
-    }*/
+    // Vamos a vaciar la tabla de todos los codigos y todos sus apuntadores
     TabsPointerList.clear();
-
     ui->TripWindow->clear();
 }
 
@@ -317,28 +322,12 @@ void MainWindow::ReadCodes(bool automatico)
     /* Borremos cualquier codigo previamente leido */
     CodesList.clear();
 
-    /* Preparamos y mostramos un dialogo de progreso */
-    QProgressDialog ReadingProgress;
-    ReadingProgress.setWindowTitle("Recuperando códigos...");
-    ReadingProgress.setWindowModality(Qt::WindowModal);
-    ReadingProgress.setMaximum(100);
-    ReadingProgress.setMinimum(0);
-    ReadingProgress.setValue(0);
-    ReadingProgress.setCancelButton(0);
-    connect(DevConnector, SIGNAL(ReadingCodes(int)), &ReadingProgress, SLOT(setValue(int)));
-    ReadingProgress.show();
-/*
-    // Preparamos y mostramos la barra de carga
-    ui->ReadingProgressBar->setValue(0);
+    /* Mostramos la barra de progreso y otros avisos */
     ui->ReadingProgressBar->show();
-
-    // Bloqueamos los botones para evitar errores de comunicacion
-    ui->CodesButtonsFrame->setEnabled(false);
-
-    // Informamos al usuario sobre lo que se esta ejecutando actualmente
+    ui->BackToDriverButton->hide();
     ui->InfoText->clear();
-    ui->InfoText->appendPlainText("Leyendo...");
-*/
+    ui->InfoText->insertPlainText("Leyendo códigos, por favor espere ...");
+
     int OpResult= DevConnector->Reader->cspReadData();
 
     if (OpResult> STATUS_OK)
@@ -433,17 +422,26 @@ void MainWindow::ReadCodes(bool automatico)
             CalculateTrips();
         else
             CalculateTrips(ui->CedulaInput->text());
+
+        // Si todo ha ido bien, habilitamos los botones de accion
+        ui->UploadDataButton->setEnabled(true);
+        ui->NextDeviceButton->setEnabled(true);
+
+        // Y la seccion de codigos
+        ui->CodesButtonsFrame->setEnabled(true);
     }
     else
     {
         // Informamos
         ui->InfoText->appendPlainText("No se han podido recuperar los códigos. ¿El lector está conectado?");
+
+        // Y volvemos al paso anterior
+        on_BackToDriverButton_clicked();
     }
 
     // Finalmente, rehabilitamos la interfaz y escondemos la barra de carga
-    ui->ReadingProgressBar->setValue(100);
     ui->ReadingProgressBar->hide();
-    ui->CodesButtonsFrame->setEnabled(true);
+    ui->BackToDriverButton->show();
 }
 
 // Funciones de apoyo para ReadCodes()
@@ -666,32 +664,15 @@ void MainWindow::CalculateTrips(QString Cedula)
             CurrentTable->setItem(CurrentTable->rowCount()-1, 0, AuxTableItem);
         }
     }
-
-    // Y desabilitaremos el boton de "Calcular Viajes"
-    ui->CalculateTripsButton->setEnabled(false);
-}
-
-// Esto recibe la actualizacion del proceso de lectura de DeviceConnector
-void MainWindow::GetReadingUpdate(int)
-{
-    if (ui->ReadingProgressBar->value()<90)
-        ui->ReadingProgressBar->setValue(ui->ReadingProgressBar->value()+5);
-}
-
-/* Esto servira para traernos los codigos del lector */
-void MainWindow::on_CalculateTripsButton_clicked()
-{
-    ReadCodes(false);
-    ui->CalculateTripsButton->setEnabled(false);
 }
 
 /* Esto hara lo mismo que on_CalculateTripsButton_clicked() pero
  * buscara automaticamente al transportista */
 void MainWindow::on_FindTransportistButton_clicked()
 {
-    ReadCodes(true);
     ui->DriversFrame->setEnabled(false);
     ui->CodesFrame->setEnabled(true);
+    ReadCodes(true);
 }
 
 /* Esto se ejecutara cuando el usuario haya elegido al transportista correspondiente
@@ -701,22 +682,25 @@ void MainWindow::on_DriverReadyButton_clicked()
     // Bloqueamos la seccion de transportistas
     ui->DriversFrame->setEnabled(false);
 
-    // Y desbloqueamos la de codigos
+    // Desbloqueamos la de codigos
     ui->CodesFrame->setEnabled(true);
+
+    // Y leemos del dispositivo
+    ReadCodes(false);
 }
 
 // Esto se activara cuando el usuario eliga volver a la eleccion de transportista
 void MainWindow::on_BackToDriverButton_clicked()
 {
-    // Desbloqueamos el boton de calcular viajes
-    ui->CalculateTripsButton->setEnabled(true);
+    // Bloqueamos las acciones
+    ui->UploadDataButton->setEnabled(false);
+    ui->NextDeviceButton->setEnabled(false);
 
     // Bloqueamos la seccion de codigos
     ui->CodesFrame->setEnabled(false);
 
     // La limpiamos
     WipeTripsOut();
-    //ui->TripWindow->clear();
 
     // Y desbloqueamos la de transportista
     ui->DriversFrame->setEnabled(true);
@@ -755,4 +739,20 @@ void MainWindow::on_actionAdminUsuarios_triggered()
 
     UsersM->UpdateUser(UserID);
     UsersM->show();
+}
+
+/** Esta funcion es la mas importante de todo el proyecto, es la que se encargara
+ * de tomar la informacion capturada y procesada del dispositivo para subirla
+ * a la base de datos, de forma que esta pueda ser consultada en la fase 2: Reporter */
+void MainWindow::on_UploadDataButton_clicked()
+{
+
+}
+
+// Esto basicamente lo que hace es proporcionar una forma explicita de eliminar
+// los datos calculados de la interfaz (pestañas de viajes, etc).
+void MainWindow::on_NextDeviceButton_clicked()
+{
+    // Que es exactamente lo mismo que hace el boton "Cambiar Transportista"
+    on_BackToDriverButton_clicked();
 }

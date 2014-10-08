@@ -35,8 +35,6 @@ private:
     DBConnector* Connector;
     DeviceConnector* DevConnector; // Para la ventana de conexion con el lector y la comunicacion
                                     // con el mismo
-    QMap <QString, int> RouteLocalList; // Esto nos permitira disminuir la cantidad de
-    // consultas a la BD al momento de actualizar la lista de paradas dinamicamente
 
     // Esta lista tendra todos los codigos recuperados del dispositivo. Permitira que las operaciones
     // que dependan de los mismos sean mas rapidas
@@ -54,6 +52,7 @@ private:
         QTimeEdit* ArriveTime;
         QDateEdit* Date;
         QTableWidget* CodesTable;
+        QWidget* TabPointer;
     };
     QVector <trip_tab> TabsPointerList;
 
@@ -62,6 +61,7 @@ private:
     QVector <QStringList> TripRutas;
 
     void LoadInitialData(); // Para la ventana de subida de datos inicial
+    void WipeTripsOut(); // Para eliminar todos los viajes y limpiar las estructuras
 
 private slots:
     void on_actionCerrarSesion_triggered();
@@ -74,7 +74,6 @@ private slots:
 
     void UpdateTransportistaC(QString cedula); // Por razones internas de Qt usaremos QString
     void UpdateTransportistaA(QString apellido);
-    void UpdateRoute(QString id);
     void UpdateTabRoute(int RouteIndex);
 
     // Esta funcion es una de las primordiales

@@ -74,16 +74,12 @@ void MainWindow::ReportarMensaje(QString mensaje)
  * esta tarea al usuario */
 void MainWindow::LoadInitialData()
 {
-    ui->CodesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-    //ui->AllCodesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->ReadingProgressBar->hide();
 
     // Bloqueamos la seccion de codigos
     ui->CodesFrame->setEnabled(false);
 
     ui->centralWidget->setStyleSheet("");
-    ui->RouteDate->setDate(QDate::currentDate());
-    ui->RouteHLlegada->setTime(QTime::currentTime());
 
     // Vamos a crear una conexion para poder traer ciertos datos
     if (!Connector->RequestConnection())
@@ -117,65 +113,31 @@ void MainWindow::LoadInitialData()
                 CedulaList.append(Lastnamequery->value(1).toString());
             }
             while (Lastnamequery->next());
-
-            // Ahora llenemos la lista de rutass
-            QSqlQuery* Routequery= new QSqlQuery (Connector->Connector);
-
-            if (!Routequery->exec(QString("SELECT * FROM ruta")))
-            {
-                QMessageBox::critical(0, QObject::tr("Error"),
-                "No se ha podido recuperar la lista de rutas. "
-                "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ2\n");
-            }
-            else
-            {
-                Routequery->first();
-
-                // Guardemos el ID de la primera ruta
-                int FirstRoute= Routequery->value(2).toInt();
-
-                // Ahora con los datos obtenidos del SELECT, vamos a llenar la interfaz
-
-                // Llenamos la lista de rutas
-                do
-                {
-                    QString NombreRuta= QString(Routequery->value(0).toString()) + QString(" - ")
-                            +QString(Routequery->value(1).toString());
-                    ui->RouteList->addItem(NombreRuta);
-
-                    // Y el "vector" de rutas
-                    RouteLocalList[NombreRuta]= Routequery->value(2).toInt();
-
-                }
-                while (Routequery->next());
-
-                // Ahora llenamos la lista de paradas segun la primera ruta
-                QSqlQuery* Stopquery= new QSqlQuery (Connector->Connector);
-
-                if (!Stopquery->exec(QString("SELECT * FROM parada WHERE ruta_id= %1").arg(FirstRoute)))
-                {
-                    QMessageBox::critical(0, QObject::tr("Error"),
-                    "No se ha podido recuperar la lista de paradas. "
-                    "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ3\n");
-                }
-                else
-                {
-                    Stopquery->first();
-
-                    // Ahora con los datos obtenidos del SELECT, vamos a llenar la interfaz
-
-                    // Llenamos la lista de paradas
-                    do
-                    {
-                        ui->RouteStopsList->addItem(QString(Stopquery->value(1).toString()));
-                    }
-                    while (Stopquery->next());
-                }
-            }
         }
 
         Connector->EndConnection();
     }
+}
+
+/* Esto permite limpiar las estructuras de la clase, ademas de vaciar el widget de viajes y dejar
+ * todo listo para una nueva lectura. Deberia ser llamado al subir los datos a la BD, al cambiar el
+ * transportista para el lector actual o al cambiar de lector para registrar el trabajo de varios
+ * transportistas */
+void MainWindow::WipeTripsOut()
+{
+    // Vamos a limpiar las pestañas
+    for (int i=0; i<TabsPointerList.count(); i++)
+    {
+        delete TabsPointerList[i].ArriveTime;
+        delete TabsPointerList[i].CodesTable;
+        delete TabsPointerList[i].Date;
+        delete TabsPointerList[i].DepartTime;
+        delete TabsPointerList[i].RouteName;
+        delete TabsPointerList[i].Stops;
+        delete TabsPointerList[i].TabPointer;
+    }
+
+    TabsPointerList.clear();
 }
 
 /* Las siguientes funciones sirven para actualizar la interfaz segun el usuario
@@ -266,50 +228,6 @@ void MainWindow::UpdateTransportistaA(QString apellido)
                     ui->Apellido2Input->setText(Driverquery->value(3).toString());
                     ui->CedulaInput->setText(Driverquery->value(5).toString());
                 }
-            }
-        }
-    }
-}
-
-// Esto actualiza las paradas de la ruta escogida
-void MainWindow::UpdateRoute(QString id)
-{
-    // Vamos a crear una conexion para poder traer ciertos datos
-    if (!Connector->RequestConnection())
-    {
-        QMessageBox::critical(0, "Error",
-        "No se ha podido recuperar la lista de rutas. "
-        "Revise el estado de la Base de Datos.\n\nMensaje: Error DBA1\n"+
-        Connector->getLastError().text());
-    }
-    else
-    {
-        // Vamos a tomar el ID de la ruta que han seleccionado
-        int RouteID= RouteLocalList.value(id);
-
-        QSqlQuery* Stopquery= new QSqlQuery (Connector->Connector);
-
-        if (!Stopquery->exec(QString("SELECT * FROM parada WHERE ruta_id= %1").arg(RouteID)))
-        {
-            QMessageBox::critical(0, QObject::tr("Error"),
-            "No se ha podido recuperar la lista de paradas. "
-            "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ3\n");
-        }
-        else
-        {
-            Stopquery->first();
-            ui->RouteStopsList->clear();
-
-            // Ahora con los datos obtenidos del SELECT, vamos a llenar la interfaz
-
-            // Llenamos la lista de paradas
-            if (Stopquery->isValid())
-            {
-                do
-                {
-                    ui->RouteStopsList->addItem(QString(Stopquery->value(1).toString()));
-                }
-                while (Stopquery->next());
             }
         }
     }
@@ -611,7 +529,7 @@ void MainWindow::CalculateTrips(QString Cedula)
 
                 QString NombreRuta= Routequery->value(0).toString() + "-"
                         +Routequery->value(1).toString()+"-"+Routequery->value(2).toString();
-                ui->RouteList->addItem(NombreRuta);
+                //ui->RouteList->addItem(NombreRuta);
 
                 QStringList AuxRoute;
                 AuxRoute.append(NombreRuta);
@@ -720,6 +638,7 @@ void MainWindow::CalculateTrips(QString Cedula)
             AuxTab.ArriveTime= ArriveTInput;
             AuxTab.Date= DateInput;
             AuxTab.CodesTable= TripTable;
+            AuxTab.TabPointer= AllCodesTab;
             TabsPointerList.append(AuxTab);
         }
         else
@@ -734,8 +653,13 @@ void MainWindow::CalculateTrips(QString Cedula)
             QTableWidgetItem* AuxTableItem= new QTableWidgetItem (CodesList.at(i));
             CurrentTable->setItem(CurrentTable->rowCount()-1, 0, AuxTableItem);
         }
-
     }
+
+    // Ahora eliminemos la pestaña extra del widget de pestañas de ruta
+    ui->TripWindow->removeTab(ui->TripWindow->count()-1);
+
+    // Y desabilitaremos el boton de "Calcular Viajes"
+    ui->CalculateTripsButton->setEnabled(false);
 }
 
 // Esto recibe la actualizacion del proceso de lectura de DeviceConnector
@@ -749,6 +673,7 @@ void MainWindow::GetReadingUpdate(int)
 void MainWindow::on_CalculateTripsButton_clicked()
 {
     ReadCodes(false);
+    ui->CalculateTripsButton->setEnabled(false);
 }
 
 /* Esto hara lo mismo que on_CalculateTripsButton_clicked() pero
@@ -774,11 +699,15 @@ void MainWindow::on_DriverReadyButton_clicked()
 // Esto se activara cuando el usuario eliga volver a la eleccion de transportista
 void MainWindow::on_BackToDriverButton_clicked()
 {
+    // Desbloqueamos el boton de calcular viajes
+    ui->CalculateTripsButton->setEnabled(true);
+
     // Bloqueamos la seccion de codigos
     ui->CodesFrame->setEnabled(false);
 
     // La limpiamos
-    ui->TripWindow->clear();
+    WipeTripsOut();
+    //ui->TripWindow->clear();
 
     // Y desbloqueamos la de transportista
     ui->DriversFrame->setEnabled(true);

@@ -62,6 +62,7 @@ private:
 
     void LoadInitialData(); // Para la ventana de subida de datos inicial
     void WipeTripsOut(); // Para eliminar todos los viajes y limpiar las estructuras
+    void ActivateValidators(); // Esto incorpora REGEX a los inputs de la clase
 
 private slots:
     void on_actionCerrarSesion_triggered();
@@ -76,22 +77,24 @@ private slots:
     void UpdateTransportistaA(QString apellido);
     void UpdateTabRoute(int RouteIndex);
 
+    // Esto permite chequear si la cedula del transportista especificado es real
+
+
     // Esta funcion es una de las primordiales
     void ReadCodes(bool automatico);
     // A su vez se apoyara en esta
     void CalculateTrips (QString cedula);
     void CalculateTrips ();
 
-    // Esta recibe la actualizacion de DeviceConnector y actualiza
-    // la barra de progreso de la interfaz
-    void GetReadingUpdate(int);
-
-    void on_CalculateTripsButton_clicked();
     void on_DriverReadyButton_clicked();
     void on_BackToDriverButton_clicked();
     void on_FindTransportistButton_clicked();
     void on_actionAdminTransportistas_triggered();
     void on_actionAdminUsuarios_triggered();
+
+    void on_UploadDataButton_clicked();
+
+    void on_NextDeviceButton_clicked();
 
 signals:
     void CerrarSesion ();

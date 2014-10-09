@@ -247,6 +247,9 @@
              </item>
              <item>
               <widget class="QPushButton" name="DriverReadyButton">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="text">
                 <string>Listo</string>
                </property>

@@ -203,6 +203,9 @@ void MainWindow::WipeTripsOut()
     // Vamos a vaciar la tabla de todos los codigos y todos sus apuntadores
     TabsPointerList.clear();
     ui->TripWindow->clear();
+
+    // Ademas de la lista de codigos por pestañas
+    FinalCodesList.clear();
 }
 
 /* Las siguientes funciones sirven para actualizar la interfaz segun el usuario
@@ -433,7 +436,7 @@ void MainWindow::ReadCodes(bool automatico)
             }
         }
         // Informamos
-        ui->InfoText->appendPlainText(QString("%1 códigos ignorados").arg(IgnoredCount));
+        ui->InfoText->appendPlainText(QString("Códigos repetidos ignorados: %1").arg(IgnoredCount));
 
         /* Llegados a este punto, toca crear la lista de pasajeros por viajes de acuerdo
          * al analisis de la lista de codigos. El algoritmo tendra dos versiones: aquella
@@ -565,6 +568,8 @@ void MainWindow::CalculateTrips()
             {
                 // Ignore
             }
+
+            Connector->EndConnection();
         }
     }
     else
@@ -587,6 +592,7 @@ void MainWindow::CalculateTrips(QString Cedula)
     // vez y haremos uso de ellas cada vez que sea necesario
 
     int ViajesCount= 0;
+    int IgnoredCodes= 0; // Esto permitira reportar cuantas repeticiones por viajes fueron ignoradas
     for (int i= 0; i<CodesList.count(); i++)
     {
         // Si hemos encontrado la cedula del transportista, debemos crear una nueva pestaña para un nuevo viaje
@@ -595,7 +601,11 @@ void MainWindow::CalculateTrips(QString Cedula)
         {
             ViajesCount++;
 
-            /* Primero creemos la tabla*/
+            // Primero vamos a crear un vector de codigos para la pestaña actual
+            QVector <QString> CurrentTabCodes;
+            FinalCodesList.append(CurrentTabCodes);
+
+            /* Creemos la tabla*/
             QTableWidget* TripTable= new QTableWidget(0, 1, this);
             TripTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 
@@ -665,29 +675,55 @@ void MainWindow::CalculateTrips(QString Cedula)
             TabsPointerList.append(AuxTab);
 
             // Con la estructura creada, toca insertar la primera cedula para no perderla, salvo
-            // que la cedula corresponda al transportista
+            // que la cedula corresponda al transportista o que ya haya sido insertada en la lista
             if (CodesList.at(i)!=Cedula)
             {
-                TripTable->insertRow(TripTable->rowCount());
-                TripTable->setRowHeight(TripTable->rowCount()-1, 20);
+                // El codigo existe ya?
+                if (!FinalCodesList.at(ViajesCount-1).contains(CodesList.at(i)))
+                {
+                    TripTable->insertRow(TripTable->rowCount());
+                    TripTable->setRowHeight(TripTable->rowCount()-1, 20);
 
-                QTableWidgetItem* AuxTableItem= new QTableWidgetItem (CodesList.at(i));
-                TripTable->setItem(TripTable->rowCount()-1, 0, AuxTableItem);
+                    QTableWidgetItem* AuxTableItem= new QTableWidgetItem (CodesList.at(i));
+                    TripTable->setItem(TripTable->rowCount()-1, 0, AuxTableItem);
+
+                    // Insertamos en la lista de la pestaña actual
+                    FinalCodesList[ViajesCount-1].append(CodesList.at(i));
+                }
+                else
+                {
+                    IgnoredCodes++;
+                }
             }
         }
         else
         {
-            // Si no, seguimos insertando en la lista actual
-            // Creamos la fila
-            QTableWidget* CurrentTable= TabsPointerList.at(TabsPointerList.count()-1).CodesTable;
-            CurrentTable->insertRow(CurrentTable->rowCount());
-            CurrentTable->setRowHeight(CurrentTable->rowCount()-1, 20);
+            // Si no, seguimos insertando en la lista actual siempre que el codigo actual no haya sido
+            // insertado ya
+            // El codigo existe ya?
+            if (!FinalCodesList.at(ViajesCount-1).contains(CodesList.at(i)))
+            {
+                // Creamos la fila
+                QTableWidget* CurrentTable= TabsPointerList.at(TabsPointerList.count()-1).CodesTable;
+                CurrentTable->insertRow(CurrentTable->rowCount());
+                CurrentTable->setRowHeight(CurrentTable->rowCount()-1, 20);
 
-            // E insertamos el codigo
-            QTableWidgetItem* AuxTableItem= new QTableWidgetItem (CodesList.at(i));
-            CurrentTable->setItem(CurrentTable->rowCount()-1, 0, AuxTableItem);
+                // E insertamos el codigo
+                QTableWidgetItem* AuxTableItem= new QTableWidgetItem (CodesList.at(i));
+                CurrentTable->setItem(CurrentTable->rowCount()-1, 0, AuxTableItem);
+
+                // Insertamos en la lista de la pestaña actual
+                FinalCodesList[ViajesCount-1].append(CodesList.at(i));
+            }
+            else
+            {
+                IgnoredCodes++;
+            }
         }
     }
+
+    // Informamos
+    ui->InfoText->appendPlainText(QString("Códigos repetidos por pestaña ignorados: %1").arg(IgnoredCodes));
 }
 
 /* Esto hara lo mismo que on_CalculateTripsButton_clicked() pero
@@ -770,7 +806,62 @@ void MainWindow::on_actionAdminUsuarios_triggered()
  * a la base de datos, de forma que esta pueda ser consultada en la fase 2: Reporter */
 void MainWindow::on_UploadDataButton_clicked()
 {
+    // Vamos a crear una conexion
+    if (!Connector->RequestConnection())
+    {
+        QMessageBox::critical(0, "Error",
+        "No se ha podido recuperar la información de los transportistas encontrados.\n"
+        "Revise el estado de la Base de Datos.\n\nMensaje: Error DBA1\n"+
+        Connector->getLastError().text());
+    }
+    else
+    {
+        /* Necesitamos 3 insert:
+         * Uno para la tabla "pasajero"
+         * Uno para la tabla "viaje"
+         * Uno para la tabla "registro"
+         */
+        QSqlQuery* PassengerQuery= new QSqlQuery(Connector->Connector);
+        QSqlQuery* TripQuery= new QSqlQuery(Connector->Connector);
+        QSqlQuery* RecordQuery= new QSqlQuery(Connector->Connector);
 
+        // Ahora, por cada viaje, vamos a insertar un conjunto de pasajeros
+        int TripCount= TabsPointerList.count()-1; // Restamos 1 para ignorar la pestaña "Todos los codigos"
+        bool OK= true; // Para detener todo el proceso por si algo sale mal!
+        for (int i=0; i<TripCount; i++)
+        {
+            // Insertemos cada pasajero
+            for (int p=0; p<FinalCodesList.at(i).count(); p++)
+            {
+                if (!PassengerQuery->exec(QString("INSERT INTO pasajero (cedula) VALUES(")+
+                                          QString("'")+FinalCodesList.at(i).at(p)+QString("')")))
+                {
+                    // Si a estas alturas no podemos insertar pasajeros, es que algo ha salido muy mal
+                    QMessageBox::information(0, "Error",
+                    "No se ha podido guardar la lista de pasajeros. Revise el estado de la base<br>"
+                    "de datos.<br><br>"
+                    "Mensaje: Error DBQ1<br>"+
+                    Connector->getLastError().text());
+
+                    // Por eso toca matar el procedimiento
+                    OK= false;
+                    break;
+                }
+                else
+                {
+                    qDebug("Insertado");
+                }
+            }
+
+            // Todo salio bien?
+            if (!OK)
+                break;
+            else
+            {
+
+            }
+        }
+    }
 }
 
 // Esto basicamente lo que hace es proporcionar una forma explicita de eliminar

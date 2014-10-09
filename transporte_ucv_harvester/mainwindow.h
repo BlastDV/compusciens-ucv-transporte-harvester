@@ -42,6 +42,10 @@ private:
     // que dependan de los mismos sean mas rapidas
     QList <QString> CodesList;
 
+    // Esta lista de listas tendra todos los codigos por pestañas para facilitar su subida
+    // a la BD y evitar repeticion de codigos en un mismo viaje
+    QVector <QVector <QString> > FinalCodesList;
+
     // Esta otra tendra las cedulas de todos los transportistas en la BD
     QList <QString> CedulaList;
 

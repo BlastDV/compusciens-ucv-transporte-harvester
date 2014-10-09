@@ -16,6 +16,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     Connector= new DBConnector(this);
     Connector->ConnectionName= ConnectionName;
 
+    // Esto es para saber si hay un transportista escogido o no
+    DRIVERCHOSEN= false;
+
     // Cargamos todos los datos iniciales de la clase
     LoadInitialData();
 
@@ -204,6 +207,9 @@ void MainWindow::WipeTripsOut()
 
 /* Las siguientes funciones sirven para actualizar la interfaz segun el usuario
  * lo requiera. Otro transportista, otra ruta, etc. */
+// Esta en particular actualiza los datos segun la cedula ingresada y ademas chequea
+// que se trate de un transportista valido, para evitar usar el lector sin un transportista
+// previamente elegido
 void MainWindow::UpdateTransportistaC(QString cedula)
 {
     int id= cedula.toInt();
@@ -236,6 +242,9 @@ void MainWindow::UpdateTransportistaC(QString cedula)
                 ui->Nombre2Input->setText(Driverquery->value(1).toString());
                 ui->Apellido2Input->setText(Driverquery->value(3).toString());
                 ui->LastNameList->setCurrentIndex(ui->LastNameList->findText(Driverquery->value(2).toString()));
+
+                DRIVERCHOSEN= true;
+                ui->DriverReadyButton->setEnabled(true);
             }
             else
             {
@@ -243,6 +252,9 @@ void MainWindow::UpdateTransportistaC(QString cedula)
                 ui->Nombre2Input->setText("");
                 ui->Apellido2Input->setText("");
                 ui->LastNameList->setCurrentIndex(0);
+
+                DRIVERCHOSEN= false;
+                ui->DriverReadyButton->setEnabled(false);
             }
         }
     }
@@ -256,7 +268,10 @@ void MainWindow::UpdateTransportistaA(QString apellido)
         ui->Nombre2Input->setText("");
         ui->LastNameList->setCurrentIndex(0);
         ui->Apellido2Input->setText("");
-        ui->CedulaInput->setText("");
+        //ui->CedulaInput->setText("");
+
+        DRIVERCHOSEN= false;
+        ui->DriverReadyButton->setEnabled(false);
     }
     else
     {
@@ -289,6 +304,16 @@ void MainWindow::UpdateTransportistaA(QString apellido)
                     ui->Nombre2Input->setText(Driverquery->value(1).toString());
                     ui->Apellido2Input->setText(Driverquery->value(3).toString());
                     ui->CedulaInput->setText(Driverquery->value(5).toString());
+
+                    // Permitimos el pase a la otra etapa del proceso de carga
+                    DRIVERCHOSEN= true;
+                    ui->DriverReadyButton->setEnabled(true);
+                }
+                else
+                {
+                    // Denegamos el pase
+                    DRIVERCHOSEN= false;
+                    ui->DriverReadyButton->setEnabled(false);
                 }
             }
         }

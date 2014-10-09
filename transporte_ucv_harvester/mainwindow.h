@@ -36,6 +36,8 @@ private:
     DeviceConnector* DevConnector; // Para la ventana de conexion con el lector y la comunicacion
                                     // con el mismo
 
+    bool DRIVERCHOSEN; // Esto permite saber si un transportista ya ha sido elegido
+
     // Esta lista tendra todos los codigos recuperados del dispositivo. Permitira que las operaciones
     // que dependan de los mismos sean mas rapidas
     QList <QString> CodesList;

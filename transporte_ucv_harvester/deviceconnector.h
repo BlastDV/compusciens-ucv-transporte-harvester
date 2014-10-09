@@ -6,8 +6,9 @@
 #include "csp32bridge.h"
 #include "logmaster.h"
 
-namespace Ui {
-class DeviceConnector;
+namespace Ui
+{
+    class DeviceConnector;
 }
 
 class DeviceConnector : public QWidget

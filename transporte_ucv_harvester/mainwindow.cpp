@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
      * el programa. */
     DevConnector= new DeviceConnector();
     connect(DevConnector, SIGNAL(RegistrarEvento(QString)), this, SLOT(ReportarMensaje(QString)));
-    //DevConnector->InitObject();
+    DevConnector->InitObject();
 
     ConnectionName= "MainWindow";
     Connector= new DBConnector(this);
@@ -53,7 +53,6 @@ void MainWindow::on_actionConectarDispositivo_triggered()
 {
     connect(DevConnector, SIGNAL(CancelPressed()), this, SLOT(DeviceConnectionAborted()));
     connect(DevConnector, SIGNAL(AcceptPressed()), this, SLOT(DeviceConnectionAccepted()));
-    DevConnector->InitObject();
     DevConnector->show();
 }
 

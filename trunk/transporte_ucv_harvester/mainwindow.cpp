@@ -830,6 +830,53 @@ void MainWindow::on_UploadDataButton_clicked()
         bool OK= true; // Para detener todo el proceso por si algo sale mal!
         for (int i=0; i<TripCount; i++)
         {
+            // Primero hay que obtener el ID de ruta
+            QStringList AuxToken= TabsPointerList.at(i+1).RouteName->currentText().split("-");
+            QString Ruta_ID= AuxToken.at(AuxToken.count()-1);
+            QString CurrentTrip_ID= ""; // Esto permitira saber el ID del viaje que estamos insertando (porque es "auto increment")
+            QVector <QString> PASSENGERS_IDS; // Esto tambn permitira conocer los ID de los pasajeros insertados
+
+            // Insertemos el viaje actual
+            if (!TripQuery->exec(QString("INSERT INTO viaje (fecha, hora_salida, hora_llegada, ruta_id, ci_transportista) VALUES(")+
+                                 QString("'")+TabsPointerList.at(i+1).Date->date().toString("yyyy-MM-dd")+QString("', ")+
+                                 QString("'")+TabsPointerList.at(i+1).DepartTime->time().toString("HH:mm:ss")+QString("', ")+
+                                 QString("'")+TabsPointerList.at(i+1).ArriveTime->time().toString("HH:mm:ss")+QString("', ")+
+                                 QString("'")+Ruta_ID+QString("', ")+
+                                 QString("'")+ui->CedulaInput->text()+QString("')")))
+            {
+                QMessageBox::information(0, "Error",
+                "No se han podido guardar los viajes. Revise el estado de la base<br>"
+                "de datos.<br><br>"
+                "Mensaje: Error DBQ1<br>"+
+                Connector->getLastError().text());
+
+                // Toca matar el procedimiento si la insercion falla
+                OK= false;
+                break;
+            }
+            else
+            {
+                // Ahora recuperemos el ID del ultimo viaje
+                if (!TripQuery->exec("SELECT LAST_INSERT_ID()"))
+                {
+                    QMessageBox::information(0, "Error",
+                    "No se han podido guardar los viajes. Revise el estado de la base<br>"
+                    "de datos.<br><br>"
+                    "Mensaje: Error DBQ2<br>"+
+                    Connector->getLastError().text());
+
+                    // Toca matar el procedimiento si la recuperacion del ID falla
+                    OK= false;
+                    break;
+                }
+                else
+                {
+                    TripQuery->first();
+                    CurrentTrip_ID= TripQuery->value(0).toString();
+                }
+            }
+
+
             // Insertemos cada pasajero
             for (int p=0; p<FinalCodesList.at(i).count(); p++)
             {
@@ -849,7 +896,24 @@ void MainWindow::on_UploadDataButton_clicked()
                 }
                 else
                 {
-                    qDebug("Insertado");
+                    // Ahora recuperemos el ID del ultimo pasajero insertado
+                    if (!PassengerQuery->exec("SELECT LAST_INSERT_ID()"))
+                    {
+                        QMessageBox::information(0, "Error",
+                        "No se ha podido guardar la lista de pasajeros. Revise el estado de la base<br>"
+                        "de datos.<br><br>"
+                        "Mensaje: Error DBQ2<br>"+
+                        Connector->getLastError().text());
+
+                        // Si fallo esto, toca matar el procedimiento
+                        OK= false;
+                        break;
+                    }
+                    else
+                    {
+                        PassengerQuery->first();
+                        PASSENGERS_IDS.append(PassengerQuery->value(0).toString());
+                    }
                 }
             }
 
@@ -858,8 +922,32 @@ void MainWindow::on_UploadDataButton_clicked()
                 break;
             else
             {
+                // Ahora solo queda guardar las entradas en la tabla "registro"
 
+                for (int i=0; i<PASSENGERS_IDS.count(); i++)
+                {
+                    if (!RecordQuery->exec(QString("INSERT INTO registro (viaje_id, pasajero_id) VALUES (")+
+                                           QString("'")+CurrentTrip_ID+QString("', ")+
+                                           QString("'")+PASSENGERS_IDS.at(i)+QString("')")))
+                    {
+                        OK= false;
+                        break;
+                    }
+                }
             }
+        }
+
+        if (!OK)
+            QMessageBox::critical(0, "Error",
+            "No se han podido registrar los viajes correctamente. Revise el estado de la base<br>"
+            "de datos.<br><br>");
+        else
+        {
+            QMessageBox::information(0, "Fin de Operacion",
+            "¡Se han guardado los datos correctamente!<br><br>Puede desconectar el dispositivo e insertar otro si es necesario.<br>");
+
+            // Limpiemos la interfaz y dejemosla como estaba
+            on_NextDeviceButton_clicked();
         }
     }
 }

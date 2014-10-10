@@ -1,6 +1,6 @@
 /*
 SQLyog Community v11.5 (32 bit)
-MySQL - 5.6.19 : Database - ptransporteucv
+MySQL - 5.6.19-log : Database - ptransporteucv
 *********************************************************************
 */
 
@@ -28,11 +28,9 @@ CREATE TABLE `actividad` (
   PRIMARY KEY (`id`),
   KEY `fk_actividad_usuario_idx` (`usuario`),
   CONSTRAINT `fk_actividad_usuario` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=119 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `actividad` */
-
-insert  into `actividad`(`id`,`usuario`,`tiempo`,`actividad`) values (88,'admin','2014-07-07 12:10:20','INICIO SESION'),(89,'admin','2014-07-07 12:10:36','INICIO SESION'),(90,'admin','2014-07-07 12:11:45','INICIO SESION'),(91,'admin','2014-07-07 12:11:56','ABRIO PUERTO 1'),(92,'admin','2014-07-07 12:11:57','LIBERO PUERTO 1'),(93,'admin','2014-07-07 12:11:58','ABRIO PUERTO 1'),(94,'admin','2014-07-07 12:13:40','INICIO SESION'),(95,'admin','2014-07-07 12:15:51','INICIO SESION'),(96,'admin','2014-07-07 12:17:19','INICIO SESION'),(97,'admin','2014-07-07 12:17:45','INICIO SESION'),(98,'admin','2014-07-07 12:18:57','INICIO SESION'),(99,'admin','2014-07-07 12:20:22','INICIO SESION'),(100,'admin','2014-07-07 12:21:05','INICIO SESION'),(101,'admin','2014-07-07 12:21:17','CERRO SESION'),(102,'krys','2014-07-07 12:21:56','INICIO SESION'),(103,'krys','2014-07-07 12:22:28','CERRO SESION'),(104,'admin','2014-07-07 12:22:34','INICIO SESION'),(105,'admin','2014-07-07 12:23:37','CERRO SESION'),(106,'krys','2014-07-07 12:26:39','INICIO SESION'),(107,'krys','2014-07-07 12:26:59','INICIO SESION'),(108,'admin','2014-07-07 12:42:48','INICIO SESION'),(109,'admin','2014-07-07 12:44:59','INICIO SESION'),(110,'admin','2014-07-07 12:46:48','INICIO SESION'),(111,'admin','2014-07-07 12:53:15','INICIO SESION'),(112,'admin','2014-08-26 17:33:21','INICIO SESION'),(113,'admin','2014-08-26 17:33:54','CERRO SESION'),(114,'andre','2014-08-26 17:34:12','INICIO SESION'),(115,'andre','2014-08-26 17:35:01','CERRO SESION'),(116,'admin','2014-08-27 18:10:58','INICIO SESION'),(117,'admin','2014-08-27 18:12:16','CERRO SESION'),(118,'josue','2014-08-27 18:13:26','INICIO SESION');
 
 /*Table structure for table `parada` */
 
@@ -50,7 +48,7 @@ CREATE TABLE `parada` (
 
 /*Data for the table `parada` */
 
-insert  into `parada`(`id`,`nombre`,`descripcion`,`ruta_id`) values (10001,'Casalta II','Bloque 5, Casalta II',2019),(10002,'Propatria','Estación de Metro Propatria',2019),(10003,'Av. Sucre','Estacion de Metro Gato Negro',2019),(10004,'Av. Urdaneta','Centro Comercial Galerías Ávila',2019),(10005,'UCV_CENTRAL','UCV Sede principal',2019),(20001,'El Junquito','Km. 4, Coco Frío',1047),(20002,'El Amparo','Modulo Policial El Amparo',1047),(20003,'Plaza Catia','Plaza Catia',1047),(30001,'UCV_CENTRAL','UCV Sede principal',1045),(30002,'Petare','Estacion de Metro Petare',1045),(30003,'Guarenas','Guarenas',1045),(30004,'Guatire','Guatire',1045);
+insert  into `parada`(`id`,`nombre`,`descripcion`,`ruta_id`) values (10001,'Casalta II','Bloque 5, Casalta II',2019),(10002,'Propatria','Estación de Metro Propatria',2019),(10003,'Av. Sucre','Estacion de Metro Gato Negro',2019),(10004,'Av. Urdaneta','Centro Comercial Galerías Ávila',2019),(10005,'UCV_CENTRAL','UCV Sede principal',2019),(20001,'El Junquito','Km. 4, Coco Frío',1047),(20002,'El Amparo','Modulo Policial El Amparo',1047),(20003,'Plaza Catia','Plaza Catia',1047),(30001,'UCV_CENTRAL','UCV Sede principal',1045),(30002,'Petare','Estacion de Metro Petare',1045),(30003,'Guarenas','Guarenas',1045),(30004,'Guatire','Guatire',1045),(40001,'UCV_CENTRAL','UCV Sede principal',2022);
 
 /*Table structure for table `pasajero` */
 
@@ -60,19 +58,20 @@ CREATE TABLE `pasajero` (
   `cedula` int(8) unsigned NOT NULL COMMENT 'La cedula de los pasajeros',
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=252 DEFAULT CHARSET=utf8;
 
 /*Data for the table `pasajero` */
+
+insert  into `pasajero`(`cedula`,`id`) values (17489960,156),(14199311,157),(20858077,158),(21447855,159),(14999633,160),(19874225,161),(22458996,162),(17484757,163),(14763123,164),(23410705,165),(21000101,166),(14685741,167),(17655101,168),(19484747,169),(17635141,170),(19675140,171),(11688105,172),(11788839,173),(21789931,174),(23701171,175),(16458961,176),(14555123,177),(10553143,178),(22546332,179),(22753312,180),(12053922,181),(24101778,182),(20111763,183),(19031753,184),(20871763,185),(14277858,186),(21536559,187),(17489960,188),(14199311,189),(20858077,190),(21447855,191),(14999633,192),(19874225,193),(22458996,194),(17484757,195),(14763123,196),(23410705,197),(21000101,198),(14685741,199),(17655101,200),(19484747,201),(17635141,202),(19675140,203),(11788839,204),(21789931,205),(23701171,206),(16458961,207),(14555123,208),(10553143,209),(22546332,210),(22753312,211),(12053922,212),(24101778,213),(14199311,214),(20111763,215),(19031753,216),(20871763,217),(14277858,218),(21536559,219),(17489960,220),(20858077,221),(21447855,222),(14999633,223),(19874225,224),(22458996,225),(17484757,226),(14763123,227),(23410705,228),(21000101,229),(14685741,230),(17655101,231),(19484747,232),(17635141,233),(19675140,234),(11688105,235),(11788839,236),(21789931,237),(23701171,238),(16458961,239),(14555123,240),(10553143,241),(22546332,242),(22753312,243),(12053922,244),(24101778,245),(20111763,246),(19031753,247),(20871763,248),(14277858,249),(14555123,250),(22753312,251);
 
 /*Table structure for table `registro` */
 
 DROP TABLE IF EXISTS `registro`;
 
 CREATE TABLE `registro` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `viaje_id` bigint(20) unsigned NOT NULL COMMENT 'El viaje asociado al registro',
-  `pasajero_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
+  `pasajero_id` int(10) unsigned NOT NULL COMMENT 'Un pasajero asociado al viaje',
+  PRIMARY KEY (`viaje_id`,`pasajero_id`),
   KEY `fk_registro_viaje_idx` (`viaje_id`),
   KEY `fk_registro_pasajero_idx` (`pasajero_id`),
   CONSTRAINT `fk_registro_pasajero` FOREIGN KEY (`pasajero_id`) REFERENCES `pasajero` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -80,6 +79,8 @@ CREATE TABLE `registro` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `registro` */
+
+insert  into `registro`(`viaje_id`,`pasajero_id`) values (7,156),(7,157),(7,158),(7,159),(7,160),(7,161),(7,162),(7,163),(7,164),(7,165),(7,166),(7,167),(7,168),(7,169),(7,170),(7,171),(7,172),(7,173),(7,174),(7,175),(7,176),(7,177),(7,178),(7,179),(7,180),(7,181),(7,182),(7,183),(7,184),(7,185),(7,186),(8,187),(8,188),(8,189),(8,190),(8,191),(8,192),(8,193),(8,194),(8,195),(8,196),(8,197),(8,198),(8,199),(8,200),(8,201),(8,202),(8,203),(9,204),(9,205),(9,206),(9,207),(9,208),(9,209),(9,210),(9,211),(9,212),(9,213),(9,214),(9,215),(9,216),(9,217),(9,218),(10,219),(10,220),(11,221),(11,222),(11,223),(11,224),(11,225),(11,226),(11,227),(11,228),(11,229),(11,230),(11,231),(11,232),(11,233),(11,234),(11,235),(11,236),(11,237),(11,238),(11,239),(11,240),(11,241),(11,242),(11,243),(11,244),(11,245),(12,246),(12,247),(12,248),(12,249),(12,250),(12,251);
 
 /*Table structure for table `ruta` */
 
@@ -113,7 +114,7 @@ CREATE TABLE `transportista` (
 
 /*Data for the table `transportista` */
 
-insert  into `transportista`(`primer_nombre`,`segundo_nombre`,`primer_apellido`,`segundo_apellido`,`fecha_nac`,`cedula`,`activo`) values ('Raul','Ernesto','Pereira','Figueroa','1970-10-03',12394033,1),('Ernesto','Saul','Camacho','Montilla','1971-07-07',13286741,1),('Ricardo','Antonio','Pereira','Mora','1976-12-07',14396554,1),('Alberto','José','Maneiro','Fuentes','1980-04-30',16475014,0),('Antonio','José','Rivas','Beltrand','1989-09-09',16589741,1),('Ruben','Yaimeru','Maza','Marquez','1993-02-10',20875996,1),('Pedro','Alejandro','Fernandes','Olarte','1993-06-29',21536559,0);
+insert  into `transportista`(`primer_nombre`,`segundo_nombre`,`primer_apellido`,`segundo_apellido`,`fecha_nac`,`cedula`,`activo`) values ('Antonio','José','Rivas','Beltrand','1989-09-09',11688105,1),('Raul','Ernesto','Pereira','Figueroa','1970-10-03',12394033,1),('Ernesto','Saul','Camacho','Montilla','1971-07-07',14199311,1),('Ricardo','Antonio','Pereira','Mora','1976-12-07',14396554,1),('Alberto','José','Maneiro','Fuentes','1980-04-30',16475014,0),('Ruben','Yaimeru','Maza','Marquez','1993-02-10',20875996,1),('Pedro','Alejandro','Fernandes','Olarte','1993-06-29',21536559,0);
 
 /*Table structure for table `usuario` */
 
@@ -137,8 +138,8 @@ DROP TABLE IF EXISTS `viaje`;
 CREATE TABLE `viaje` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `fecha` date NOT NULL COMMENT 'La fecha del viaje',
-  `hora_salida` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Hora de partida',
-  `hora_llegada` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Hora de llegada',
+  `hora_salida` time NOT NULL COMMENT 'Hora de partida',
+  `hora_llegada` time DEFAULT NULL COMMENT 'Hora de llegada',
   `ruta_id` int(10) unsigned NOT NULL COMMENT 'La ruta del viaje',
   `ci_transportista` int(8) unsigned NOT NULL COMMENT 'La cedula del chofer',
   PRIMARY KEY (`id`),
@@ -146,9 +147,11 @@ CREATE TABLE `viaje` (
   KEY `fk_viaje_ruta` (`ruta_id`),
   CONSTRAINT `fk_viaje_ruta` FOREIGN KEY (`ruta_id`) REFERENCES `ruta` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_viaje_transportista` FOREIGN KEY (`ci_transportista`) REFERENCES `transportista` (`cedula`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 /*Data for the table `viaje` */
+
+insert  into `viaje`(`id`,`fecha`,`hora_salida`,`hora_llegada`,`ruta_id`,`ci_transportista`) values (7,'2014-10-10','14:07:00','16:44:48',2019,21536559),(8,'2014-10-10','00:00:00','16:47:36',2022,11688105),(9,'2014-10-10','00:00:00','16:47:36',2022,11688105),(10,'2014-10-10','00:00:00','16:49:49',2022,14199311),(11,'2014-10-10','00:00:00','16:49:49',2022,14199311),(12,'2014-10-10','00:00:00','16:49:49',2022,14199311);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

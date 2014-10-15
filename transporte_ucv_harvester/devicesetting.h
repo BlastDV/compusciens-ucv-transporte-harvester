@@ -3,8 +3,12 @@
 
 #include <QWidget>
 
-namespace Ui {
-class DeviceSetting;
+#include "csp32bridge.h"
+#include "logmaster.h"
+
+namespace Ui
+{
+    class DeviceSetting;
 }
 
 class DeviceSetting : public QWidget

@@ -152,42 +152,48 @@ void MainWindow::LoadInitialData()
         else
         {
             Routequery->first();
-            // Llenamos la lista de rutas
-            do
+            if (Routequery->isValid())
             {
-                int CurrentRouteID= Routequery->value(2).toInt();
-
-                QString NombreRuta= Routequery->value(0).toString() + "-"
-                        +Routequery->value(1).toString()+"-"+Routequery->value(2).toString();
-                //ui->RouteList->addItem(NombreRuta);
-
-                QStringList AuxRoute;
-                AuxRoute.append(NombreRuta);
-
-                // Ahora llenamos la lista de paradas segun la ruta actual
-                QSqlQuery* Stopquery= new QSqlQuery (Connector->Connector);
-
-                if (!Stopquery->exec(QString("SELECT * FROM parada WHERE ruta_id= %1").arg(CurrentRouteID)))
+                // Llenamos la lista de rutas
+                do
                 {
-                    QMessageBox::critical(0, QObject::tr("Error"),
-                                          "No se ha podido recuperar la lista de paradas. "
-                                          "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ3\n");
-                }
-                else
-                {
-                    Stopquery->first();
-                    // Llenamos la lista de paradas
-                    do
+                    int CurrentRouteID= Routequery->value(2).toInt();
+
+                    QString NombreRuta= Routequery->value(0).toString() + "-"
+                            +Routequery->value(1).toString()+"-"+Routequery->value(2).toString();
+                    //ui->RouteList->addItem(NombreRuta);
+
+                    QStringList AuxRoute;
+                    AuxRoute.append(NombreRuta);
+
+                    // Ahora llenamos la lista de paradas segun la ruta actual
+                    QSqlQuery* Stopquery= new QSqlQuery (Connector->Connector);
+
+                    if (!Stopquery->exec(QString("SELECT * FROM parada WHERE ruta_id= %1").arg(CurrentRouteID)))
                     {
-                        AuxRoute.append(Stopquery->value(1).toString());
+                        QMessageBox::critical(0, QObject::tr("Error"),
+                                              "No se ha podido recuperar la lista de paradas. "
+                                              "Revise el estado de la Base de Datos.\n\nMensaje: Error DBQ3\n");
                     }
-                    while (Stopquery->next());
-                }
+                    else
+                    {
+                        Stopquery->first();
+                        if (Stopquery->isValid())
+                        {
+                            // Llenamos la lista de paradas
+                            do
+                            {
+                                AuxRoute.append(Stopquery->value(1).toString());
+                            }
+                            while (Stopquery->next());
+                        }
+                    }
 
-                // Ahora insertamos el QStringList en el vector de rutas
-                TripRutas.append(AuxRoute);
+                    // Ahora insertamos el QStringList en el vector de rutas
+                    TripRutas.append(AuxRoute);
+                }
+                while (Routequery->next());
             }
-            while (Routequery->next());
         }
 
         Connector->EndConnection();
@@ -958,4 +964,11 @@ void MainWindow::on_NextDeviceButton_clicked()
 {
     // Que es exactamente lo mismo que hace el boton "Cambiar Transportista"
     on_BackToDriverButton_clicked();
+}
+
+// Esto llama a la ventana de configuracion del dispositivo
+void MainWindow::on_actionConfigurarDispositivo_triggered()
+{
+    DevSetting= new DeviceSetting();
+    DevSetting->show();
 }

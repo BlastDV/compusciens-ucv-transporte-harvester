@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Sistema de [Nombre por definir]</string>
+   <string>SENTRA - Harvester</string>
   </property>
   <property name="autoFillBackground">
    <bool>true</bool>
@@ -527,7 +527,7 @@
     </property>
     <addaction name="actionConectarDispositivo"/>
     <addaction name="separator"/>
-    <addaction name="actionConfigurar"/>
+    <addaction name="actionConfigurarDispositivo"/>
    </widget>
    <addaction name="menuArchivo"/>
    <addaction name="menuDispositivo"/>
@@ -572,7 +572,7 @@
     <string>Transportistas</string>
    </property>
   </action>
-  <action name="actionConfigurar">
+  <action name="actionConfigurarDispositivo">
    <property name="text">
     <string>Configurar</string>
    </property>

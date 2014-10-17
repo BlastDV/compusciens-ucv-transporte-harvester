@@ -5,7 +5,9 @@ DeviceConnector::DeviceConnector(QWidget *parent): QWidget(parent), ui(new Ui::D
 {
     ui->setupUi(this);
     Reader= new Csp32Bridge(this);
-    connect(Reader, SIGNAL(ReadingCodes(int)), this, SLOT(GetReadingUpdate(int)));
+    //connect(Reader, SIGNAL(ReadingCodes(int)), this, SLOT(GetReadingUpdate(int)));
+
+    ui->SettingsGroupBox->hide();
 }
 
 DeviceConnector::~DeviceConnector()
@@ -223,4 +225,26 @@ void DeviceConnector::on_CancelButton_clicked()
 void DeviceConnector::on_AcceptButton_clicked()
 {
     emit AcceptPressed();
+}
+
+// Esto alterna la visibilidad de las opciones del dispositivo
+void DeviceConnector::on_ShowSettingsButton_clicked()
+{
+    if (ui->SettingsGroupBox->isHidden())
+    {
+        ui->ShowSettingsButton->setText("Esconder Opciones");
+        ui->SettingsGroupBox->show();
+    }
+    else
+    {
+        ui->ShowSettingsButton->setText("Mostrar Opciones");
+        ui->SettingsGroupBox->hide();
+    }
+}
+
+void DeviceConnector::on_ReadSettingsButton_clicked()
+{
+    char DeviceID [8];
+    Reader->cspGetDeviceId(DeviceID, 8);
+    qDebug("Volumen: %d\nID: %s", Reader->cspGetVolume(), DeviceID);
 }

@@ -6,7 +6,6 @@
 #include <QtGui>
 #include "logreporter.h"
 #include "deviceconnector.h"
-#include "devicesetting.h"
 #include "dbconnector.h"
 #include "csp32bridge.h"
 #include "driversmanager.h"
@@ -36,7 +35,6 @@ private:
     DBConnector* Connector;
     DeviceConnector* DevConnector; // Para la ventana de conexion con el lector y la comunicacion
                                     // con el mismo
-    DeviceSetting* DevSetting; // Para la ventana de configuracion del dispositivo
 
     bool DRIVERCHOSEN; // Esto permite saber si un transportista ya ha sido elegido
 
@@ -99,12 +97,8 @@ private slots:
     void on_FindTransportistButton_clicked();
     void on_actionAdminTransportistas_triggered();
     void on_actionAdminUsuarios_triggered();
-
     void on_UploadDataButton_clicked();
-
     void on_NextDeviceButton_clicked();
-
-    void on_actionConfigurarDispositivo_triggered();
 
 signals:
     void CerrarSesion ();

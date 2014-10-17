@@ -526,8 +526,6 @@
      <string>Dispositivo</string>
     </property>
     <addaction name="actionConectarDispositivo"/>
-    <addaction name="separator"/>
-    <addaction name="actionConfigurarDispositivo"/>
    </widget>
    <addaction name="menuArchivo"/>
    <addaction name="menuDispositivo"/>
@@ -559,7 +557,7 @@
   </action>
   <action name="actionConectarDispositivo">
    <property name="text">
-    <string>Conectar</string>
+    <string>Conectar y Configurar</string>
    </property>
   </action>
   <action name="actionAdminRutas">

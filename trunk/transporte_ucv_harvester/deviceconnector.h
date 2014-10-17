@@ -45,6 +45,10 @@ private slots:
     void on_AcceptButton_clicked();
 
 
+    void on_ShowSettingsButton_clicked();
+
+    void on_ReadSettingsButton_clicked();
+
 private:
     Ui::DeviceConnector *ui;
 

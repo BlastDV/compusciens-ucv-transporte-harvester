@@ -965,10 +965,3 @@ void MainWindow::on_NextDeviceButton_clicked()
     // Que es exactamente lo mismo que hace el boton "Cambiar Transportista"
     on_BackToDriverButton_clicked();
 }
-
-// Esto llama a la ventana de configuracion del dispositivo
-void MainWindow::on_actionConfigurarDispositivo_triggered()
-{
-    DevSetting= new DeviceSetting();
-    DevSetting->show();
-}

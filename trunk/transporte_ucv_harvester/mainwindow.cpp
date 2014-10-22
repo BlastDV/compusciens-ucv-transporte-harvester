@@ -965,3 +965,13 @@ void MainWindow::on_NextDeviceButton_clicked()
     // Que es exactamente lo mismo que hace el boton "Cambiar Transportista"
     on_BackToDriverButton_clicked();
 }
+
+// Esto abre la ventana de configuracion de rutas y paradas
+void MainWindow::on_actionAdminRutas_triggered()
+{
+    // Creamos el objeto
+    RoutesManager* RoutesM= new RoutesManager();
+
+    //RoutesM->UpdateUser(UserID);
+    RoutesM->show();
+}

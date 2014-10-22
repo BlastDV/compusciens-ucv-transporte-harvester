@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     deviceconnector.cpp \
     permissionreporter.cpp \
     driversmanager.cpp \
-    usersmanager.cpp
+    usersmanager.cpp \
+    routesmanager.cpp
 
 HEADERS  += mainwindow.h \
     sessionwindow.h \
@@ -34,14 +35,16 @@ HEADERS  += mainwindow.h \
     deviceconnector.h \
     permissionreporter.h \
     driversmanager.h \
-    usersmanager.h
+    usersmanager.h \
+    routesmanager.h
 
 FORMS    += mainwindow.ui \
     sessionwindow.ui \
     logreporter.ui \
     deviceconnector.ui \
     driversmanager.ui \
-    usersmanager.ui
+    usersmanager.ui \
+    routesmanager.ui
 
 RESOURCES += \
     icons.qrc \

@@ -2,6 +2,7 @@
 #define DEVICECONNECTOR_H
 
 #include <QWidget>
+#include <QMessageBox>
 
 #include "csp32bridge.h"
 #include "logmaster.h"
@@ -48,6 +49,8 @@ private slots:
     void on_ShowSettingsButton_clicked();
 
     void on_ReadSettingsButton_clicked();
+
+    void on_SaveSettingsButton_clicked();
 
 private:
     Ui::DeviceConnector *ui;

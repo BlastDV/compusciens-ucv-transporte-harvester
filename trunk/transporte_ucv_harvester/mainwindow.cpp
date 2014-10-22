@@ -466,7 +466,7 @@ void MainWindow::ReadCodes(bool automatico)
     else
     {
         // Informamos
-        ui->InfoText->appendPlainText("No se han podido recuperar los códigos. ¿El lector está conectado?");
+        ui->InfoText->appendPlainText("No se han podido recuperar los códigos. ¿El lector está conectado? ¿Hay códigos en el dispositivo?");
 
         // Y volvemos al paso anterior
         on_BackToDriverButton_clicked();

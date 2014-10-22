@@ -242,9 +242,38 @@ void DeviceConnector::on_ShowSettingsButton_clicked()
     }
 }
 
+// Esto permitira recuperar las configuraciones del lector para mostrarlas
+// en pantalla
 void DeviceConnector::on_ReadSettingsButton_clicked()
 {
-    char DeviceID [8];
-    Reader->cspGetDeviceId(DeviceID, 8);
-    qDebug("Volumen: %d\nID: %s", Reader->cspGetVolume(), DeviceID);
+    //char DeviceID [9];
+    int DeviceVolume= 0;
+
+    // Recuperamos la configuracion del dispositivo
+    // El ID no se recupera, la libreria solo permite recuperar esta informacion
+    // haciendo una lectura de todos los codigos contenidos en el dispositivo.
+    // Esto es muy ineficiente y por tanto no se considerara en la version
+    // final de SENTRA: Harvester.
+    //Reader->cspGetDeviceId(DeviceID, sizeof(DeviceID));
+
+    DeviceVolume= Reader->cspGetVolume();
+
+    // Y actualizamos en pantalla
+    ui->DeviceVolumeInput->setValue(DeviceVolume);
+}
+
+// Esto permitira guardar las configuraciones del lector en el dispositivo
+void DeviceConnector::on_SaveSettingsButton_clicked()
+{
+    int DeviceVolume= ui->DeviceVolumeInput->value();
+
+    if (DeviceVolume>=0 && DeviceVolume<=3)
+    {
+        Reader->cspSetVolume(DeviceVolume);
+
+        QString OutputMessage= "";
+        OutputMessage= "Se ha guardado la configuracion en el dispositivo.<br><br>";
+        OutputMessage+=QString("-Volumen:  %1<br>").arg(DeviceVolume);
+        QMessageBox::information(0, "Exito", OutputMessage);
+    }
 }

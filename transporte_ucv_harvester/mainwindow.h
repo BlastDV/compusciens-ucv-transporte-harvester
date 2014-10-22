@@ -10,6 +10,7 @@
 #include "csp32bridge.h"
 #include "driversmanager.h"
 #include "usersmanager.h"
+#include "routesmanager.h"
 
 namespace Ui
 {
@@ -97,6 +98,7 @@ private slots:
     void on_FindTransportistButton_clicked();
     void on_actionAdminTransportistas_triggered();
     void on_actionAdminUsuarios_triggered();
+    void on_actionAdminRutas_triggered();
     void on_UploadDataButton_clicked();
     void on_NextDeviceButton_clicked();
 

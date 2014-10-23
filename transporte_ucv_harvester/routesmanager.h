@@ -28,6 +28,12 @@ private:
     PermissionReporter* PermissionRep;
     QString ConnectionName;
     QString UserID;
+
+
+    // Estos metodos se encargan del apartado visual de los
+    // campos y de la extraccion de datos de la BD
+    void LoadData();
+    void FillInputs(QSqlQuery Input);
 };
 
 #endif // ROUTESMANAGER_H

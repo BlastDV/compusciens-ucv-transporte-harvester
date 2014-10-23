@@ -29,11 +29,23 @@ private:
     QString ConnectionName;
     QString UserID;
 
+    // Estos QMap sirven para mostrar la informacion respectiva
+    // segun el usuario navegue por las listas presentes en la interfaz
+    QMap <int, QString> RoutesLocalList;
+    QMap <int, QString> StopsLocalList;
+
 
     // Estos metodos se encargan del apartado visual de los
     // campos y de la extraccion de datos de la BD
     void LoadData();
-    void FillInputs(QSqlQuery Input);
+    void EraseData();
+    void EraseStops();
+    void LoadStops(int routeindex);
+    void FillRouteInputs(QSqlQuery Input);
+    void FillStopInputs(QSqlQuery Input);
+
+private slots:
+    void UpdateView(int UserIndex, int Trash);
 };
 
 #endif // ROUTESMANAGER_H

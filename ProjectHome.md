@@ -1,0 +1,1 @@
+Se trata de un proyecto cuya misión es la de cuantificar los datos concernientes al servicio de transporte de la Universidad Central de Venezuela. A cargo del desarrollo se encuentra la organización de software libre CompuSciens (www.compusciens.org.ve)
